@@ -1,0 +1,1130 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+
+@model PMS_Admin_Web.Models.Property.RENTSTModel
+
+@{
+    ViewData["Title"] = "RentSt";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<!--script goes here...-->
+<script>
+    function call_refresh() {
+        var bname = $('#bname').val();
+        var accgridclassmonth = document.getElementsByClassName('month');
+        var accgridclassyear = document.getElementsByClassName('year');
+        //console.log(accgridclassmonth[0].innerText);
+        var smonth = accgridclassmonth[0].innerText;
+        var syear = accgridclassyear[0].innerText;
+        $.ajax({
+            type: "POST",
+            data: {},
+            url: "@Url.Action("call_refreshRENTST", "MenuView")",
+            success: function (response) {
+
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+
+        $('#divdown').hide();
+        $('#divup').hide();
+        $('#divclose').hide();
+
+        /*var pryEmpId;*/
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var pryEmpId = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteUser", "User")",
+                    data: { Id: pryEmpId },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#btnview').click(function () {
+            var bname = $('#bname').val();
+            var month = $('#month').val();
+
+            if (month == null || month == "") {
+                alert('Select Month');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, month: month},
+                url: "@Url.Action("BtnViewRENTST", "MenuView")",
+                success: function (response) {
+                    $('#tbodyaccgrid').html('');
+                    var accgrid = response.accgrid;
+                    //console.log(accgrid);
+                    //console.log(response.actrent);
+                    //console.log(response.totrent);
+                    if (response == 0) {
+                        alert('Rent statement is not uploaded for this month')
+                        $('#lcrent').val('');
+                        $('#actualrent').val('');
+                    }
+                    else {
+                        $.each(accgrid, function (k, v) {
+                            $('#tbodyaccgrid').append(`<tr id="${v.pref}" class="accgridclass">
+                                                            <td hidden>${v.id}</td>
+                                                            <td style="color:black;"><input type="checkbox" value="${v.pref}" name="selectedids" /></td>
+                                                            <td class="aptno" style="color:black;">${v.aptno}</td>
+                                                            <td class="tenantname" style="color:black;">${v.tname}</td>
+                                                            <td class="nationality" style="color:black;">${v.nat}</td>
+                                                            <td class="bed" style="color:black;">${v.bed}</td>
+                                                            <td class="bath" style="color:black;">${v.bath}</td>
+                                                            <td class="rent" style="color:black;">${v.rent}</td>
+                                                            <td class="mpay" style="color:black;">${v.mpay}</td>
+                                                            <td class="ftype" style="color:black;">${v.ftype}</td>
+                                                            <td class="corpinv" style="color:black;">${v.corpinv}</td>
+                                                            <td class="month" style="color:black;">${v.month}</td>
+                                                            <td class="year" style="color:black;">${v.year}</td>
+                                                            <td class="pref" style="color:black;">${v.pref}</td>
+                                                            <td style="color:black;">Updated</td>
+                                                            <td class="leasestart" style="color:black;">${v.leasestart}</td>
+                                                            <td class="leaseend" style="color:black;">${v.leaseend}</td>
+                                                            <td class="actrent" style="color:black;">${v.actrent}</td>
+                                                            <td style="color:black;">${v.slease}</td>
+                                                       </tr>`);
+                        })
+                        $('#lcrent').val(response.totrent);
+                        $('#actualrent').val(response.actrent);
+
+                    }
+                }
+            })
+
+        })
+
+        $('#btnbed').click(function () {
+            $('#bedModal').modal({ backdrop: "static" });
+        })
+
+        $('#btnbedupdateselectedrecordfrompm').click(function () {
+            var confirmmsgbox = confirm('Are you sure that you want to update from previous rent statement?');
+            if (confirmmsgbox) {
+                var selectedids = [];
+                var bname = $('#bname').val();
+
+                if ($("input[name=selectedids]:checked").length > 1) {
+                    alert('Select only one row');
+                    return false;
+                }
+
+                $("input[name=selectedids]:checked").each(function (i) {
+                    selectedids[i] = $(this).val();
+                });
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, selectedids: selectedids},
+                    url: "@Url.Action("BtnBedUpdateSelectedRecordfromPMRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        if (response == "Updated") {
+                            $('#bedModal').modal('hide');
+                            window.location.reload();
+                        }
+                    }
+                })
+            }
+        });
+
+
+        $('#btnbedupdateallfromprevrs').click(function () {
+            var confirmmsgbox = confirm('Are you sure that you want to update from previous rent statement?');
+            if (confirmmsgbox) {
+                var bname = $('#bname').val();
+                var accgridclassid = document.getElementsByClassName('rentstatementid');
+                var accgridclasspref = document.getElementsByClassName('pref');
+                var accgridclass = document.getElementsByClassName('accgridclass');
+                var aglength = accgridclass.length;
+                var id = [], pref = [];
+                for (let i = 0; i < aglength; i++) {
+                    id.push(accgridclassid[i].innerText);
+                    pref.push(accgridclasspref[i].innerText);
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, id: id, pref: pref, aglength: aglength},
+                    url: "@Url.Action("BtnBedUpdateAllfromPrevRS", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        if (response == "Updated") {
+                            $('#bedModal').modal('hide');
+                            window.location.reload();
+                        }
+                    }
+                })
+            }
+        })
+
+        $('#btnbathupdateselectedrecord').click(function () {
+            var confirmmsgbox = confirm('Are you sure that you want the selected record?');
+            if (confirmmsgbox) {
+                var selectedids = [];
+                var bname = $('#bname').val();
+                var bathtxt = $('#bathtxt').val();
+                if ($("input[name=selectedids]:checked").length > 1) {
+                    alert('Select only one row');
+                    return false;
+                }
+
+                $("input[name=selectedids]:checked").each(function (i) {
+                    selectedids[i] = $(this).val();
+                });
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, selectedids: selectedids, bathtxt: bathtxt},
+                    url: "@Url.Action("BtnBathUpdateSelectedRecordRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        if (response == "Updated") {
+                            $('#bedModal').modal('hide');
+                            window.location.reload();
+                        }
+                    }
+                })
+            }
+        });
+
+        $('#btnbathupdateallrecord').click(function () {
+            var confirmmsgbox = confirm('Are you sure that you want to update all records?');
+            if (confirmmsgbox) {
+                var bname = $('#bname').val();
+                var bathtxt = $('#bathtxt').val();
+                var accgridclassid = document.getElementsByClassName('rentstatementid');
+                var accgridclass = document.getElementsByClassName('accgridclass');
+                var aglength = accgridclass.length;
+                var id = [];
+                for (let i = 0; i < aglength; i++) {
+                    id.push(accgridclassid[i].innerText);
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, id: id, aglength: aglength, bathtxt: bathtxt},
+                    url: "@Url.Action("BtnBathUpdateAllRecordRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        if (response == "Updated") {
+                            $('#bedModal').modal('hide');
+                            window.location.reload();
+                        }
+                    }
+                })
+            }
+        })
+
+        $('#btnvacant').click(function () {
+            var confirmmsgbox = confirm('Are you sure that you want to make the selected apartment Vacant?');
+            if (confirmmsgbox) {
+                var bname = $('#bname').val();
+                if ($("input[name=selectedids]:checked").length > 1) {
+                    alert('Select only one row');
+                    return false;
+                }
+
+                $("input[name=selectedids]:checked").each(function (i) {
+                    selectedids[i] = $(this).val();
+                });
+
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, selectedids: selectedids},
+                    url: "@Url.Action("BtnVacantRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        $('#btnreserved').click(function () {
+            var confirmmsgbox = confirm('Are you sure that you want to make the selected apartment Reserved?');
+            if (confirmmsgbox) {
+                var bname = $('#bname').val();
+                if ($("input[name=selectedids]:checked").length > 1) {
+                    alert('Select only one row');
+                    return false;
+                }
+
+                $("input[name=selectedids]:checked").each(function (i) {
+                    selectedids[i] = $(this).val();
+                });
+
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, selectedids: selectedids},
+                    url: "@Url.Action("BtnReservedRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        $('#btnrentmatch').click(function () {
+            var accgridclassrent = document.getElementsByClassName('rent');
+            var accgridclassactrent = document.getElementsByClassName('actrent');
+            var accgridclass = document.getElementsByClassName('accgridclass');
+            var aglength = accgridclass.length;
+            for (let i = 0; i < aglength; i++) {
+                accgridclassrent[i].style.backgroundColor = "silver";
+                var LRENT = accgridclassrent[i].innerText;
+                var ARENT = accgridclassactrent[i].innerText;
+                if (LRENT != ARENT) {
+                    accgridclassrent[i].style.backgroundColor = "yellow";
+                }
+            }
+        })
+
+        //$('#btnmo').click(function () {
+        //    $('#divdown').show();
+        //    $('#divup').show();
+        //    $('#divclose').show();
+        //})
+
+        $(".up,.down").click(function () {
+            var row = $(this).parents("tr:first");
+            if ($(this).is(".up")) {
+                row.insertBefore(row.prev());
+            } else {
+                row.insertAfter(row.next());
+            }
+        });
+
+        //$('#btnclose').click(function () {
+        //    $('#divdown').hide();
+        //    $('#divup').hide();
+        //    $('#divclose').hide();
+        //})
+
+        $('#btnupdates').click(function () {
+            var month = $('#month').val();
+            var bname = $('#bname').val();
+            if (month == null || month == "") {
+                alert('Select the month of rent statement');
+                return false;
+            }
+            window.location.href = `@Url.Action("RentedVacating", "MenuView")?month=${month}&bname=${bname}`;
+        })
+
+        $('#btnstatusanalysis').click(function () {
+            var tbodyaccgrid = document.getElementById('tbodyaccgrid');
+            var smonth = $(tbodyaccgrid.rows[0].cells[11]).text();
+            var syear = $(tbodyaccgrid.rows[0].cells[12]).text();
+
+            var bname = $('#bname').val();
+            var accgridclass = document.getElementsByClassName('accgridclass');
+            var accgridclasslength = accgridclass.length;
+            var rentstatementid = document.getElementsByClassName('rentstatementid');
+            var chkshowcorporates = $('#chkshowcorporates').prop('checked');
+            var chkshowsummaryupdate = $('#chkshowsummaryupdate').prop('checked');
+            var chkincludeothernote = $('#chkincludeothernote').prop('checked');
+            var showingcorp, showsummary, othernote, id = [];
+            for (let i = 0; i < accgridclasslength; i++) {
+                id.push(rentstatementid[i].innerText);
+            }
+
+            if (chkshowcorporates == true) {
+                showingcorp = "yes";
+            }
+            else {
+                showingcorp = "no";
+            }
+
+            if (chkshowsummaryupdate == true) {
+                showsummary = "yes";
+            }
+            else {
+                showsummary = "no";
+            }
+
+            if (chkincludeothernote == true) {
+                othernote = "yes";
+            }
+            else {
+                othernote = "no";
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { id: id, bname: bname, accgridclasslength: accgridclasslength},
+                url: "@Url.Action("BtnStatusAnalysisRENTST", "MenuView")",
+                success: function (response) {
+                    alert(response);
+                    @*window.location.href = `@Url.Action("Page", "MenuView")`;*@
+                }
+            })
+            //opening report file
+        })
+
+        $('#btnothernote').click(function () {
+            var bname = $('#bname').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname},
+                url: "@Url.Action("BtnOthernoteRENTST", "MenuView")",
+                success: function (response) {
+                    if (response != "No Records found") {
+                        $('#otherremarkModal').modal({ backdrop: "static" });
+                        $('#otherremark').val(response);
+                    }
+                    else {
+                        alert(response);
+                    }
+                }
+            })
+        })
+
+        $('#btnsaveotherremark').click(function () {
+            var bname = $('#bname').val();
+            var otherremark = $('#otherremark').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, otherremark: otherremark},
+                url: "@Url.Action("BtnSaveOtherremarkRENTST", "MenuView")",
+                success: function (response) {
+                    alert(response);
+                    $('#otherremarkModal').modal('hide');
+                }
+            })
+        })
+
+        $('#btnprintall').click(function () {
+            $('#printallModal').modal({ backdrop: "static" });
+        })
+
+        $('#btnprintprntall').click(function () {
+            //pending
+        })
+
+        $('#btnasr').click(function () {
+            var bname = $('#bname').val();
+            var accgridclass = document.getElementsByClassName('accgridclass');
+            var accgridclasslength = accgridclass.length;
+            var rentstatementid = document.getElementsByClassName('rentstatementid');
+            var chkgroupbybedrooms = $('#chkgroupbybedrooms').prop('checked');
+            var chkgroupbytypes = $('#chkgroupbytypes').prop('checked');
+            var id = [];
+            for (let i = 0; i < accgridclasslength; i++) {
+                id.push(rentstatementid[i].innerText);
+            }
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, accgridclasslength: accgridclasslength, chkgroupbybedrooms: chkgroupbybedrooms, chkgroupbytypes: chkgroupbytypes, id: id},
+                url: "@Url.Action("BtnAsrRENTST", "MenuView")",
+                success: function (response) {
+                    alert(response);
+                    //asr reporting
+                }
+            })
+        })
+
+        $('#btnasrnote').click(function () {
+            var bname = $('#bname').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname},
+                url: "@Url.Action("BtnAsrNoteRENTST", "MenuView")",
+                success: function (response) {
+                    $('#asrnotModal').modal({ backdrop: "static" });
+                    $('#asrnote').val(response);
+                }
+            })
+        })
+
+        $('#btnsaveasrnote').click(function () {
+            var bname = $('#bname').val();
+            var asrnote = $('#asrnote').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, asrnote: asrnote},
+                url: "@Url.Action("BtnSaveAsrNoteRENTST", "MenuView")",
+                success: function (response) {
+                    alert(response);
+                    $('#asrnotModal').modal('hide');
+                }
+            })
+        })
+
+        $('#btnwalkinclientenq').click(function () {
+            window.location.href = "@Url.Action("Walkin", "MenuView")";
+        })
+
+        $('#btnbedbath').click(function () {
+            var bname = $('#bname').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname},
+                url: "@Url.Action("BtnBedBathRENTST", "MenuView")",
+                success: function (response) {
+                    if (response == 0) {
+                        alert('Create the Rent Statement First');
+                        return false;
+                    }
+                    //LLreportRENTST
+                }
+            })
+        })
+
+        $('#btnonlyrent').click(function () {
+            var bname = $('#bname').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname},
+                url: "@Url.Action("BtnOnlyRentRENTST", "MenuView")",
+                success: function (response) {
+                    if (response == 0) {
+                        alert('Create the Rent Statement First');
+                        return false;
+                    }
+                    //LLreportRENTST1
+                }
+            })
+        })
+
+        $('#btngetrentfromaccounts').click(function () {
+            var confirmmsgbox = confirm('Are you sure to get the rent from accounts ?');
+            if (confirmmsgbox) {
+                var bname = $('#bname').val();
+                var accgridclass = document.getElementsByClassName('accgridclass');
+                var accgridclasslength = accgridclass.length;
+                var rentstatementid = document.getElementsByClassName('rentstatementid');
+                var month = document.getElementsByClassName('month');
+                var year = document.getElementsByClassName('year');
+                var propref = document.getElementsByClassName('pref');
+                var id = [], month = [], year = [], pref = [];
+                for (let i = 0; i < accgridclasslength; i++) {
+                    id.push(rentstatementid[i].innerText);
+                    month.push(month[i].innerText);
+                    year.push(year[i].innerText);
+                    pref.push(propref[i].innerText);
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, id: id, month: month, year: year, pref: pref, accgridclasslength: accgridclasslength},
+                    url: "@Url.Action("BtnGetRentFromAccountsRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+
+        $('#btncheckprentfromaccounts').click(function () {
+            var month = $('#month').val();
+            if (month == null || month == "") {
+                alert('Select the month of rent statement');
+                return false;
+            }
+            var bname = $('#bname').val();
+            var tbodyaccgrid = document.getElementById('tbodyaccgrid');
+            var accgridclass = document.getElementsByClassName('accgridclass');
+            var accgridclasslength = accgridclass.length;
+            var propref = document.getElementsByClassName('pref');
+            var classrent = document.getElementsByClassName('rent');
+            var pref = [], rent = [];
+            for (let i = 0; i < accgridclasslength; i++) {
+                pref.push(propref[i].innerText);
+                rent.push(classrent[i].innerText);
+            }
+            $.ajax({
+                type: "POST",
+                data: { month: month, bname: bname, accgridclasslength: accgridclasslength, pref: pref, rent: rent},
+                url: "@Url.Action("BtnCheckPrentFromAccountsRENTST", "MenuView")",
+                success: function (response) {
+                    /*console.log(response);*/
+                    for (let i = 0; i < accgridclasslength; i++) {
+                        var accRow = document.getElementById(propref[i].innerText);
+                        if (response.collectedacc[i] == response.collectedrs[i]) {
+                            accRow.style.backgroundColor = "silver";
+                        }
+                        else {
+                            accRow.style.backgroundColor = "red";
+                        }
+                    }
+                }
+            })
+        })
+
+        $('#btnrevertchanges').click(function () {
+            var confirmmsgbox = confirm('Are you sure to revert the changes ?');
+            if (confirmmsgbox) {
+                var month = $('#month').val();
+                if (month == null || month == "") {
+                    alert('Select the month of rent statement');
+                    return false;
+                }
+                var bname = $('#bname').val();
+                $.ajax({
+                    type: "POST",
+                    data: { month: month, bname: bname},
+                    url: "@Url.Action("BtnRevertChangesRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                    }
+                })
+            }
+        })
+
+        $('#btnclosethestatement').click(function () {
+            var confirmmsgbox = confirm('Are you sure to close the statement? Changes are not possible once you Close it!');
+            if (confirmmsgbox) {
+                var smonth = $(tbodyaccgrid.rows[0].cells[11]).text();
+                var syear = $(tbodyaccgrid.rows[0].cells[12]).text();
+                var rentstatementid = document.getElementsByClassName('rentstatementid');
+                var accgridclass = document.getElementsByClassName('accgridclass');
+                var accgridclasslength = accgridclass.length;
+                var id = [];
+                for (let i = 0; i < accgridclasslength; i++) {
+                    id.push(rentstatementid[i].innerText);
+                }
+                var bname = $('#bname').val();
+                $.ajax({
+                    type: "POST",
+                    data: { id: id, bname: bname, accgridclasslength: accgridclasslength},
+                    url: "@Url.Action("BtnCloseTheStatementRENTST", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    }
+                })
+            }
+        })
+
+        $('#btncreate').click(function () {
+            var bname = $('#bname').val();
+            var rentmonth = $('#month').val();
+            if (rentmonth == null || rentmonth == "") {
+                alert('Select the month');
+                return false;
+            }
+            var accgridclass = document.getElementsByClassName('accgridclass');
+            var accgridclasslength = accgridclass.length;
+            var aptnoclass = document.getElementsByClassName('aptno');
+            var prefclass = document.getElementsByClassName('pref');
+            var tenantnameclass = document.getElementsByClassName('tenantname');
+            var nationalityclass = document.getElementsByClassName('nationality');
+            var bedclass = document.getElementsByClassName('bed');
+            var bathclass = document.getElementsByClassName('bath');
+            var rentclass = document.getElementsByClassName('rent');
+            var actrentclass = document.getElementsByClassName('actrent');
+            var mpayclass = document.getElementsByClassName('mpay');
+            var ftypeclass = document.getElementsByClassName('ftype');
+            var corpinvclass = document.getElementsByClassName('corpinv');
+            var monthclass = document.getElementsByClassName('month');
+            var yearclass = document.getElementsByClassName('year');
+            var aptno = [], pref = [], tname = [], nat = [], bed = [], bath = [], rent = [], actualrent = [], mpay = [], ftype = [], corpinv = [], month = [], year = [];
+            for (let i = 0; i < accgridclasslength; i++) {
+                aptno.push(aptnoclass[i].innerText);
+                pref.push(prefclass[i].innerText);
+                tname.push(tenantnameclass[i].innerText);
+                nat.push(nationalityclass[i].innerText);
+                bed.push(bedclass[i].innerText);
+                bath.push(bathclass[i].innerText);
+                rent.push(rentclass[i].innerText);
+                actualrent.push(actrentclass[i].innerText);
+                mpay.push(mpayclass[i].innerText);
+                ftype.push(ftypeclass[i].innerText);
+                corpinv.push(corpinvclass[i].innerText);
+                month.push(monthclass[i].innerText);
+                year.push(yearclass[i].innerText);
+            }
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, rentmonth: rentmonth, accgridclasslength: accgridclasslength, aptno: aptno, pref: pref, tname: tname, nat: nat, bed: bed, bath: bath, rent: rent,actualrent: actualrent, mpay: mpay, ftype: ftype, corpinv: corpinv, month: month, year: year},
+                url: "@Url.Action("BtnCreateRENTST", "MenuView")",
+                success: function (response) {
+                    alert(response)
+                    location.reload();
+                }
+            })
+        })
+
+        $('#btnsublease').click(function () {
+            window.location.href = "@Url.Action("SubleaseList", "Accounts")";
+        })
+
+        //end of the docuement ready function
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form>
+                    <div class="col-lg-12">
+                        <input type="hidden" id="bname" asp-for="bname" />
+                        <input type="hidden" id="LRENT" />
+                        <input type="hidden" id="ARENT" />
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Rent Statement</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <div class="form-group" style="width: 170px;">
+                                                <label class="control-label text-black-50">Month</label>
+                                                <input id="month" class="form-control" type="date" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button id="btnview" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">View</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnbed" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Bed</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnvacant" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Vacant</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnreserved" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Reserved</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnrentmatch" type="button" class="btn btn-primary" style="border-radius: 10px; width: 110px; margin-top: 15px;">Rent Match</button>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 135px; margin-left: 50px;">
+                                                <label class="control-label text-black-50">LC Rent</label>
+                                                <input id="lcrent" asp-for="totrent" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 135px;">
+                                                <label class="control-label text-black-50">Actual Rent</label>
+                                                <input id="actualrent" asp-for="ACTRENT" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 80px; margin-left: 50px;">
+                                                <label class="control-label text-black-50">Rented</label>
+                                                <input id="rented" asp-for="rented" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 80px;">
+                                                <label class="control-label text-black-50">Reserved</label>
+                                                <input id="reserved" asp-for="reserved" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 80px;">
+                                                <label class="control-label text-black-50">Vacant</label>
+                                                <input id="vacant" asp-for="vacant" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        @*<td>
+                                            <button id="btnmo" type="button" class="btn btn-primary" style="border-radius: 10px; width: 100px; margin-left: 50px; margin-top: 15px; ">MO</button>
+                                        </td>
+                                        <td>
+                                            <div id="divdown">
+                                                <button id="btndown" type="button" class="btn btn-primary" style="border-radius: 10px; width: 100px; margin-top: 15px;">Down</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div id="divup">
+                                                <button id="btnup" type="button" class="btn btn-primary" style="border-radius: 10px; width: 100px; margin-top: 15px;">Up</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div id="divclose">
+                                                <button id="btnclose" type="button" class="btn btn-primary" style="border-radius: 10px; width: 100px; margin-top: 15px;">Close</button>
+                                            </div>
+                                        </td>*@
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button id="btnupdates" type="button" class="btn btn-primary" style="border-radius: 10px; ">Updates</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnstatusanalysis" type="button" class="btn btn-primary" style="border-radius: 10px; width: 130px;">Status Analysis</button>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 140px; margin-left: 60px; margin-top: 20px; ">
+                                                <input id="chkshowcorporates" type="checkbox" />
+                                                <label class="control-label text-black-50">Show Corporates</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 185px; margin-top: 20px;">
+                                                <input id="chkshowsummaryupdate" type="checkbox" />
+                                                <label class="control-label text-black-50">Show Summary Update</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 155px; margin-top: 20px;">
+                                                <input id="chkincludeothernote" type="checkbox" />
+                                                <label class="control-label text-black-50">Include Other Note</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button id="btnothernote" type="button" class="btn btn-primary" style="border-radius: 10px; ">Other Note</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnprintall" type="button" class="btn btn-primary" style="border-radius: 10px;">Print All</button>
+                                        </td>
+                                        <td>
+                                            <div style="margin-left: 50px; margin-top: 10px; ">
+                                                <div class="row" style="margin-left: 35px;">
+                                                    <div class="form-group" style="width: 165px;  ">
+                                                        <input id="chkgroupbybedrooms" type="checkbox" />
+                                                        <label class="control-label text-black-50">Group by Bedrooms</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-left: 35px;">
+                                                    <div class="form-group" style="width: 130px;">
+                                                        <input id="chkgroupbytypes" type="checkbox" />
+                                                        <label class="control-label text-black-50">Group by Types</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="row" style="margin-left: 25px;">
+                                                <button id="btnasr" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: -7px;">ASR</button>
+                                            </div>
+                                            <div class="row" style="margin-left: 25px;">
+                                                <button id="btnasrnote" type="button" class="btn btn-primary" style="border-radius: 10px; width: 95px;">ASR Note</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="row">
+                                                <div class="form-group" style="margin-left: 85px; ">
+                                                    <label class="control-label text-black-50" style="width: 117px; margin-left: 14px;">Rent Statement</label>
+                                                    <div class="col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-lg-3">
+                                                                <button id="btnbedbath" type="button" class="btn btn-primary" style="border-radius: 10px; width: 100px;">Bed/Bath</button>
+                                                            </div>
+                                                            <div class="col-lg-3" style="margin-left: 30px;">
+                                                                <button id="btnonlyrent" type="button" class="btn btn-primary" style="border-radius: 10px; width: 100px;">Only Rent</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button id="btnwalkinclientenq" type="button" class="btn btn-primary" style="border-radius: 10px; width: 195px;">Walk-in Client Enquiries</button>
+                                        </td>
+                                        <td>
+                                            <button id="btngetrentfromaccounts" type="button" class="btn btn-primary" style="border-radius: 10px; width: 205px;">Get Rent from Accounts</button>
+                                        </td>
+                                        <td>
+                                            <button id="btncheckprentfromaccounts" type="button" class="btn btn-primary" style="border-radius: 10px; width: 280px;">Check Payable Rent from Accounts</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnrevertchanges" type="button" class="btn btn-primary" style="border-radius: 10px; width: 145px;">Revert Changes</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnclosethestatement" type="button" class="btn btn-primary" style="border-radius: 10px; width: 175px;">Close the Statement</button>
+                                        </td>
+                                        <td>
+                                            <button id="btncreate" type="button" class="btn btn-primary" style="border-radius: 10px;">Create</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnsublease" type="button" class="btn btn-primary" style="border-radius: 10px;">Sublease</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div style="overflow-y: auto;">
+                            <table id="accgridtable" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success" style="width:100%">
+                                    <tr>
+                                        <th hidden></th>
+                                        <th></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 65px;">Apt No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 365px;">Tenant Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Nationality</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 55px;">Bed</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 55px;">Bath</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Pay Mode</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px; ">Fur Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">T.Type</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Month</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Year</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 102px;">Property Ref</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 102px;">State</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 95px;">Lease Start</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 95px;">Lease End</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Actual Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Sublease</label></th>
+                                        <th class="table-bordered" colspan="2"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyaccgrid">
+                                    @foreach (var item in Model.accgrid)
+                                    {
+                                        <tr id="@item.pref" class="accgridclass">
+                                            <td class="rentstatementid" hidden>@item.id</td>
+                                            <td style="color:black;"><input type="checkbox" value="@item.id" name="selectedids" /></td>
+                                            <td class="aptno" style="color:black;">@item.aptno</td>
+                                            <td class="tenantname" style="color:black;">@item.tname</td>
+                                            <td class="nationality" style="color:black;">@item.nat</td>
+                                            <td class="bed" style="color:black;">@item.bed</td>
+                                            <td class="bath" style="color:black;">@item.bath</td>
+                                            <td class="rent" style="color:black;">@item.rent</td>
+                                            <td class="mpay" style="color:black;">@item.mpay</td>
+                                            <td class="ftype" style="color:black;">@item.ftype</td>
+                                            <td class="corpinv" style="color:black;">@item.corpinv</td>
+                                            <td class="month" style="color:black;">@item.month</td>
+                                            <td class="year" style="color:black;">@item.year</td>
+                                            <td class="pref" style="color:black;">@item.pref</td>
+                                            <td style="color:black;">Updated</td>
+                                            <td class="leasestart" style="color:black;">@item.leasestart</td>
+                                            <td class="leaseend" style="color:black;">@item.leaseend</td>
+                                            <td class="actrent" style="color:black;">@item.actrent</td>
+                                            <td style="color:black;">@item.slease</td>
+                                            <td><a href="#" class="up">Up</a></td>
+                                            <td><a href="#" class="down">Down</a></td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                </form>
+
+
+                <!--popup for btn bed-->
+                <div id="bedModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 1190px; margin-left: -195px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Bed/Bath</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <label><strong>Bed</strong></label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <button id="btnbedupdateselectedrecordfrompm" type="button" class="btn btn-primary" style="border-radius: 10px; width: 355px;">Update Selected Record from Property Master</button>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-left: 95px;">
+                                                    <button id="btnbedupdateallfromprevrs" type="button" class="btn btn-primary" style="border-radius: 10px; width: 315px;">Update All from Previous Rent Statement</button>
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <label><strong>Bath</strong></label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <input id="bathtxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <button id="btnbathupdateselectedrecord" type="button" class="btn btn-primary" style="border-radius: 10px;">Update Selected Record</button>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-left: -65px;">
+                                                    <button id="btnbathupdateallrecord" type="button" class="btn btn-primary" style="border-radius: 10px;">Update All Record</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @*<button id="btnhide" type="button" class="btn btn-primary" style="border-radius:10px;">Hide</button>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--popup for other remark-->
+                <div id="otherremarkModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 575px; margin-left: 85px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Other Remark</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <textarea id="otherremark" class="form-control" type="text" style="border-radius: 10px; width: 500px; height: 100px; "></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="btnsaveotherremark" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                                        <button id="btnclearremark" type="button" class="btn btn-primary" style="border-radius:10px;">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--popup for print all-->
+                <div id="printallModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 700px; margin-left: 40px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Print All</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-group" style="width: 140px; margin-top: 20px; ">
+                                                            <input id="printallchkshowcorporates" type="checkbox" />
+                                                            <label class="control-label text-black-50">Show Corporates</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group" style="width: 185px; margin-top: 20px; margin-left: -33px; ">
+                                                            <input id="printallchkshowsummaryupdate" type="checkbox" />
+                                                            <label class="control-label text-black-50">Show Summary Update</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group" style="width: 155px; margin-top: 20px; margin-left: -120px; ">
+                                                            <input id="printallchkincludeothernote" type="checkbox" />
+                                                            <label class="control-label text-black-50">Include Other Note</label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-group" style="width: 230px; margin-top: 20px;">
+                                                            <input id="rdRsActRent" type="radio" name="rentstatment" />
+                                                            <label class="control-label text-black-50">Rent Statement (Actual Rent)</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group" style="width: 285px; margin-top: 20px; margin-left: 45px; ">
+                                                            <input id="rdRsWoActRent" type="radio" name="rentstatment" />
+                                                            <label class="control-label text-black-50">Rent Statement (Without Actual Rent)</label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="btnprintprntall" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--popup for asr note-->
+                <div id="asrnotModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 575px; margin-left: 85px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">ASR Note</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <textarea id="asrnote" class="form-control" type="text" style="border-radius: 10px; width: 500px; height: 100px; "></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="btnsaveasrnote" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                                        <button id="btnclearremark" type="button" class="btn btn-primary" style="border-radius:10px;">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

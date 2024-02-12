@@ -1,0 +1,215 @@
+﻿@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "Moving In/Out";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (Context.Session.GetString("CurrentUserDepartment") != "facilities" && Context.Session.GetString("CurrentUserRole") != "SRPA")
+{
+    <script>
+        alert('Access denied');
+        history.back();
+    </script>
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9" asp-action="AttendanceList" asp-controller="MovingInOut">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-file-contract" style="font-size:24px;"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Attendance</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9" asp-action="NewVacating" asp-controller="MovingInOut">
+                                <div>
+                                    <i class="fa fa-plus" aria-hidden="true" style="font-size:24px"></i>
+                                </div>
+                                <div>
+                                    <strong>New Vacating</strong>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9" asp-action="VacatingAndTlc" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-list" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Vacating List</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="Properties" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Property Master</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9 " asp-action="MailIdBox" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-envelope" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Mail ID Box</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9 " asp-action="MovingInInventory" asp-controller="MovingInOut">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-gears" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Moving In Inventory</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" type="button" data-target="#passwordChangeModal" data-toggle="modal" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9 ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-gear" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Settings</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    @*</div>*@
+
+
+                    <!--popup for password change(settings)-->
+                    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                    <script>
+                        $(document).ready(function () {
+                            $('#showpassword').click(function () {
+                                var x = document.getElementById("oldpassword");
+                                var y = document.getElementById("newpassword");
+                                var z = document.getElementById("confirmnewpassword");
+                                if (x.type === "password") {
+                                    x.type = "text";
+                                }
+                                else {
+                                    x.type = "password";
+                                }
+                                if (y.type === "password") {
+                                    y.type = "text";
+                                }
+                                else {
+                                    y.type = "password";
+                                }
+                                if (z.type === "password") {
+                                    z.type = "text";
+                                }
+                                else {
+                                    z.type = "password";
+                                }
+                            })
+
+                            $('#updatepassword').click(function () {
+                                var oldpassword = $('#oldpassword').val();
+                                var newpassword = $('#newpassword').val();
+                                var confirmnewpassword = $('#confirmnewpassword').val();
+                                if (newpassword == confirmnewpassword) {
+                                    $.ajax({
+                                        type: "POST",
+                                        data: { oldPassword: oldpassword, newPassword: newpassword },
+                                        url: "@Url.Action("ChangePassword", "Common")",
+                                        success: function (response) {
+                                            alert(response);
+                                            window.location.reload();
+                                        },
+                                        error: function (errResp) {
+                                            alert(errResp);
+                                        }
+                                    })
+                                }
+                            })
+                        });
+                    </script>
+                    <div id="passwordChangeModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            @*<div class="card">*@
+                            @*<div class="card-body">*@
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Change password</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>Old Password</label>
+                                        <input id="oldpassword" type="text" class="form-control" style="border-radius: 10px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        <input id="newpassword" type="text" class="form-control" style="border-radius: 10px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Confirm New Password</label>
+                                        <input id="confirmnewpassword" type="text" class="form-control" style="border-radius: 10px;" />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="updatepassword" type="button" class="btn btn-primary">Update</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                            @*</div>*@
+                            @*</div>*@
+                        </div>
+                    </div>
+                    <!---->
+                </form>
+
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

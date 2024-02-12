@@ -1,0 +1,390 @@
+﻿@model PMS_Admin_Web.Models.LOI.LOIModel;
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "LC";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+@if (Context.Session.GetString("CurrentUserDepartment") != "Administration" && Context.Session.GetString("CurrentUserRole") != "Administrator")
+{
+    <script>
+        alert('Access denied');
+        history.back();
+    </script>
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred" asp-action="NewLC" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-file-contract" style="font-size:24px;"></i> <i class="fa fa-plus" aria-hidden="true" style="font-size:15px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>New LC</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred" asp-action="ListLC" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-list" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>LC List</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="Properties" asp-controller="MenuView">
+                                <div style=" padding: 65px; padding-top: 20px; ">
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Properties</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred " asp-action="ExpiringContracts" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-file-contract" style="font-size:24px"></i> <i class="fas fa-hourglass-end"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Expiring Contracts</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred " asp-action="MailIdBox" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-envelope" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Mail ID Box</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" type="button" data-target="#LCNoFixingModal" data-toggle="modal" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-gears" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>LC No Fixing</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred " asp-action="ListRentChange" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Rent Change</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred " asp-action="ListSublease" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Subleases</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+
+                        @*<div class="col-lg-3">
+                                <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred ">
+                                    <div>
+                                        <div>
+                                            <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Linking LC</strong>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>*@
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred " asp-action="VacatingAndTlc" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>SD Refund and R.Cost</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred " asp-action="LcChanges" asp-controller="LC">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>View Changes</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" type="button" data-target="#passwordChangeModal" data-toggle="modal" data-backdrop="static" data-keyboard="false" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-gear" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Settings</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    @*</div>*@
+
+
+                </form>
+
+
+
+
+                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                <!--popup for LC No Fixing-->
+
+
+                <div id="LCNoFixingModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">LC No Fixing</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <script>
+                                        $(document).ready(function () {
+                                            var d = new Date();
+                                            var year = d.getFullYear();
+                                            var format = "LC-" + year + "-" + "0000";
+                                            $('#newLcNo').val(format);
+
+                                            $('#lcyear').change(function () {
+                                                var lcyear = $('#lcyear :selected').val();
+                                                $.ajax({
+                                                    type: "POST",
+                                                    data: { LcYear: lcyear },
+                                                    url: "@Url.Action("LoadLcNos", "LC")",
+                                                    success: function (response) {
+                                                        //alert(response)
+                                                        $('#LcNo').html('');
+                                                        $('#LcNo').append('<option value="" hidden> --Select-- </option>');
+                                                        $.each(response, function (k, v) {
+                                                            $('#LcNo').append('<option value="' + v + '" > ' + v + '</option>');
+                                                        });
+
+                                                    }
+                                                })
+                                            })
+
+                                            $('#updateLC').click(function () {
+                                                var lcno = $('#LcNo :selected').val();
+                                                var newlcno = $('#newLcNo').val();
+                                                $.ajax({
+                                                    type: "POST",
+                                                    data: { oldlcno: lcno, newlcno: newlcno },
+                                                    url: "@Url.Action("UpdateLCNo", "LC")",
+                                                    success: function (response) {
+                                                        alert(response);
+                                                        location.reload();
+                                                    },
+                                                    error: function (errResp) {
+                                                        alert(errResp);
+                                                        location.reload();
+                                                    }
+                                                })
+                                            })
+                                        });
+                                    </script>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label style="color:black">LC Year</label>
+                                            <select id="lcyear" class="form-control" style="border-radius: 10px;">
+                                                @*asp-for="LcYear"*@
+                                                <option hidden>--Select--</option>
+                                                @for (int i = 2008; i <= DateTime.Today.Year; i++)
+                                                {
+                                                    <option value="@i">@i</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="color:black">Select LC No</label>
+                                            <select id="LcNo" class="form-control" style="border-radius: 10px;">
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>New LC No</label>
+                                            <input id="newLcNo" type="text" class="form-control" style="border-radius: 10px;" />
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button id="updateLC" type="button" class="btn btn-primary">Update</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+
+                <script>
+                    $(document).ready(function () {
+                        $('#showpassword').click(function () {
+                            var x = document.getElementById("oldpassword");
+                            var y = document.getElementById("newpassword");
+                            var z = document.getElementById("confirmnewpassword");
+                            if (x.type === "password") {
+                                x.type = "text";
+                            }
+                            else {
+                                x.type = "password";
+                            }
+                            if (y.type === "password") {
+                                y.type = "text";
+                            }
+                            else {
+                                y.type = "password";
+                            }
+                            if (z.type === "password") {
+                                z.type = "text";
+                            }
+                            else {
+                                z.type = "password";
+                            }
+                        })
+
+                        $('#updatepassword').click(function () {
+                            var oldpassword = $('#oldpassword').val();
+                            var newpassword = $('#newpassword').val();
+                            var confirmnewpassword = $('#confirmnewpassword').val();
+                            if (newpassword == confirmnewpassword) {
+                                $.ajax({
+                                    type: "POST",
+                                    data: { oldPassword: oldpassword, newPassword: newpassword },
+                                    url: "@Url.Action("ChangePassword", "Common")",
+                                    success: function (response) {
+                                        alert(response);
+                                        window.location.reload();
+                                    },
+                                    error: function (errResp) {
+                                        alert(errResp);
+                                    }
+                                })
+                            }
+                        })
+                    });
+                </script>
+                <!--popup for password change(settings)-->
+                <div id="passwordChangeModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="card">
+                            <div class="card-body">
+                                <form>
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Change password</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>Old Password</label>
+                                                <input id="oldpassword" type="password" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>New Password</label>
+                                                <input id="newpassword" type="password" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Confirm New Password</label>
+                                                <input id="confirmnewpassword" type="password" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <a id="showpassword"><i class="fa-solid fa-eye"></i></a>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" id="updatepassword" class="btn btn-primary">Update</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

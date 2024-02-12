@@ -1,0 +1,194 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+@using PMS_Admin_Web.Repository;
+@model PMS_Admin_Web.Models.Property.TLCModel
+
+@{
+    ViewData["Title"] = "TLC";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+        var pryEmpId;
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                pryEmpId = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteUser", "User")",
+                    data: { Id: pryEmpId },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#btnSearch').click(function () {
+            var txtSearchUser = $('#txtSearchUser').val();
+
+            if (txtSearchUser != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("SearchUser", "User")",
+                    data: { searchUsername: txtSearchUser },
+                    success: function (response) {
+                        $('#tbody').html('');
+                        $.each(response, function (k, v) {
+
+                            $('#tbody').append('<tr>');
+                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.usrname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.department + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.role + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.designation + '</td>');
+
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditUser", "User")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('</tr>');
+                            $('.pagination').css('display', 'none');
+                        });
+                    }
+                })
+            }
+            else {
+                $('#tbody').html('');
+                /*$('#tbody').append('<tr>');*/
+                $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                /*$('#tbody').append('</tr>');*/
+            }
+        });
+
+        //end of the docuement ready function
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form>
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>TLC</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12" style="">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group" style="float: right;">
+                                            <label class="control-label text-black-50">Mode</label>
+                                            <select asp-for="SearchMode" class="form-control" style="border-radius: 10px;">
+                                                <option value="PropertyName">Property Name</option>
+                                                <option value="Location">Location</option>
+                                                <option value="LCNo">Lease No</option>
+                                                <option value="TenantName">Tenant Name</option>
+                                                <option value="ReservedClientName">Reserved Client Name</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group" style="float: right;">
+                                            <label class="control-label text-black-50">Keyword</label>
+                                            <input id="searchkeyword" asp-for="SearchKeyword" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group" style="padding-top: 32px; ">
+                                            <button id="searchbutton" type="button" class="btn btn-primary">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div style="overflow-y: auto;">
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success">
+                                    <tr>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 200px; ">Property Name</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px;">Floor</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 105px;">Apt No</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 110px;">Apt Type</label></th>
+
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 85px;">Bed</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 290px; ">Tenant Name</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 170px;">Nationality</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px;">Contact</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px;">LC Rent</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 100px; ">Lease No</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 100px; ">Lease Start</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 100px; ">Lease End</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 130px; ">Move Out On</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 130px; ">Key Return On</label></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.TLCs)
+                                    {
+                                        <tr>
+                                            <td style="color:black;">@item.PropertyName</td>
+                                            <td></td>
+                                            <td style="color:black;">@item.AptNo</td>
+                                            <td style="color:black;">@item.AptType</td>
+
+                                            <td style="color:black;">@item.Bed</td>
+                                            <td style="color:black;">@CommonRepository.Truncate(item.TenantName, 30)</td>
+                                            <td style="color:black;">@item.Nationality</td>
+                                            <td style="color:black;">@item.ContactNo</td>
+                                            <td style="color:black;">@item.LCRent</td>
+                                            <td style="color:black;">@item.LeaseNo</td>
+                                            <td style="color:black;">@item.LeaseStart</td>
+                                            <td style="color:black;">@item.LeaseEnd</td>
+                                            <td style="color:black;">@item.MoveOutOn</td>
+                                            <td style="color:black;">@item.KeyReturnOn</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

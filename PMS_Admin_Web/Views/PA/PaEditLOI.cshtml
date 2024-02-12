@@ -1,0 +1,996 @@
+﻿@model PMS_Admin_Web.Models.LOI.NewLOIModel
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "Edit LOI";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form asp-controller="PA" asp-action="PaNewLOI">
+
+        @Html.HiddenFor(model => model.LOI.Id)
+        @Html.HiddenFor(model => model.LOI.Doc)
+        @Html.HiddenFor(model => model.LOI.Inqno)
+        @Html.HiddenFor(model => model.LOI.LoiNo)
+        @Html.HiddenFor(model => model.EmailLoiTo)
+        @Html.HiddenFor(model => model.EmailLoiCc)
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Edit LOI</strong></h5>
+            </div>
+            <br />
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">LOI No</label>
+                            <input id="loino" asp-for="LOI.LoiNo1" class="form-control" type="text" style="border-radius: 10px;" />
+
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Date</label>
+                            <input readonly asp-for="LOI.LoiDate" value="@DateTime.Now.ToShortDateString()" class="form-control" type="text" style="border-radius: 10px;" />
+
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Status</label>
+                            <input readonly asp-for="LOI.LoiStatus" value="Open" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3" style=" margin-top: 31px;">
+                        <button class="btn btn-primary" type="button" style="border-radius:10px;" data-target="#paymentViewModal" data-toggle="modal">View Payment</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">LOI Created By</label>
+                            <input id="loino" asp-for="LOI.Dept" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-3"></div>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#ClientAndPropertyDetails">Client and Property Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#AgreementPeriodType">Agreement Period/Type</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#PaymentDetails">Payment Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#DocumentsSubmitted">Documents Submitted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#OtherDetails">Other Details</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="ClientAndPropertyDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Client Name</label>
+                                        <input asp-for="LOI.ClientName" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.ClientName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Company</label>
+                                        <input asp-for="LOI.ClientCompany" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.ClientCompany" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Mobile/Phone</label>
+                                        <input asp-for="LOI.Cmob" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.Cmob" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Nationality</label>
+                                        <select id="nationality" asp-for="LOI.Cnationality" class="form-control" style="border-radius: 10px;">
+                                            <option hidden value="">--Select--</option>
+                                            @*@foreach (var area in Model.Nationalities)
+                                                {
+                                                    <option>@area.Nationalityname</option>
+                                                }*@
+                                        </select>
+                                        <input type="hidden" id="hiddenNationality" asp-for="LOI.Cnationality" />
+                                        <span asp-validation-for="LOI.Cnationality" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Client Source</label>
+                                        <input asp-for="LOI.ClientSource" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.ClientSource" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Requirement</label>
+                                        <select asp-for="LOI.Req" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="Mulhaq">Mulhaq</option>
+                                            <option value="Basement">Basement</option>
+                                            <option value="Shop">Shop</option>
+                                            @*<option value="RT">RT</option>*@
+                                        </select>
+                                        <span asp-validation-for="LOI.Req" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Type</label>
+                                        <select asp-for="LOI.Fur" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="SF">SF</option>
+                                            <option value="FF">FF</option>
+                                            <option value="UF">UF</option>
+                                        </select>
+                                        <span asp-validation-for="LOI.Fur" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                            <script>
+                                    function loadNationality() {
+                                        var hiddenNationality = $('#hiddenNationality').val();
+                                        $.ajax({
+                                            type:"GET",
+                                            url:"@Url.Action("LoadNationality", "Common")",
+                                            dataType: "json",
+                                            success: function (response) {
+                                                $.each(response, function (k, v) {
+                                                    if (hiddenNationality == v) {
+                                                        $('#nationality').append('<option selected value="' + v + '" > ' + v + '</option>');
+                                                    }
+                                                    else {
+                                                        $('#nationality').append('<option value="' + v + '" > ' + v + '</option>');
+                                                    }
+
+                                                });
+                                            }
+                                        })
+                                    }
+
+                                    function loadAptNo() {
+                                        var pname = $('#propertyname').val();
+                                        var hiddenAptno = $('#hiddenAptno').val();
+                                        var hiddenPref = $('#hiddenPref').val();
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("LoadApartmentNo", "LOI")",
+                                            data: { propertyname: pname },
+                                            dataType: "json",
+                                            success: function (response) {
+                                                //alert(response)
+                                                $('#aptno').html('');
+                                                $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                                                $('#refno').val('');
+                                                $.each(response, function (k, v) {
+                                                    if (hiddenAptno == v) {
+                                                        $('#aptno').append('<option selected value="' + v + '" > ' + v + '</option>');
+                                                        //loadRefno(pname.trim(), v);
+                                                        $('#refno').val(hiddenPref);
+                                                    }
+                                                    else {
+                                                        $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                                                    }
+
+                                                });
+
+                                            }
+                                        })
+                                    }
+
+                                    function loadRefno(propertyname,aptno) {
+                                            var pname = propertyname;
+                                            var ano = aptno;
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "@Url.Action("LoadRefNo", "LOI")",
+                                                data: { propertyname: pname, aptno: ano },
+                                                dataType: "json",
+                                                success: function (response) {
+                                                    //alert(response)
+                                                    $('#refno').val(response);
+
+                                                }
+                                            })
+                                        }
+
+                                    $(document).ready(function () {
+                                        loadNationality();
+                                        loadAptNo();
+
+                                        //var gRefsample = [];
+                                        $("#aptno").change(function () {
+
+                                            var pname = $('#propertyname :selected').val();
+                                            var ano = $('#aptno :selected').last().val();
+                                            //var multipleApt = $('#multipleApt').prop('checked');
+                                            //if (multipleApt) {
+                                            //    //var gAptsample = $(ano).toArray().map(item => item.text).join();
+                                            //    var gAptsample = $('#aptno option:selected').toArray().map(item => item.text).join();
+                                            //    $('#gaptno').val(gAptsample);
+                                            //}
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "@Url.Action("LoadRefNo", "LOI")",
+                                                data: { propertyname: pname, aptno: ano },
+                                                dataType: "json",
+                                                success: function (response) {
+
+                                                    $('#refno').val(response);
+                                                    //var refno = response;
+
+                                                    //if (multipleApt) {
+                                                    //    gRefsample.push(refno);
+                                                    //    $('#grefno').val(gRefsample);
+                                                    //}
+                                                }
+                                            })
+
+                                        });
+                                    });
+                            </script>
+                            <div class="row">
+                                @*<div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Property Source</label>
+                                            <select id="propertysource" asp-for="LOI.PropertySource" class="form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="ManagedProperty">Managed Property</option>
+                                                <option value="StandAloneProperty">Standalone Property</option>
+                                            </select>
+                                            <span asp-validation-for="LOI.PropertySource" class="text-danger"></span>
+                                        </div>
+                                    </div>*@
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Name</label>
+                                        <input disabled id="propertyname" asp-for="LOI.PropertyName" class="form-control" style="border-radius: 10px;" value=" @Context.Session.GetString("CurrentUserDepartment")" />
+                                        <span asp-validation-for="LOI.PropertyName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-3" style="margin-top: 38px;">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50"> Multiple Apartments</label>
+                                            <input id="multipleApt" type="checkbox" asp-for="MultipleApartment" />
+                                            <label class="control-label text-black-50" style="font-size: 13px;">Note: Kindly check this option if you have Multiple Apartments to reserve.</label>
+                                        </div>
+                                    </div>*@
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apartment No</label>
+                                        <select id="aptno" asp-for="LOI.Aptno" class="form-control" style="border-radius: 10px;">
+                                            @*<option value="" hidden>--Select--</option>*@
+                                        </select>
+                                        <input type="hidden" id="hiddenAptno" asp-for="LOI.Aptno" />
+                                        @*<label class="control-label text-black-50" style="font-size: 13px;">Note: To select multiple apartments, press ctrl and click the Apt No.</label>*@
+                                    </div>
+                                </div>
+                                @*<script>
+                                            $(document).ready(function () {
+                                                $('#gaptCol').hide();
+                                                $('#grefCol').hide();
+                                                $('#clearbuttonCol').hide();
+                                                $('#aptno').prop('multiple', false);
+
+                                                $('#multipleApt').change(function () {
+                                                    var multipleApt = $('#multipleApt').prop('checked');
+                                                    if (multipleApt) {
+                                                        $('#gaptCol').show();
+                                                        $('#grefCol').show();
+                                                        $('#clearbuttonCol').show();
+                                                        $('#refnoCol').hide();
+                                                        $('#aptno').prop('multiple', true);
+
+                                                    }
+                                                    else {
+                                                        $('#gaptCol').hide();
+                                                        $('#grefCol').hide();
+                                                        $('#clearbuttonCol').hide();
+                                                        $('#refnoCol').show();
+                                                        $('#aptno').prop('multiple', false);
+                                                    }
+                                                })
+
+                                                $('#clearButton').click(function () {
+                                                    location.reload();
+                                                })
+
+                                            })
+                                    </script>*@
+                                <!--<div id="gaptCol" class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Group Apartment</label>
+                                    <input id="gaptno" readonly asp-for="GroupAptno" class="form-control" type="text" style="border-radius: 10px;" />-->
+                                @*<span asp-validation-for="LcInfo.Pref" class="text-danger"></span>*@
+                                <!--</div>
+                                </div>-->
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Reference No</label>
+                                        <input readonly id="refno" asp-for="LOI.PropertyRefNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <input type="hidden" id="hiddenPref" asp-for="LOI.PropertyRefNo" />
+                                        <span asp-validation-for="LOI.PropertyRefNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                @*<div id="clearbuttonCol" class="col-lg-3" style="margin-top: 30px;">
+                                        <div class="form-group">
+                                            <button id="clearButton" type="button" class="btn btn-primary" style="border-radius: 10px;">Clear</button>
+                                        </div>
+                                    </div>*@
+                                <!--<div id="grefCol" class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Group Reference No</label>
+                                    <input id="grefno" readonly asp-for="GroupPref" class="form-control" type="text" style="border-radius: 10px;" />-->
+                                @*<span asp-validation-for="LcInfo.Pref" class="text-danger"></span>*@
+                                <!--</div>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                                $(document).ready(function () {
+                                    function converttoDay() {
+                                        var ymd = $('#YMD :selected').val();
+                                        var noofYMD = $('#NoYMD :selected').val();
+                                        var startDate = $('#leasestartDate').val();
+                                        var times = parseInt(noofYMD, 10);
+                                        //alert(startDate);
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("LoadLeaseEndDate", "LC")",
+                                            data: { startDate: startDate, count: times, periodName: ymd },
+                                            //dataType: "json",
+                                            success: function (response) {
+                                                //alert(response)
+                                                $('#leaseendDate').val(response);
+                                            },
+                                            error: function (errResponse) {
+                                                alert(errResponse)
+                                            }
+                                        })
+                                    }
+
+                                    $("#NoYMD").change(function () {
+                                        converttoDay();
+                                    });
+
+                                    $('#leasestartDate').change(function () {
+                                        converttoDay()
+                                    })
+
+                                    var YMD_hidden = $('#YMD_hidden').val();
+                                    var NoYMD_hidden = $('#NoYMD_hidden').val();
+                                    if (YMD_hidden == "Year") {
+                                        for (var i = 1; i <= 10; i++) {
+                                            if (NoYMD_hidden == i) {
+                                                $('#NoYMD').append('<option value="' + i + '" selected="selected"> ' + i + '</option>');
+                                            }
+                                            else {
+                                                $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                                            }
+
+                                        }
+                                    }
+                                    else if (YMD_hidden == "Month") {
+                                        for (var i = 1; i <= 12; i++) {
+                                            if (NoYMD_hidden == i) {
+                                                $('#NoYMD').append('<option value="' + i + '" selected="selected"> ' + i + '</option>');
+                                            }
+                                            else {
+                                                $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                                            }
+
+                                        }
+                                    }
+                                    else {
+                                        for (var i = 1; i <= 30; i++) {
+                                            if (NoYMD_hidden == i) {
+                                                $('#NoYMD').append('<option value="' + i + '" selected="selected"> ' + i + '</option>');
+                                            }
+                                            else {
+                                                $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                                            }
+
+                                        }
+                                    }
+
+                                    $("#YMD").change(function () {
+                                        $('#NoYMD').html('');
+                                        $('#NoYMD').append('<option value="" hidden> --Select-- </option>');
+                                        var str = $('#YMD :selected').val();
+                                        if (str == "Year") {
+                                            for (var i = 1; i <= 10; i++) {
+                                                $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                                            }
+                                        }
+                                        else if (str == "Month") {
+                                            for (var i = 1; i <= 12; i++) {
+                                                $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                                            }
+                                        }
+                                        else {
+                                            for (var i = 1; i <= 30; i++) {
+                                                $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                                            }
+                                        }
+                                    });
+                                });
+                    </script>
+                    <div class="tab-pane" id="AgreementPeriodType">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Lease Start Date</label>
+                                        <input id="leasestartDate" asp-for="LOI.Leasedate" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.Leasedate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Year/Month/Day</label>
+                                        <select id="YMD" asp-for="LOI.Aptype" class="form-control" style="border-radius: 10px;">
+                                            <option selected hidden>--Select--</option>
+                                            <option value="Year">Year</option>
+                                            <option value="Month">Month</option>
+                                            <option value="Day">Day</option>
+                                        </select>
+                                        <input type="hidden" asp-for="LOI.Aptype" id="YMD_hidden" />
+                                        <span asp-validation-for="LOI.Aptype" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">No Of Year/Month/Day</label>
+                                        <select id="NoYMD" asp-for="LOI.Ap" class="form-control" style="border-radius: 10px;">
+                                        </select>
+                                        <input type="hidden" asp-for="LOI.Ap" id="NoYMD_hidden" />
+                                        <span asp-validation-for="LOI.Ap" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Lease End Date</label>
+                                        <input id="leaseendDate" asp-for="LOI.Leaseenddate" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.Leaseenddate" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+
+                            $("#lcrent").change(function () {
+                                $('#deposit').html('');
+                                $('#clientresf').html('');
+                                $('#aptrent').html('');
+
+
+                                var lcrent = $('#lcrent').val();
+                                $('#deposit').val(lcrent);
+                                var clientresf = lcrent / 2;
+                                $('#clientresf').val(clientresf);
+                                //$('#aptrent').val(lcrent);
+                            });
+                        });
+                    </script>
+                    <div class="tab-pane" id="PaymentDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC Rent</label>
+                                        <input id="lcrent" asp-for="LOI.Rent" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.Rent" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Deposit</label>
+                                        <input id="deposit" asp-for="LOI.Deposit" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.Deposit" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">RESF</label>
+                                        <input id="clientresf" asp-for="LOI.ClientResf" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.ClientResf" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <!--<div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LL RESF</label>
+                                        <input asp-for="LOI.Llresf" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.Llresf" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apt Rent</label>
+                                        <input id="aptrent" asp-for="AptRent" class="form-control" type="text" style="border-radius: 10px;" />-->
+                                @*asp-for="LOI."*@
+                                @*<span asp-validation-for="LOI.Leaseenddate" class="text-danger"></span>*@
+                                <!--</div>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="DocumentsSubmitted">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 700px; "></th>
+                                                <th style="width: 400px;"></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Passport(PP)</label>
+                                                    <input id="passport" type="file" name="passportfile" />
+                                                </td>
+                                                @if (Model.LOI.Pp != null && Model.LOI.Pp != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewPassport" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Pp" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Civil ID(CID)</label>
+                                                    <input type="file" name="civilidfile" />
+                                                </td>
+                                                @if (Model.LOI.Cid != null && Model.LOI.Cid != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCid" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Cid" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">NOC Visa</label>
+                                                    <input type="file" name="nocvisafile" />
+                                                </td>
+                                                @if (Model.LOI.Noc != null && Model.LOI.Noc != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewNoc" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Noc" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Marriage Contract</label>
+                                                    <input type="file" name="marriagecontractfile" />
+                                                </td>
+                                                @if (Model.LOI.Mc != null && Model.LOI.Mc != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewMc" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Mc" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">MOC License/Itemmatokiya</label>
+                                                    <input type="file" name="moclicensefile" />
+                                                </td>
+                                                @if (Model.LOI.Moc != null && Model.LOI.Moc != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewMoc" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Moc" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Civil ID of AS</label>
+                                                    <input type="file" name="civilidASfile" />
+                                                </td>
+                                                @if (Model.LOI.Cas != null && Model.LOI.Cas != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCas" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Cas" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Cert of Employement/Salary Certificate</label>
+                                                    <input type="file" name="salarycertificatefile" />
+                                                </td>
+                                                @if (Model.LOI.Coe != null && Model.LOI.Coe != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCoe" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Coe" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Company Authorised Signatory</label>
+                                                    <input type="file" name="companysignfile" />
+                                                </td>
+                                                @if (Model.LOI.Cosign != null && Model.LOI.Cosign != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCosign" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Cosign" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">CID or PP copies of employee/staff</label>
+                                                    <input type="file" name="staffemployeefile" />
+                                                </td>
+                                                @if (Model.LOI.Cidpp != null && Model.LOI.Cidpp != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCidpp" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Cidpp" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Company Guarantee</label>
+                                                    <input type="file" name="companyguaranteefile" />
+                                                </td>
+                                                @if (Model.LOI.Cg != null && Model.LOI.Cg != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCg" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Cg" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">LOI</label>
+                                                    <input type="file" name="loifile" />
+                                                </td>
+                                                @if (Model.LOI.Loipath != null && Model.LOI.Loipath != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewLOI" asp-controller="LOI" asp-route-id="@Model.LOI.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LOI.Loipath" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--<div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">File Upload</label>
+                                        <input type="file" />-->
+                            @*asp-for="Property.Description"*@
+                            <!--</div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <button class="btn btn-primary" type="button" style="border-radius: 10px; margin-top: 25px;">Upload</button>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="OtherDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Expected Moving In Date</label>
+                                        <input asp-for="LOI.Movingindate" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LOI.Movingindate" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6" style="margin-top: 40px;">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Individual Client</label>
+                                                <input type="radio" asp-for="LOI.EnquiryType" value="Individual Enquiry">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Corporate Client</label>
+                                                <input type="radio" asp-for="LOI.EnquiryType" value="Corporate Enquiry">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Remarks</label>
+                                        @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                        <textarea asp-for="LOI.Loiremarks" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <table>
+                        <tr>
+                            <td>
+                                <button type="button" class="btn btn-primary float-right" style="border-radius: 10px;">Send Email</button>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    @*<button type="submit" class="btn btn-primary float-right" onclick="location.href='@Url.Action("NewLOI", "LOI",Model)'">Create</button>*@
+                                    <button type="submit" class="btn btn-primary float-right" style="border-radius: 10px;">Update</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!--popup for payment view-->
+
+
+    <div id="paymentViewModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            @*<div class="card">*@
+            @*<div class="card-body">*@
+            @*<form asp-action="LC" asp-controller="MenuView" method="post">*@
+            <div class="modal-content" style="width: 1000px; margin-left: -85px;">
+                @**@
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <script>
+                        $(document).ready(function () {
+                            var loino = $('#loino').val();
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("PaymentView", "Common")",
+                                data: { loiNo: loino },
+                                success: function (response) {
+                                    //alert(response)
+                                    $('#rentPaid').val(response.rentPaid);
+                                    $('#depositPaid').val(response.depositPaid);
+                                    $('#clresfPaid').val(response.clResfPaid);
+                                    $('#llresfPaid').val(response.llResfPaid);
+                                    $('#rentDue').val(response.rentDue);
+                                    $('#depositDue').val(response.depositDue);
+                                    $('#clresfDue').val(response.clResfDue);
+                                    $('#llresfDue').val(response.llResfDue);
+                                    if (response.rentDue <= 0 && response.depositDue <= 0 && response.clResfDue <= 0 && response.llResfDue <= 0) {
+                                        $('#dueRow').hide();
+                                        //$('#depositDue').hide();
+                                        //$('#clresfDue').hide();
+                                        //$('#llresfDue').hide();
+                                    }
+
+                                    $.each(response.viewPaymentListModels, function (k, v) {
+                                        //alert(v.voucherType)
+                                        $('#tbody').append('<tr>');
+                                        $('#tbody').append('<td>' + v.voucherType + '</td>');
+                                        $('#tbody').append('<td>' + v.amt + '</td>');
+                                        $('#tbody').append('<td>' + v.cash + '</td>');
+                                        $('#tbody').append('<td>' + v.knet + '</td>');
+                                        $('#tbody').append('<td>' + v.cheque + '</td>');
+                                        $('#tbody').append('<td>' + v.bt + '</td>');
+                                        $('#tbody').append('<td>' + v.dateFrom +' - '+ v.dateTo + '</td>');
+                                        $('#tbody').append('<td>' + v.remarks + '</td>');
+                                        $('#tbody').append('</tr>');
+                                    });
+                                }
+                            })
+                        });
+                </script>
+                <div class="modal-body">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label style="color:black">Rent Paid</label>
+                                    <input id="rentPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label style="color:black">Deposit Paid</label>
+                                    <input id="depositPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>CL RESF Paid</label>
+                                    <input id="clresfPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>LL RESF Paid</label>
+                                    <input id="llresfPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dueRow" class="row">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>Rent Due</label>
+                                    <input id="rentDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>Deposit Due</label>
+                                    <input id="depositDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>CL RESF Due</label>
+                                    <input id="clresfDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>LL RESF Due</label>
+                                    <input id="llresfDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div style="overflow-y:auto">
+
+                                    <table class="table-bordered" style=" width: 100%;">
+                                        <thead class="bg-success">
+                                            <tr>
+                                                <th style="width: 130px;">Voucher Type</th>
+                                                <th style="width: 75px;">Amt</th>
+                                                <th style="width: 75px;">Cash</th>
+                                                <th style="width: 75px;">Knet</th>
+                                                <th style="width: 75px;">Cheque</th>
+                                                <th style="width: 50px;">BT</th>
+                                                <th style="width: 190px;">Payment Period</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*</form>*@
+            @*</div>*@
+            @*</div>*@
+        </div>
+    </div>
+    <!---->
+</div>
+@*</div>*@
+
+
+@{
+
+}

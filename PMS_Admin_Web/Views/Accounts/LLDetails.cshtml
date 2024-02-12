@@ -1,0 +1,131 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+
+@model PMS_Admin_Web.Models.Accounts.LLDetailsModel
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "Landlord Details";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+
+        @*$('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var id = $(this).attr('id');
+                var voucherno = $(this).attr('data-voucher');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteTemporaryReceipt", "Accounts")",
+                    data: { id: id, voucherno: voucherno },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });*@
+
+        //end of the document ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    @*<input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                        <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />*@
+                    <form method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                @*<div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>Temporary Receipt List</strong></h5>
+                                </div>*@
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3 float-right">
+                                    @*<button asp-action="" class="btn btn-primary"> <i class="fa fa-plus-square-o" style="font-size:20px"></i></button>*@
+                                </div>
+                            </div>
+                            <br />
+                            
+                            @*<input type="hidden" id="oreceipt" />*@
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 255px;">Property Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 50px;">Code</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 425px;">LL Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 350px;">LL Name in Arabic</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 550px">Address</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 465px;">Address in Arabic</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 235px;">Accountant Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Account No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Bank</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Att Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 240px;">Att Designation</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 320px;">Att Property</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Att Phone</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Att Fax</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                        @foreach (var item in Model.lldetails)
+                                        {
+                                            <tr>
+                                                <td hidden>@item.Id</td>
+                                                <td style="color:black;">@item.Pname</td>
+                                                <td style="color:black;">@item.Code</td>
+                                                <td style="color:black;">@item.Llname</td>
+                                                <td style="color:black;">@item.Arabicllname</td>
+                                                <td style="color:black;">@item.Address</td>
+                                                <td style="color:black;">@item.Arabicaddress</td>
+                                                <td style="color:black;">@item.AccName</td>
+                                                <td style="color:black;">@item.AccNo</td>
+                                                <td style="color:black;">@item.Accbank</td>
+                                                <td style="color:black;">@item.Attname</td>
+                                                <td style="color:black;">@item.Attdesg</td>
+                                                <td style="color:black;">@item.Attprop</td>
+                                                <td style="color:black;">@item.Attph</td>
+                                                <td style="color:black;">@item.Attfax</td>
+                                                <td style="text-align: center;">
+                                                    <a asp-action="LLUpdate" asp-controller="Accounts" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                                @*<td style="text-align: center;">
+                                                    <a href="javascript:void(0)" id="@item.Id" data-voucher="@item.Voucherno" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                </td>*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

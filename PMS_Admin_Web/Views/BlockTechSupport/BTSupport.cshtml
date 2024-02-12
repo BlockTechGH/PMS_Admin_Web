@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    //Layout = "_Layout1";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@if (ViewBag.Message == "Access denied")
+{
+    <script>
+        history.back();
+    </script>
+}
+
+@*<script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;" asp-action="Accounting" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <strong>Accounts</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;" asp-action="Index" asp-controller="Home">
+                                <div>
+                                    <div>
+                                        <strong>Administration</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="" asp-controller="">
+                                <div>
+                                    <div>
+                                        <strong>Facilities</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #C38D9E " asp-action="MarketingAdmin" asp-controller="Home">
+                                <div>
+                                    <div>
+                                        <strong>Marketing Admin</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #C38D9E " asp-action="MarketingLeasingExecutive" asp-controller="Home">
+                                <div>
+                                    <div>
+                                        <strong>Marketing Executive</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 " asp-action="PAIndex" asp-controller="Home">
+                                <div>
+                                    <div>
+                                        <strong>PA</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                @*</div>*@
+                </form>
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

@@ -1,0 +1,170 @@
+﻿@model PMS_Admin_Web.Models.PA.PrintReceiptModel
+
+@{
+    ViewData["Title"] = "Receipt";
+    Layout = "";
+}
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<script>
+    window.onload = function () {
+        window.print();
+    };
+    //$(document).ready(function () {
+
+
+
+    //});
+</script>
+
+<html>
+<head>
+</head>
+<body>
+    <table style="margin-top: 50px; margin-left: 100px; ">
+        <tr>
+            <th><h2 style="color:black; position:center"><b>Receipt</b></h2></th>
+        </tr>
+        <tr><td><strong>Voucher Details</strong></td></tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Date</label>
+                    <b><label id="date">@Model.date</label></b>
+                </div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Voucher No</label>
+                    <b><label id="voucherno">@Model.bulkprinting.Rno</label></b>
+                </div>
+            </td>
+        </tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Property Name</label>
+                    <b><label id="propertyname">@Model.bulkprinting.Pname</label></b>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Apt No</label>
+                    <b><label id="aptno">@Model.bulkprinting.Aptno</label></b>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Tenant Name</label>
+                    <b><label id="tenantname">@Model.bulkprinting.Tname</label></b>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Monthly Rent</label>
+                    <b><label id="monthlyrent">@Model.bulkprinting.Mrent</label></b>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Payment Category</label>
+                    <b><label id="paymentcategory">@Model.bulkprinting.Ptype</label></b>
+                </div>
+            </td>
+        </tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr><td><strong>Rent Period</strong></td></tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">From</label>
+                    <b><label id="from">@Model.from</label></b>
+                </div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">To</label>
+                    <b><label id="to" />@Model.to</b>
+                </div>
+            </td>
+        </tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr><td><strong>Payment Type</strong></td></tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <input type="checkbox" /><label class="control-label text-black-50">Cash</label>
+                    <b><label id="cash"></label></b>
+                </div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <input type="checkbox" /><label class="control-label text-black-50">K.Net</label>
+                    <b><label id="knet"></label></b>
+                </div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <input type="checkbox" /><label class="control-label text-black-50">Cheque</label>
+                    <b><label id="cheque"></label></b>
+                </div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <input type="checkbox" /><label class="control-label text-black-50">BT</label>
+                    <b><label id="bt"></label></b>
+                </div>
+            </td>
+        </tr>
+        <tr><td></td></tr>
+        <tr><td></td></tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Received Amount</label>
+                    <b><label id="receivedamt">@Model.bulkprinting.Mrent</label></b>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label class="control-label text-black-50">Remarks</label>
+                    <b><label id="remarks">@Model.bulkprinting.Mrentinwords</label></b>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
+
+@*<div class="col-lg-12">
+
+
+        <form>
+
+
+        </form>
+    </div>*@
+
+
+@*@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }*@

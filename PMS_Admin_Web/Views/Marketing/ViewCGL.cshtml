@@ -1,0 +1,209 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+@*@using X.PagedList.Mvc.Core
+    @model X.PagedList.IPagedList<PMS_Admin_Web.Models.User>*@
+
+@model List<PMS_Admin_Web.Models.Cgl>
+
+@{
+    ViewData["Title"] = "View Enquiry";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+        var cglrefno;
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                cglrefno = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteCGLEnquiry", "Marketing")",
+                    data: { cglrefNo: cglrefno },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+
+            }
+
+        });
+
+        $('#btnSearch').click(function () {
+            var txtSearchUser = $('#txtSearchUser').val();
+
+            if (txtSearchUser != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("SearchUser", "User")",
+                    data: { searchUsername: txtSearchUser },
+                    success: function (response) {
+                        $('#tbody').html('');
+                        $.each(response, function (k, v) {
+
+                            $('#tbody').append('<tr>');
+                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.usrname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.department + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.role + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.designation + '</td>');
+
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditUser", "User")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('</tr>');
+                            $('.pagination').css('display', 'none');
+                        });
+                    }
+                })
+            }
+            else {
+                $('#tbody').html('');
+                /*$('#tbody').append('<tr>');*/
+                $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                /*$('#tbody').append('</tr>');*/
+            }
+        });
+
+        //end of the docuement ready function
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @* <div class="card" style="color:burlywood"> *@
+        @* <div class="col-lg-12"> *@
+            <div class="card-body">
+                <form>
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>View CGL</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3 float-right">
+                                
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12" style="">
+                                <div class="row"> 
+                                    <div class="col-lg-3" style="margin-top: 30px;">
+                                        <button asp-action="EnquiryForm" class="btn btn-primary" style="border-radius:10px;">Create Enquiry <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>
+                                    </div>
+                                    <div class="col-lg-3">
+
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Search</label>
+                                            <input id="txtSearchUser" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-top: 30px;">
+                                        <div class="form-group">
+                                            <button id="btnSearch" type="button" class="btn btn-primary" style="border-radius:10px;">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row" style="width: 100% ">
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success" style="width:100%">
+                                    <tr>
+                                        <th hidden></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 115px;">Enquiry No</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 385px;">Client Name</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 140px;">Mobile</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 160px;">Property Type</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 130px;">Min Budget</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 130px;">Max Budget</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 170px;">Enquired By</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 135px;">Enquiry Date</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 170px;">Source</label></th>
+                                        <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 100px;">LOI</label></th>
+                                        <th class="table-bordered" colspan="2"><label style="color: black; font-size: 17px; text-align: center; width: 70px;">Actions</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                    <tr>
+                                        <td hidden>@item.Id</td>
+                                        <td style="color:black;">@item.Cglrefno</td>
+                                        <td style="color:black;">@item.ClientName</td>
+                                        <td style="color:black;">@item.Mobile</td>
+                                        <td style="color:black;">@item.Propertytype</td>
+                                        <td style="color:black;">@item.MinBudget</td>
+                                        <td style="color:black;">@item.Maxbudget</td>
+                                        <td style="color:black;">@item.Completedby</td>
+                                        <td style="color:black;">@Convert.ToDateTime(item.EnquiryDate).ToShortDateString()</td>
+                                        <td style="color:black;">@item.Source</td>
+                                        <td>
+                                            <a asp-action="MarketingLOI" asp-controller="Marketing" asp-route-refno="@item.Cglrefno" asp-route-type="CGL">Generate LOI</a>
+                                        </td>
+                                        <td>
+                                            <a asp-action="UpdateCGL" asp-controller="Marketing" asp-route-cglrefno="@item.Cglrefno"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="javascript:void(0)" id="@item.Cglrefno" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                        </td>
+                                    </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                    @*<div id="container">
+                            <p></p>
+                            <p></p>
+                            <div class="pagination">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        @Html.PagedListPager(Model, page => Url.Action("ListUser", new { page, pageSize = Model.PageSize }))
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />*@
+                </form>
+                @*<script type="text/javascript">
+                        function PagerClick(index) {
+                            document.getElementById("hfCurrentPageIndex").value = index;
+                            document.forms[0].submit();
+                        }
+                    </script>*@
+            </div>
+        @* </div> *@
+    @* </div> *@
+</div>
+@*</div>*@

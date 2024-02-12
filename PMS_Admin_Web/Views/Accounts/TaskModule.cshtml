@@ -1,0 +1,1980 @@
+﻿@model PMS_Admin_Web.Models.Accounts.TaskModuleModel
+@using PMS_Admin_Web.Repository
+
+@{
+    ViewData["Title"] = "Task Module";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+            //window.location.href = "@Url.Action("ListLOI", "LOI")";
+        };
+    </script>
+}
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<script>
+    function loadaptno() {
+        var buildingname = $('#buildingname').val();
+        $.ajax({
+            type:"GET",
+            url: "@Url.Action("LoadAptNumber", "Common")",
+            data: { propertyname: buildingname},
+            success: function (response) {
+                $('#aptno').append('<option hidden value="">--Selected--</option>');
+                $.each(response, function (k, v) {
+                    $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        loadaptno();
+
+        $('#paymentcategory').change(function () {
+            var paymentcategory = $('#paymentcategory :selected').val();
+            if (paymentcategory == "OTHER") {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("FetchDistinctOtherPaytypeTaskModule", "Accounts")",
+                    success: function (resp) {
+                        //console.log(resp.length);
+                        $.each(resp, function (k, v) {
+                            $('#paymentcategory').append('<option value="' + v + '" > ' + v + '</option>');
+                        });
+                    }
+                })
+            }
+        })
+
+        $('#refresh').click(function () {
+            $('#paymentcategory').html('');
+            $('#paymentcategory').append('<option value="ADDITIONAL RENT PAYMENT">ADDITIONAL RENT PAYMENT</option>');
+            $('#paymentcategory').append('<option value="RENT">RENT</option>');
+            $('#paymentcategory').append('<option value="DEPOSIT">DEPOSIT</option>');
+            $('#paymentcategory').append('<option value="RESF">RESF</option>');
+            $('#paymentcategory').append('<option value="GBC">GBC</option>');
+            $('#paymentcategory').append('<option value="INTERNET">INTERNET</option>');
+            $('#paymentcategory').append('<option value="OTHER">OTHER</option>');
+        })
+
+        $('#divreservedlc').hide();
+
+        $('#rbshowreserved').click(function () {
+            $('#divreservedlc').show();
+            $('#reservedlc').html('');
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("FetchReservedLcReservedRb", "Accounts")",
+                /*data: {},*/
+                success: function (response) {
+                    $('#reservedlc').append('<option hidden value="" >--Select--</option>');
+                    $.each(response, function (k, v) {
+                        $('#reservedlc').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+                    alert("Select the LC NO");
+                }
+            })
+        })
+
+        $('#reservedlc').change(function () {
+            var reservedlc = $('#reservedlc :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ReservedLcSelectedIndex", "Accounts")",
+                data: { reservedlc: reservedlc},
+                success: function (response) {
+                    //console.log(response);
+                    $('#tenantname').val(response.teTname);
+                    $('#tenantid').val(response.id);
+                }
+            })
+        })
+
+        $('#rbshowvacated').click(function () {
+            var buildingname = $('#buildingname').val();
+            var aptno = $('#aptno :selected').val();
+            if (aptno == null || aptno == "") {
+                alert("Select Aptno");
+                return false;
+            }
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("ShowVacatedRb", "Accounts")",
+                data: { bldngname: buildingname, aptcombo: aptno},
+                success: function (response) {
+                    console.log(response);
+                    if (response.vacatedrb == false) {
+                        alert(response.message);
+                    }
+                    else {
+                        $('#tenantname').val(response.te_tname);
+                        $('#tenantid').val(response.id);
+                    }
+                }
+            })
+        })
+
+        $('#rbcshowcurrent').click(function () {
+            $('#tenantname').val('');
+            $('#tenantid').val('');
+            $('#monthlyrent').val('');
+            var buildingname = $('#buildingname').val();
+            var aptno = $('#aptno :selected').val();
+            if (aptno == null || aptno == "") {
+                alert("Select Aptno");
+                return false;
+            }
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("ShowCurrentRb", "Accounts")",
+                data: { bldngname: buildingname, aptcombo: aptno},
+                success: function (response) {
+                    //console.log(response);
+                    $('#tenantname').val(response.tname);
+                    $('#tenantid').val(response.tid);
+                    $('#monthlyrent').val(response.crent);
+                }
+            })
+        })
+
+        $('#btnforce').hide();
+
+        $('#chkforcetogeneratevoucherno').click(function () {
+            var chkforce = $('#chkforcetogeneratevoucherno').is(':checked');
+            //console.log(chkforce)
+            if (chkforce == true) {
+                var confirmMessageBox = confirm('When you force to generate previous number series, make sure all enteries are there in appropriate statements; if not number will not be generated in series?');
+                if (confirmMessageBox) {
+                    $('#btnforce').show();
+                    $('#btn15print').hide();
+                    var buildingname = $('#buildingname').val();
+                    $.ajax({
+                        type: "GET",
+                        url: "@Url.Action("ChkForceToGenerateVoucherNo", "Accounts")",
+                        data: { buildingname: buildingname },
+                        success: function (response) {
+                            //console.log(response);
+                            $('#vnotxt').val(response);
+                        }
+                    })
+                }
+                else {
+                    $('#chkforce').prop("checked", false);
+                }
+            }
+            else {
+                $('#btnforce').hide();
+                $('#btn15print').show();
+                $('#vnotxt').val('');
+            }
+        })
+
+        $('#aptno').change(function () {
+            var aptno = $('#aptno :selected').val();
+            var aptnotxt = $('#aptnotxt').val();
+            var multipleApt = $('#multipleApt').is(':checked');
+            if (multipleApt == true) {
+                if (aptnotxt.length < 1) {
+                    $('#aptnotxt').val(aptno);
+                }
+                else {
+                    $('#aptnotxt').val(aptnotxt + ',' + aptno);
+                }
+            }
+            else {
+                $('#aptnotxt').val('');
+                $('#aptnotxt').val(aptno);
+            }
+        })
+
+        $('#allapt').click(function () {
+            var allapt = $('#allapt').is(':checked');
+            if (allapt == true) {
+                var buildingname = $('#buildingname').val();
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("ChkAllApt", "Accounts")",
+                    data: { buildingname: buildingname },
+                    success: function (response) {
+                        //console.log(resp);
+                        $('#tenantname').val(response.tname);
+                        $('#monthlyrent').val(response.crent);
+                        $('#aptnotxt').val(response.totapt + " Apartments");
+                    }
+                })
+            }
+            else {
+                $('#aptnotxt').val('');
+            }
+        })
+
+        $('#divpanel34').hide();
+
+        $('#rentfor').change(function () {
+            $('#noofmonthordays').html('');
+            $('#rentdateto').html('');
+            var rentfor = $('#rentfor :selected').val();
+            var paymentcategory = $('#paymentcategory :selected').val();
+            if (paymentcategory.length < 1) {
+                alert("Select the Payment Category");
+                return false;
+            }
+            $('#noofmonthordays').append(`<option hidden value="" >--Select--</option>`);
+            if (rentfor == "Month") {
+                for (let i = 1; i <= 12; i++) {
+                    $('#noofmonthordays').append(`<option value="${i}" >${i}</option>`);
+                }
+                if (paymentcategory == "RENT") {
+                    $('#divpanel34').show();
+                }
+                else {
+                    $('#divpanel34').hide();
+                }
+            }
+            else if (rentfor == "Day") {
+                for (let i = 1; i <= 29; i++) {
+                    $('#noofmonthordays').append(`<option value="${i}" >${i}</option>`);
+                }
+                if (paymentcategory == "RENT") {
+                    $('#divpanel34').show();
+                }
+                else {
+                    $('#divpanel34').hide();
+                }
+            }
+            else if (rentfor == "Half Month") {
+                for (let i = 1; i <= 29; i++) {
+                    $('#noofmonthordays').append(`<option value="${i}" >${i}</option>`);
+                }
+                $('#divpanel34').hide();
+            }
+        })
+
+        $('#btnok').click(function () {
+            var rentdatefrom = $('#rentdatefrom').val();
+            //var rentdateto = $('#rentdateto').val();
+            var rentfor = $('#rentfor :selected').val();
+            var noofmonthordays = $('#noofmonthordays :selected').val();
+            var aggtype, aggtime;
+
+            if (rentdatefrom.length < 1) {
+                alert("SELECT THE FROM DATE");
+                return false;
+            }
+            if (rentdatefrom.length > 1) {
+                aggtype = rentfor;
+                //var leasestartdate = rentdatefrom;
+            }
+
+            if (rentfor.length == 0) {
+                alert("MENTION THE RENT FOR MONTH OR DAY");
+                return false;
+            }
+
+            if (noofmonthordays.length == 0) {
+                alert("MENTION THE NO OF MONTH OR DAY");
+                return false;
+            }
+            if (noofmonthordays.length > 0) {
+                aggtime = noofmonthordays;
+            }
+
+            if (rentfor == "Month") {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddMonths", "Accounts")",
+                    data: { rentdatefrom: rentdatefrom, aggtime: aggtime},
+                    success: function (response) {
+                        //console.log(response);
+                        $('#rentdateto').val(response);
+                    }
+                })
+            }
+            if (rentfor == "Day") {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddDays", "Accounts")",
+                    data: { rentdatefrom: rentdatefrom, aggtime: aggtime},
+                    success: function (response) {
+                        //console.log(response);
+                        $('#rentdateto').val(response);
+                    }
+                })
+            }
+            if (rentfor == "Half Month") {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddDays", "Accounts")",
+                    data: { rentdatefrom: rentdatefrom, aggtime: aggtime},
+                    success: function (response) {
+                        //console.log(response);
+                        $('#rentdateto').val(response);
+                    }
+                })
+            }
+        })
+
+        $('#btnloadvoucherno').click(function () {
+            var buildingname = $('#buildingname').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BtnLoadVoucherNo", "Accounts")",
+                data: { buildingname: buildingname},
+                success: function (response) {
+                    //console.log(response);
+                    $('#oldvoucherno').append('<option hidden value="" >--Select--</option>');
+                    $.each(response, function (k, v) {
+                        $('#oldvoucherno').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+                }
+            })
+        })
+
+        $('#oldvoucherno').change(function () {
+            var oldvoucherno = $('#oldvoucherno :selected').val();
+            var buildingname = $('#buildingname').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadOldVoucherNoDetails", "Accounts")",
+                data: { buildingname: buildingname, oldvoucherno: oldvoucherno},
+                success: function (response) {
+                    //console.log(response);
+                    $('#oldvouchernotxt').val(response.rno);
+                    $('#oldvoucherdate').val(response.rdate);
+                    $('#oldreceivedamt').val(response.totamt);
+                }
+            })
+        })
+
+        $('#chkcomplimentary').click(function () {
+            var chkcomplimentary = $('#chkcomplimentary').is(':checked');
+            if (chkcomplimentary == true) {
+                $('#divpanel34').show();
+            }
+            else {
+                $('#divpanel34').hide();
+            }
+        })
+
+        $('#divoldsdpanel').hide();
+
+        $('#chknewdepagainstolddep').click(function () {
+            var chknewdepagainstolddep = $('#chknewdepagainstolddep').is(':checked');
+            if (chknewdepagainstolddep == true) {
+                var paymentcategory = $('#paymentcategory :selected').val();
+                if (paymentcategory != "DEPOSIT - Transfer from previous Security Deposit") {
+                    alert("category must be DEPOSIT - Transfer from previous Security Deposit");
+                    $('#chknewdepagainstolddep').prop("checked", false);
+                    return false;
+                }
+                $('#divoldsdpanel').show();
+                $('#oldvoucherno').html('');
+                $('#oldvouchernotxt').val('');
+                $('#oldvoucherdate').val('');
+                $('#oldreceivedamt').val('');
+
+                var buildingname = $('#buildingname').val();
+                $.ajax({
+                type: "POST",
+                url: "@Url.Action("ChkNewDepositAgainstOldDepositLoadRno", "Accounts")",
+                data: { buildingname: buildingname},
+                success: function (response) {
+                    //console.log(response);
+                    $('#oldvoucherno').append('<option hidden value="" >--Select--</option>');
+                    $.each(response, function (k, v) {
+                        $('#oldvoucherno').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+                }
+            })
+            }
+            else {
+                $('#divoldsdpanel').hide();
+            }
+        })
+
+        $("#cashtxt").prop('disabled', true);
+
+        $('#chkcash').click(function () {
+            var chkcash = $('#chkcash').is(':checked');
+            if (chkcash == true) {
+                $("#cashtxt").prop('disabled', false);
+            }
+            else {
+                $("#cashtxt").prop('disabled', true);
+                //$("#cashtxt").val("0.000");
+            }
+        })
+
+        $("#knettxt").prop('disabled', true);
+        //$('#divknetauthcode').hide();
+        $('#divchequeno').hide();
+
+        $('#chkknet').click(function () {
+            var chkknet = $('#chkknet').is(':checked');
+            if (chkknet == true) {
+                $("#knettxt").prop('disabled', false);
+                //have to enter knet authorization code label and textbox
+                //$('#divknetauthcode').show();
+                $('#divchequeno').show();
+                $('#lblchequeno').text("Knet Authorization Code");
+            }
+            else {
+                $("#knettxt").prop('disabled', true);
+                //$("#knettxt").val("0.000");
+                //$('#divknetauthcode').hide();
+                $('#divchequeno').hide();
+            }
+        })
+
+
+        $('#divbankname').hide();
+        $("#chequetxt").prop('disabled', true);
+
+        $('#chkcheque').click(function () {
+            var chkcheque = $('#chkcheque').is(':checked');
+            if (chkcheque == true) {
+                $("#chequetxt").prop('disabled', false);
+                //to enter bankname cheque no needed label and textbox
+                $('#divchequeno').show();
+                $('#lblchequeno').text("Cheque No");
+                $('#divbankname').show();
+            }
+            else {
+                $("#chequetxt").prop('disabled', true);
+                //$("#chequetxt").val("0.000");
+                $('#divchequeno').hide();
+                $('#divbankname').hide();
+            }
+        })
+
+        $("#bttxt").prop('disabled', true);
+        $('#chkbt').click(function () {
+            var chkbt = $('#chkbt').is(':checked');
+            if (chkbt == true) {
+                $("#bttxt").prop('disabled', false);
+            }
+            else {
+                $("#bttxt").prop('disabled', true);
+                //$("#bttxt").val("0.000");
+            }
+        })
+
+        $("#receivedamt").prop('disabled', true);
+
+        $('#cashtxt').change(function () {
+            var cashtxt = $('#cashtxt').val();
+            var knettxt = $('#knettxt').val();
+            var chequetxt = $('#chequetxt').val();
+            var bttxt = $('#bttxt').val();
+
+            if (cashtxt.match("[ ^ a-z]")) {
+                $('#cashtxt').val('');
+            }
+
+            var totamt = Number(cashtxt) + Number(knettxt) + Number(chequetxt) + Number(bttxt);
+            $('#receivedamt').val(totamt);
+        })
+
+        $('#knettxt').change(function () {
+            var cashtxt = $('#cashtxt').val();
+            var knettxt = $('#knettxt').val();
+            var chequetxt = $('#chequetxt').val();
+            var bttxt = $('#bttxt').val();
+
+            if (knettxt.match("[ ^ a-z]")) {
+                $('#knettxt').val('');
+            }
+
+            var totamt = Number(cashtxt) + Number(knettxt) + Number(chequetxt) + Number(bttxt);
+            $('#receivedamt').val(totamt);
+        })
+
+        $('#chequetxt').change(function () {
+            var cashtxt = $('#cashtxt').val();
+            var knettxt = $('#knettxt').val();
+            var chequetxt = $('#chequetxt').val();
+            var bttxt = $('#bttxt').val();
+
+            if (chequetxt.match("[ ^ a-z]")) {
+                $('#chequetxt').val('');
+            }
+
+            var totamt = Number(cashtxt) + Number(knettxt) + Number(chequetxt) + Number(bttxt);
+            $('#receivedamt').val(totamt);
+        })
+
+        $('#bttxt').change(function () {
+            var cashtxt = $('#cashtxt').val();
+            var knettxt = $('#knettxt').val();
+            var chequetxt = $('#chequetxt').val();
+            var bttxt = $('#bttxt').val();
+
+            if (bttxt.match("[ ^ a-z]")) {
+                $('#bttxt').val('');
+            }
+
+            var totamt = Number(cashtxt) + Number(knettxt) + Number(chequetxt) + Number(bttxt);
+            $('#receivedamt').val(totamt);
+        })
+
+        $('#btnforce').click(function () {
+            var chkcash = $('#chkcash').is(':checked');
+            var chkknet = $('#chkknet').is(':checked');
+            var chkcheque = $('#chkcheque').is(':checked');
+            var chkbt = $('#chkbt').is(':checked');
+            var cashtxt = $('#cashtxt').val();
+            var knettxt = $('#knettxt').val();
+            var chequetxt = $('#chequetxt').val();
+            var bttxt = $('#bttxt').val();
+            var rentfor = $('#rentfor :selected').val();
+            var noofmonthordays = $('#noofmonthordays :selected').val();
+            var paymentcategory = $('#paymentcategory :selected').val();
+            var receivedamt = $('#receivedamt').val();
+            var monthlyrent = $('#monthlyrent').val();
+            var aptnotxt = $('#aptnotxt').val();
+            var RBMR = $('#RBMR').is(':checked');
+            var RBCR = $('#RBCR').is(':checked');
+            var voucherdate = $('#voucherdate').val();
+            var vnotxt = $('#vnotxt').val();
+            var buildingname = $('#buildingname').val();
+            var chequenotxt = $('#chequenotxt').val();
+            var chequebankname = $('#chequebankname').val();
+            var aptno = $('#aptno :selected').val();
+            var rentdatefrom = $('#rentdatefrom').val();
+            var rentdateto = $('#rentdateto').val();
+            var tenantname = $('#tenantname').val();
+            //var knetauthcodetxt = $('#knetauthcodetxt').val();
+            var remarks = $('#remarks').val();
+            var rbshowreserve = $('# rbshowreserved').is(':checked');
+            var rbshowvacated = $('#rbshowvacated').is(':checked');
+            var rbcshowcurrent = $('#rbcshowcurrent').is(':checked');
+
+            if (chkcash == true) {
+                if (cashtxt.length < 1) {
+                    alert("Enter the Cash");
+                    return false;
+                }
+            }
+            if (chkknet == true) {
+                if (knettxt.length < 1) {
+                    alert("Enter the Knet Amount");
+                    return false;
+                }
+                //have to check knet auth code entered or not
+                //if (knetauthcodetxt.length == 0) {
+                //    alert("Enter the Knet Authorization code");
+                //    return false;
+                //}
+                if (chequenotxt.length == 0) {
+                    alert("Enter the Knet Authorization code");
+                    return false;
+                }
+            }
+            if (chkcheque == true) {
+                if (chequetxt.length < 1) {
+                    alert("Enter the Cheque");
+                    return false;
+                }
+            }
+            if (chkbt == true) {
+                if (bttxt.length < 1) {
+                    alert("Enter the BankTransfer Amount");
+                    return false;
+                }
+            }
+
+            if (rentfor.length == 0) {
+                alert("MENTION THE RENT FOR MONTH OR DAY");
+                return false;
+            }
+            if (noofmonthordays.length == 0) {
+                alert("MENTION THE NO OF MONTH OR DAY");
+                return false;
+            }
+
+            if (Number(receivedamt) == 0) {
+                alert("Amount cannot be zero");
+                return false;
+            }
+
+            if (paymentcategory.length < 1) {
+                alert("Enter the Payment type");
+                return false;
+            }
+
+            if (aptnotxt.length < 1) {
+                alert("Enter the Apartment Number");
+                return false;
+            }
+
+            if (voucherdate.length < 1) {
+                alert("Voucher Date is required");
+                return false;
+            }
+
+            if (paymentcategory == "RENT") {
+                if (rentfor == "Month" && Number(noofmonthordays) > 1) {
+                    if (Number(receivedamt) < Number(monthlyrent)) {
+                        alert("Total Amount is mismatching for number of month selected");
+                        return false;
+                    }
+                }
+
+                if (rentfor == "Day" || rentfor == "Month") {
+                    if (RBMR == false && RBCR == false) {
+                        alert("Receipt printing based on Monthly rent or collected rent?");
+                        return false;
+                    }
+                }
+            }
+
+            var chqbtamt = Number(chequetxt) + Number(bttxt);
+
+            if (receivedamt != (Number(cashtxt) + Number(knettxt) + Number(chequetxt) + Number(bttxt))) {
+                alert("Total Not matching");
+                return false;
+            }
+
+            if (Number(receivedamt) == 0) {
+                alert("Receive Amt is required");
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetCountOfPayments", "Accounts")",
+                data: { vnotxt: vnotxt, buildingname: buildingname },
+                success: function (response) {
+                    if (Number(response) > 0) {
+                        alert("This Voucher number is already available in Statements");
+                        return false;
+                    }
+                }
+            })
+
+            if (chkcheque == true) {
+                if (chequenotxt.length < 1) {
+                    alert("Cheque NO is required");
+                    return false;
+                }
+                if (chequebankname.length < 1) {
+                    alert("Enter the Bank Name");
+                    return false;
+                }
+            }
+            var mrent;
+            if (paymentcategory == "RENT") {
+                if (rentfor == "Day") {
+                    if (RBMR == true) {
+                        var ONEDAYRENT = Number(monthlyrent) / 30;
+                        mrent = ONEDAYRENT * Number(noofmonthordays);
+                        $.ajax({
+                            type: "POST",
+                            data: { amount: mrent },
+                            url: "@Url.Action("ConvertAmount", "Common")",
+                            success: function (response) {
+                                //console.log(response);
+                                $('#receivedamttxt').val(response);
+                            }
+                        })
+                    }
+                    if (RBCR == true) {
+                        mrent = Number(receivedamt);
+                        $.ajax({
+                            type: "POST",
+                            data: { amount: mrent },
+                            url: "@Url.Action("ConvertAmount", "Common")",
+                            success: function (response) {
+                                //console.log(response);
+                                $('#receivedamttxt').val(response);
+                            }
+                        })
+                    }
+                }
+
+                if (rentfor == "Month") {
+                    if (RBCR == true) {
+                        mrent = Number(receivedamt);
+                        $.ajax({
+                            type: "POST",
+                            data: { amount: mrent },
+                            url: "@Url.Action("ConvertAmount", "Common")",
+                            success: function (response) {
+                                //console.log(response);
+                                $('#receivedamttxt').val(response);
+                            }
+                        })
+                    }
+                    else {
+                        if (Number(noofmonthordays) > 1) {
+                            mrent = Number(monthlyrent) * Number(noofmonthordays);
+                            $.ajax({
+                                type: "POST",
+                                data: { amount: mrent },
+                                url: "@Url.Action("ConvertAmount", "Common")",
+                                success: function (response) {
+                                    //console.log(response);
+                                    $('#receivedamttxt').val(response);
+                                }
+                            })
+                        }
+                        else {
+                            mrent = Number(monthlyrent);
+                            $.ajax({
+                                type: "POST",
+                                data: { amount: mrent },
+                                url: "@Url.Action("ConvertAmount", "Common")",
+                                success: function (response) {
+                                    //console.log(response);
+                                    $('#receivedamttxt').val(response);
+                                }
+                            })
+                        }
+                    }
+                }
+
+                if (rentfor == "Half Month") {
+                    mrent = Number(monthlyrent) / 2;
+                    $.ajax({
+                        type: "POST",
+                        data: { amount: mrent },
+                        url: "@Url.Action("ConvertAmount", "Common")",
+                        success: function (response) {
+                            //console.log(response);
+                            $('#receivedamttxt').val(response);
+                        }
+                    })
+                }
+            }
+            else {
+                mrent = Number(receivedamt);
+                $.ajax({
+                    type: "POST",
+                    data: { amount: mrent },
+                    url: "@Url.Action("ConvertAmount", "Common")",
+                    success: function (response) {
+                        //console.log(response);
+                        $('#receivedamttxt').val(response);
+                    }
+                })
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { aptno: aptno, buildingname: buildingname, paymentcategory: paymentcategory, rentdatefrom: rentdatefrom, rentdateto: rentdateto, tenantname: tenantname},
+                url: "@Url.Action("GetCountOfPaPayments", "Accounts")",
+                success: function (resp) {
+                    if (resp > 0) {
+                        alert(`${paymentcategory} AMOUNT IS ALREADY PAID BY THIS TENANT FOR THIS PARTICULAR DATES`);
+                        return false;
+                    }
+                }
+            })
+
+            var receivedamttxt = $('#receivedamttxt').val();
+            $.ajax({
+                type: "POST",
+                data: { vnotxt: vnotxt, buildingname: buildingname, aptnotxt: aptnotxt, tenantname: tenantname, voucherdate: voucherdate, rentdatefrom: rentdatefrom, rentdateto: rentdateto, paymentcategory: paymentcategory, cashtxt: cashtxt, knettxt: knettxt, chequetxt: chequetxt, bttxt: bttxt, chequenotxt: chequenotxt, chequebankname: chequebankname, receivedamt: receivedamt, remarks: remarks, receivedamttxt: receivedamttxt, mrent: mrent},
+                url: "@Url.Action("BtnForceDeleteAndInsertTempPayments", "Accounts")",
+                success: function (deleteAndinsertResponse) {
+                    console.log(deleteAndinsertResponse);
+                }
+            })
+
+            if (rbshowreserve == false && rbshowvacated == false && rbcshowcurrent == false) {
+                $.ajax({
+                    type: "POST",
+                    data: { buildingname: buildingname, aptno: aptno},
+                    url: "@Url.Action("BtnForceReservedVacatedCurrentFalseTenid", "Accounts")",
+                    success: function (response) {
+                        //console.log(response);
+                        $('#tenantid').val(response);
+                    }
+                })
+            }
+            var tenantid = $('tenantid').val();
+            $.ajax({
+                type: "POST",
+                data: { vnotxt: vnotxt, buildingname: buildingname, aptnotxt: aptnotxt, tenantname: tenantname, voucherdate: voucherdate, rentdatefrom: rentdatefrom, rentdateto: rentdateto, paymentcategory: paymentcategory, cashtxt: cashtxt, knettxt: knettxt, chequetxt: chequetxt, bttxt: bttxt, chequenotxt: chequenotxt, chequebankname: chequebankname, receivedamt: receivedamt, remarks: remarks, receivedamttxt: receivedamttxt, mrent: mrent, tenantid: tenantid, monthlyrent: monthlyrent, chqbtamt: chqbtamt},
+                url: "@Url.Action("BtnForceInsertPaPaymentsAndPayments", "Accounts")",
+                success: function (insertResponse) {
+                    console.log(insertResponse);
+                }
+            })
+
+            alert("Receipt Generated Successfully and It has gone to statements!");
+            //\\192.168.1.2\supportingdocx\accounts\PAtempprinting.Rpt
+            //\\192.168.1.2\supportingdocx\accounts\tempprinting.Rpt
+
+        })
+
+        $('#btn14preview').click(function () {
+            var chkcash = $('#chkcash').is(':checked');
+            var chkknet = $('#chkknet').is(':checked');
+            var chkcheque = $('#chkcheque').is(':checked');
+            var chkbt = $('#chkbt').is(':checked');
+            var cashtxt = $('#cashtxt').val();
+            var knettxt = $('#knettxt').val();
+            var chequetxt = $('#chequetxt').val();
+            var bttxt = $('#bttxt').val();
+            var chequenotxt = $('#chequenotxt').val();
+            var chequebankname = $('#chequebankname').val();
+            var rentfor = $('#rentfor :selected').val();
+            var noofmonthordays = $('#noofmonthordays :selected').val();
+            var paymentcategory = $('#paymentcategory :selected').val();
+            var receivedamt = $('#receivedamt').val();
+            var monthlyrent = $('#monthlyrent').val();
+            var aptnotxt = $('#aptnotxt').val();
+            var RBMR = $('#RBMR').is(':checked');
+            var RBCR = $('#RBCR').is(':checked');
+            var voucherdate = $('#voucherdate').val();
+            var vnotxt = $('#vnotxt').val();
+            var buildingname = $('#buildingname').val();
+            var aptno = $('#aptno :selected').val();
+            var rentdatefrom = $('#rentdatefrom').val();
+            var rentdateto = $('#rentdateto').val();
+            var tenantname = $('#tenantname').val();
+            //var knetauthcodetxt = $('#knetauthcodetxt').val();
+            var remarks = $('#remarks').val();
+            var rbshowreserve = $('# rbshowreserved').is(':checked');
+            var rbshowvacated = $('#rbshowvacated').is(':checked');
+            var rbcshowcurrent = $('#rbcshowcurrent').is(':checked');
+            var chkcomplimentary = $('#chkcomplimentary').is(':checked');
+            var chknewdepagainstolddep = $('#chknewdepagainstolddep').is(':checked');
+            var oldvouchernotxt = $('#oldvouchernotxt').val();
+
+            if (chkcash == true) {
+                if (cashtxt.length < 1) {
+                    alert("Enter the Cash");
+                    return false;
+                }
+                if (Number(cashtxt) == 0) {
+                    alert("Enter the Cash");
+                    return false;
+                }
+            }
+            if (chkknet == true) {
+                if (knettxt.length < 1) {
+                    alert("Enter the Knet Amount");
+                    return false;
+                }
+                if (Number(knettxt) == 0) {
+                    alert("Enter the Knet Amount");
+                    return false;
+                }
+                if (chequenotxt.length < 1) {
+                    alert("Enter the Knet Authorization code");
+                    return false;
+                }
+            }
+            if (chkcheque == true) {
+                if (chequetxt.length < 1) {
+                    alert("Enter the Cheque");
+                    return false;
+                }
+                if (Number(chequetxt) == 0) {
+                    alert("Enter the Cheque");
+                    return false;
+                }
+                if (chequenotxt.length < 1) {
+                    alert("Cheque NO is required");
+                    return false;
+                }
+                if (chequebankname.length < 1) {
+                    alert("Enter the Bank Name;")
+                    return false;
+                }
+            }
+            if (chkbt == true) {
+                if (bttxt.length < 1) {
+                    alert("Enter the BankTransfer Amount");
+                    return false;
+                }
+                if (Number(bttxt) == 0) {
+                    alert("Enter the BankTransfer Amount");
+                    return false;
+                }
+            }
+
+            if (rentfor.length < 1) {
+                alert("MENTION THE RENT FOR MONTH OR DAY");
+                return false;
+            }
+            if (noofmonthordays.length < 1) {
+                alert("MENTION THE NO OF MONTH OR DAY");
+                return false;
+            }
+
+            if (chkcomplimentary == true) {
+                if (Number(receivedamt) > 0) {
+                    alert("Total Amount must be zero in order to generate complimentary receipt")
+                    return false;
+                }
+            }
+            if (chknewdepagainstolddep == true) {
+                if (Number(receivedamt) > 0) {
+                    alert("Total Amount must be zero in order to generate receipt against the old deposit")
+                    return false;
+                }
+            }
+            if (chkcomplimentary == false) {
+                if (chknewdepagainstolddep == false) {
+                    if (Number(receivedamt) == 0) {
+                        alert("Amount cannot be zero");
+                        return false;
+                    }
+                    if (paymentcategory == "RENT") {
+                        if (rentfor == "Month" && Number(noofmonthordays) > 1) {
+                            if (Number(receivedamt) < Number(monthlyrent)) {
+                                alert("Total Amount is mismatching for number of month selected")
+                                return false;
+                            }
+                        }
+                    }
+                    if (Number(receivedamt) != Number(cashtxt) + Number(knettxt) + Number(chequetxt) + Number(bttxt)) {
+                        alert("Total Not matching");
+                        return false;
+                    }
+                    if (Number(receivedamt) == 0) {
+                        alert("Receive Amt is required");
+                        return false;
+                    }
+                }
+            }
+
+            if (paymentcategory.length < 1) {
+                alert("Enter the Payment type");
+                return false;
+            }
+
+            if (aptnotxt.length < 1) {
+                alert("Enter the Apartment Number");
+                return false;
+            }
+
+            if (chknewdepagainstolddep == false) {
+                if (paymentcategory == "RENT") {
+                    if (rentfor == "Month" || rentfor == "Day") {
+                        if (RBMR == false && RBCR == false) {
+                            alert("Receipt printing based on Monthly rent or collected rent?");
+                            return false;
+                        }
+                    }
+                }
+            }
+            var chqbtamt = Number(chequetxt) + Number(bttxt);
+
+            if (voucherdate.length < 1) {
+                alert("Voucher Date is required");
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { vnotxt: vnotxt, buildingname: buildingname },
+                url: "@Url.Action("GetCountOfPayments", "Accounts")",
+                success: function (response) {
+                    if (response > 0) {
+                        alert("This Voucher number is already available in Statements");
+                        return false;
+                    }
+                }
+            })
+
+            if (chknewdepagainstolddep == true) {
+                if (oldvouchernotxt.length < 1) {
+                    alert("Select the Old Deposit number");
+                    return false;
+                }
+            }
+
+            if (chkcomplimentary == false) {
+                if (chknewdepagainstolddep == false) {
+                    var mrent;
+                    if (paymentcategory == "RENT") {
+                        if (rentfor == "Day") {
+                            if (RBMR == true) {
+                                var ONEDAYRENT = Number(monthlyrent) / 30;
+                                mrent = ONEDAYRENT * Number(noofmonthordays);
+                                $.ajax({
+                                    type: "POST",
+                                    data: { amount: mrent },
+                                    url: "@Url.Action("ConvertAmount", "Common")",
+                                    success: function (response) {
+                                        //console.log(response);
+                                        $('#receivedamttxt').val(response);
+                                    }
+                                })
+                            }
+                            if (RBCR == true) {
+                                mrent = Number(receivedamt);
+                                $.ajax({
+                                    type: "POST",
+                                    data: { amount: mrent },
+                                    url: "@Url.Action("ConvertAmount", "Common")",
+                                    success: function (response) {
+                                        //console.log(response);
+                                        $('#receivedamttxt').val(response);
+                                    }
+                                })
+                            }
+                        }
+
+                        if (rentfor == "Month") {
+                            if (RBCR == true) {
+                                mrent = Number(receivedamt);
+                                $.ajax({
+                                    type: "POST",
+                                    data: { amount: mrent },
+                                    url: "@Url.Action("ConvertAmount", "Common")",
+                                    success: function (response) {
+                                        //console.log(response);
+                                        $('#receivedamttxt').val(response);
+                                    }
+                                })
+                            }
+                            else {
+                                if (Number(noofmonthordays) > 1) {
+                                    mrent = Number(monthlyrent) * Number(noofmonthordays);
+                                    $.ajax({
+                                        type: "POST",
+                                        data: { amount: mrent },
+                                        url: "@Url.Action("ConvertAmount", "Common")",
+                                        success: function (response) {
+                                            //console.log(response);
+                                            $('#receivedamttxt').val(response);
+                                        }
+                                    })
+                                }
+                                else {
+                                    mrent = Number(monthlyrent);
+                                    $.ajax({
+                                        type: "POST",
+                                        data: { amount: mrent },
+                                        url: "@Url.Action("ConvertAmount", "Common")",
+                                        success: function (response) {
+                                            //console.log(response);
+                                            $('#receivedamttxt').val(response);
+                                        }
+                                    })
+                                }
+                            }
+                        }
+
+                        if (rentfor == "Half Month") {
+                            mrent = Number(monthlyrent) / 2;
+                            $.ajax({
+                                type: "POST",
+                                data: { amount: mrent },
+                                url: "@Url.Action("ConvertAmount", "Common")",
+                                success: function (response) {
+                                    //console.log(response);
+                                    $('#receivedamttxt').val(response);
+                                }
+                            })
+                        }
+                    }
+                    else {
+                        mrent = Number(receivedamt);
+                        $.ajax({
+                            type: "POST",
+                            data: { amount: mrent },
+                            url: "@Url.Action("ConvertAmount", "Common")",
+                            success: function (response) {
+                                //console.log(response);
+                                $('#receivedamttxt').val(response);
+                            }
+                        })
+                    }
+                }
+            }
+
+
+
+            $.ajax({
+                type: "POST",
+                data: { aptno: aptno, buildingname: buildingname, paymentcategory: paymentcategory, rentdatefrom: rentdatefrom, rentdateto: rentdateto, tenantname: tenantname},
+                url: "@Url.Action("GetCountOfPaPayments", "Accounts")",
+                success: function (resp) {
+                    if (resp > 0) {
+                        alert(`${paymentcategory} AMOUNT IS ALREADY PAID BY THIS TENANT FOR THIS PARTICULAR DATES`);
+                        return false;
+                    }
+                }
+            })
+
+            var receivedamttxt = $('#receivedamttxt').val();
+            $.ajax({
+                type: "POST",
+                data: { vnotxt: vnotxt, buildingname: buildingname, aptnotxt: aptnotxt, tenantname: tenantname, voucherdate: voucherdate, rentdatefrom: rentdatefrom, rentdateto: rentdateto, paymentcategory: paymentcategory, cashtxt: cashtxt, knettxt: knettxt, chequetxt: chequetxt, bttxt: bttxt, chequenotxt: chequenotxt, chequebankname: chequebankname, receivedamt: receivedamt, remarks: remarks, receivedamttxt: receivedamttxt, mrent: mrent, chknewdepagainstolddep: chknewdepagainstolddep, oldvouchernotxt: oldvouchernotxt},
+                url: "@Url.Action("Btn14PreviewDeleteAndInsertTempPayments", "Accounts")",
+                success: function (deleteAndinsertResponse) {
+                    console.log(deleteAndinsertResponse);
+                }
+            })
+            alert("Preview Receipt Generated Successfully!");
+
+            //\supportingdocx\accounts\PAtempprinting - complimentary.Rpt
+            //\supportingdocx\accounts\tempprinting - olddepo.Rpt
+            //\supportingdocx\accounts\PAtempprinting.Rpt
+            //\supportingdocx\accounts\tempprinting.Rpt
+
+        })
+
+        $('#btn15print').click(function () {
+            var confirmMessageBox = confirm('Are you sure you want to print the Receipt?');
+            if (confirmMessageBox) {
+                var chkcash = $('#chkcash').is(':checked');
+                var chkknet = $('#chkknet').is(':checked');
+                var chkcheque = $('#chkcheque').is(':checked');
+                var chkbt = $('#chkbt').is(':checked');
+                var cashtxt = $('#cashtxt').val();
+                var knettxt = $('#knettxt').val();
+                var chequetxt = $('#chequetxt').val();
+                var bttxt = $('#bttxt').val();
+                var chequenotxt = $('#chequenotxt').val();
+                var chequebankname = $('#chequebankname').val();
+                var rentfor = $('#rentfor :selected').val();
+                var noofmonthordays = $('#noofmonthordays :selected').val();
+                var paymentcategory = $('#paymentcategory :selected').val();
+                var receivedamt = $('#receivedamt').val();
+                var monthlyrent = $('#monthlyrent').val();
+                var aptnotxt = $('#aptnotxt').val();
+                var RBMR = $('#RBMR').is(':checked');
+                var RBCR = $('#RBCR').is(':checked');
+                var voucherdate = $('#voucherdate').val();
+                var vnotxt = $('#vnotxt').val();
+                var buildingname = $('#buildingname').val();
+                var aptno = $('#aptno :selected').val();
+                var rentdatefrom = $('#rentdatefrom').val();
+                var rentdateto = $('#rentdateto').val();
+                var tenantname = $('#tenantname').val();
+                //var knetauthcodetxt = $('#knetauthcodetxt').val();
+                var remarks = $('#remarks').val();
+                var rbshowreserve = $('# rbshowreserved').is(':checked');
+                var rbshowvacated = $('#rbshowvacated').is(':checked');
+                var rbcshowcurrent = $('#rbcshowcurrent').is(':checked');
+                var chkcomplimentary = $('#chkcomplimentary').is(':checked');
+                var chknewdepagainstolddep = $('#chknewdepagainstolddep').is(':checked');
+                var oldvouchernotxt = $('#oldvouchernotxt').val();
+                var multipleApt = $('#multipleApt').is(':checked');
+
+                if (chkcash == true) {
+                    if (cashtxt.length < 1) {
+                        alert("Enter the Cash");
+                        return false;
+                    }
+                    if (Number(cashtxt) == 0) {
+                        alert("Enter the Cash");
+                        return false;
+                    }
+                }
+                if (chkknet == true) {
+                    if (knettxt.length < 1) {
+                        alert("Enter the Knet Amount");
+                        return false;
+                    }
+                    if (Number(knettxt) == 0) {
+                        alert("Enter the Knet Amount");
+                        return false;
+                    }
+                    //if (chequenotxt.length < 1) {
+                    //    alert("Enter the Knet Authorization code");
+                    //    return false;
+                    //}
+                }
+                if (chkcheque == true) {
+                    if (chequetxt.length < 1) {
+                        alert("Enter the Cheque");
+                        return false;
+                    }
+                    if (Number(chequetxt) == 0) {
+                        alert("Enter the Cheque");
+                        return false;
+                    }
+                    if (chequenotxt.length < 1) {
+                        alert("Cheque NO is required");
+                        return false;
+                    }
+                    if (chequebankname.length < 1) {
+                        alert("Enter the Bank Name;")
+                        return false;
+                    }
+                }
+                if (chkbt == true) {
+                    if (bttxt.length < 1) {
+                        alert("Enter the BankTransfer Amount");
+                        return false;
+                    }
+                    if (Number(bttxt) == 0) {
+                        alert("Enter the BankTransfer Amount");
+                        return false;
+                    }
+                }
+
+                if (chkcomplimentary == false) {
+                    if (chknewdepagainstolddep == false) {
+                        if (Number(receivedamt) == 0) {
+                            alert("Amount cannot be zero");//done
+                            return false;
+                        }
+                        //if (paymentcategory == "RENT") {
+                        //    if (rentfor == "Month" && Number(noofmonthordays) > 1) {
+                        //        if (Number(receivedamt) < Number(monthlyrent)) {
+                        //            alert("Total Amount is mismatching for number of month selected")
+                        //            return false;
+                        //        }
+                        //    }
+                        //}
+                        if (Number(receivedamt) != Number(cashtxt) + Number(knettxt) + Number(chequetxt) + Number(bttxt)) {
+                            alert("Total Not matching");//done
+                            return false;
+                        }
+                        if (Number(receivedamt) == 0) {
+                            alert("Receive Amt is required");
+                            return false;
+                        }
+                        if (chkcash == false && chkknet == false && chkcheque == false && chkbt == false) {
+                            alert("Check the payment type");
+                            return false;
+                        }
+                    }
+                }
+
+                if (paymentcategory.length < 1) {
+                    alert("Enter the Payment type");
+                    return false;
+                }
+
+                if (aptnotxt.length < 1) {
+                    alert("Enter the Apartment Number");
+                    return false;
+                }
+
+                if (rentfor.length < 1) {
+                    alert("MENTION THE RENT FOR MONTH OR DAY");
+                    return false;
+                }
+                if (noofmonthordays.length < 1) {
+                    alert("MENTION THE NO OF MONTH OR DAY");
+                    return false;
+                }
+
+                if (chkcomplimentary == true) {
+                    if (Number(receivedamt) > 0) {
+                        alert("Total Amount must be zero in order to generate complimentary receipt");
+                        return false;
+                    }
+                }
+                if (chknewdepagainstolddep == true) {
+                    if (Number(receivedamt) > 0) {
+                        alert("Total Amount must be zero in order to generate receipt against the old deposit");
+                        return false;
+                    }
+                }
+
+                if (paymentcategory == "RENT") {
+                    if (rentfor == "Day" || rentfor == "Month") {
+                        if (RBMR == false && RBCR == false) {
+                            alert("Receipt printing based on Monthly rent or collected rent?");
+                            return false;
+                        }
+                    }
+                }
+
+                var chqbtamt = Number(chequetxt) + Number(bttxt);
+
+                if (voucherdate.length < 1) {
+                    alert("Voucher Date is required");
+                    return false;
+                }
+
+                if (vnotxt.length < 1) {
+                    alert("Voucher NO is required");
+                    return false;
+                }
+
+                if (rentdatefrom.length < 1) {
+                    alert("Select the period");
+                    return false;
+                }
+                if (rentdateto.length < 1) {
+                    alert("Select the period");
+                    return false;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    data: { vnotxt: vnotxt, buildingname: buildingname },
+                    url: "@Url.Action("GetCountOfPayments", "Accounts")",
+                    success: function (response) {
+                        if (response > 0) {
+                            alert("This Voucher number is already available in Statements");
+                            return false;
+                        }
+                    }
+                })
+
+                if (chknewdepagainstolddep == true) {
+                    if (oldvouchernotxt.length < 1) {
+                        alert("Select the Old Deposit number");
+                        return false;
+                    }
+                }
+
+                if (multipleApt == true) {
+                    if (aptnotxt.length < 1) {
+                        alert("Enter the Apartments");
+                        return false;
+                    }
+                }
+
+                if (chkcomplimentary == false) {
+                    if (chknewdepagainstolddep == false) {
+                        var mrent;
+                        if (paymentcategory == "RENT") {
+                            if (rentfor == "Day") {
+                                if (RBMR == true) {
+                                    var ONEDAYRENT = Number(monthlyrent) / 30;
+                                    mrent = ONEDAYRENT * Number(noofmonthordays);
+                                    $.ajax({
+                                        type: "POST",
+                                        data: { amount: mrent },
+                                        url: "@Url.Action("ConvertAmount", "Common")",
+                                        success: function (response) {
+                                            //console.log(response);
+                                            $('#receivedamttxt').val(response);
+                                        }
+                                    })
+                                }
+                                if (RBCR == true) {
+                                    mrent = Number(receivedamt);
+                                    $.ajax({
+                                        type: "POST",
+                                        data: { amount: mrent },
+                                        url: "@Url.Action("ConvertAmount", "Common")",
+                                        success: function (response) {
+                                            //console.log(response);
+                                            $('#receivedamttxt').val(response);
+                                        }
+                                    })
+                                }
+                            }
+
+                            if (rentfor == "Month") {
+                                if (RBCR == true) {
+                                    mrent = Number(receivedamt);
+                                    $.ajax({
+                                        type: "POST",
+                                        data: { amount: mrent },
+                                        url: "@Url.Action("ConvertAmount", "Common")",
+                                        success: function (response) {
+                                            //console.log(response);
+                                            $('#receivedamttxt').val(response);
+                                        }
+                                    })
+                                }
+                                else {
+                                    if (Number(noofmonthordays) > 1) {
+                                        mrent = Number(monthlyrent) * Number(noofmonthordays);
+                                        $.ajax({
+                                            type: "POST",
+                                            data: { amount: mrent },
+                                            url: "@Url.Action("ConvertAmount", "Common")",
+                                            success: function (response) {
+                                                //console.log(response);
+                                                $('#receivedamttxt').val(response);
+                                            }
+                                        })
+                                    }
+                                    else {
+                                        mrent = Number(monthlyrent);
+                                        $.ajax({
+                                            type: "POST",
+                                            data: { amount: mrent },
+                                            url: "@Url.Action("ConvertAmount", "Common")",
+                                            success: function (response) {
+                                                //console.log(response);
+                                                $('#receivedamttxt').val(response);
+                                            }
+                                        })
+                                    }
+                                }
+                            }
+
+                            if (rentfor == "Half Month") {
+                                mrent = Number(monthlyrent) / 2;
+                                $.ajax({
+                                    type: "POST",
+                                    data: { amount: mrent },
+                                    url: "@Url.Action("ConvertAmount", "Common")",
+                                    success: function (response) {
+                                        //console.log(response);
+                                        $('#receivedamttxt').val(response);
+                                    }
+                                })
+                            }
+                        }
+                        else {
+                            mrent = Number(receivedamt);
+                            $.ajax({
+                                type: "POST",
+                                data: { amount: mrent },
+                                url: "@Url.Action("ConvertAmount", "Common")",
+                                success: function (response) {
+                                    //console.log(response);
+                                    $('#receivedamttxt').val(response);
+                                }
+                            })
+                        }
+                    }
+                }
+
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { aptno: aptno, buildingname: buildingname, paymentcategory: paymentcategory, rentdatefrom: rentdatefrom, rentdateto: rentdateto, tenantname: tenantname},
+                    url: "@Url.Action("GetCountOfPaPayments", "Accounts")",
+                    success: function (resp) {
+                        if (resp > 0) {
+                            alert(`${paymentcategory} AMOUNT IS ALREADY PAID BY THIS TENANT FOR THIS PARTICULAR DATES`);
+                            return false;
+                        }
+                    }
+                })
+
+                var receivedamttxt = $('#receivedamttxt').val();
+
+                var Newrno = $('#Newrno').val();
+                $('#Newrno').val(Number(Newrno) + 1);
+
+                if (rbshowreserve == false && rbshowvacated == false && rbcshowcurrent == false) {
+                    $.ajax({
+                        type: "POST",
+                        data: { buildingname: buildingname, aptno: aptno},
+                        url: "@Url.Action("BtnForceReservedVacatedCurrentFalseTenid", "Accounts")",
+                        success: function (response) {
+                            //console.log(response);
+                            $('#tenantid').val(response);
+                        }
+                    })
+                }
+                var tenantid = $('tenantid').val();
+
+                $.ajax({
+                    type: "POST",
+                    data: { vnotxt: vnotxt, buildingname: buildingname, aptnotxt: aptnotxt, tenantname: tenantname, voucherdate: voucherdate, rentdatefrom: rentdatefrom, rentdateto: rentdateto, paymentcategory: paymentcategory, cashtxt: cashtxt, knettxt: knettxt, chequetxt: chequetxt, bttxt: bttxt, chequenotxt: chequenotxt, chequebankname: chequebankname, receivedamt: receivedamt, remarks: remarks, receivedamttxt: receivedamttxt, mrent: mrent, monthlyrent: monthlyrent, chqbtamt: chqbtamt, Newrno: Newrno, tenantid: tenantid, chknewdepagainstolddep: chknewdepagainstolddep, oldvouchernotxt: oldvouchernotxt },
+                    url: "@Url.Action("Btn15PrintInsertPapaymentsPayments", "Accounts")",
+                    success: function (response) {
+                        console.log(response);
+                    }
+                })
+
+                //\supportingdocx\accounts\PAsingleprinting-complimentary.Rpt
+                //\supportingdocx\accounts\printing-olddepo.Rpt
+                //\supportingdocx\accounts\PAsingleprinting.Rpt
+                //\supportingdocx\accounts\singleprinting.Rpt
+
+                var maxst, maxbulk;
+                $.ajax({
+                    type: "POST",
+                    data: { buildingname: buildingname},
+                    url: "@Url.Action("Btn15PrintMaxst", "Accounts")",
+                    success: function (response) {
+                        maxst = response;
+                    }
+                })
+                $.ajax({
+                    type: "POST",
+                    data: { buildingname: buildingname},
+                    url: "@Url.Action("Btn15PrintMaxbulk", "Accounts")",
+                    success: function (response) {
+                        maxbulk = response;
+                    }
+                })
+                if (maxst > maxbulk) {
+                    $('#maxreclbl').val(maxst);
+                }
+                else {
+                    $('#maxreclbl').val(maxbulk);
+                }
+                //Panel31.Visible = False
+                //Panel29.Visible = True
+            }
+        })
+
+        $('#btnadd').click(function () {
+            var rentdatefrom = $('#rentdatefrom').val();
+            var rentdateto = $('#rentdateto').val();
+            var tenantname = $('#tenantname').val();
+            var monthlyrent = $('#monthlyrent').val();
+            var aptnotxt = $('#aptnotxt').val();
+
+            if (aptnotxt.length < 1) {
+                alert("Enter the Apartment Number");
+                return false;
+            }
+            if (rentdatefrom.length < 1) {
+                alert("Select the period");
+                return false;
+            }
+            if (rentdateto.length < 1) {
+                alert("Select the period");
+                return false;
+            }
+            if (aptnotxt.length < 1) {
+                alert("Enter the Apartment Number");
+                return false;
+            }
+            if (tenantname.length < 1) {
+                alert("Enter the name");
+                return false;
+            }
+            if (Number(monthlyrent < 1)) {
+                alert("Amount is Mandatory");
+                return false;
+            }
+
+            alert("In Progress");
+        })
+
+
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+
+    <form method="post" enctype="multipart/form-data">
+        @*@Html.HiddenFor(model => model.LOI.Id)*@
+        <input id="buildingname" type="hidden" asp-for="buildingname" />
+        <input id="Newrno" type="hidden" />
+        <input id="maxreclbl" type="hidden" />
+        
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Task Module</strong></h5>
+            </div>
+            <br />
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Payment Category</label>
+                            <select id="paymentcategory" class="form-control" style="border-radius: 10px;">
+                                <option hidden value="">--Select--</option>
+                                <option value="ADDITIONAL RENT PAYMENT">ADDITIONAL RENT PAYMENT</option>
+                                <option value="RENT">RENT</option>
+                                <option value="DEPOSIT">DEPOSIT</option>
+                                <option value="RESF">RESF</option>
+                                <option value="GBC">GBC</option>
+                                <option value="INTERNET">INTERNET</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                            <a id="refresh" href="">Refresh</a>
+                        </div>
+                    </div>
+                    <div id="divreservedlc" class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Reserved LC</label>
+                            <select id="reservedlc" class="form-control" style="border-radius: 10px;">
+                                <option hidden value="">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3" style="margin-top: 38px;">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="multipleApt" type="checkbox" />
+                                        <label class="control-label text-black-50"> Multiple Apartments</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group" style="margin-left: 75px;">
+                                        <input id="allapt" type="checkbox" />
+                                        <label class="control-label text-black-50"> All Apartments</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-lg-3">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="form-group" style="width: 195px;">
+                                        <label class="control-label text-black-50">Apartment No</label>
+                                        <select id="aptno" class="form-control" style="border-radius: 10px;">
+                                            @*<option value="" hidden>--Select--</option>*@
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group" style="width: 195px; margin-top: 32px; ">
+                                        @*<label class="control-label text-black-50"> </label>*@
+                                        <input id="aptnotxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <table style="width: 575px;">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="rbshowreserved" type="radio" name="tenanttypes" />
+                                        <label class="control-label text-black-50">Show Reserved Tenant</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="rbshowvacated" type="radio" name="tenanttypes" />
+                                        <label class="control-label text-black-50">Show Vacated Tenant</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="rbcshowcurrent" type="radio" name="tenanttypes" />
+                                        <label class="control-label text-black-50">Show Current Tenant</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-lg-3">
+                        <table style="width: 575px; margin-left: 165px;">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="chkforcetogeneratevoucherno" type="checkbox" />
+                                        <label class="control-label text-black-50">Force To Generate Voucher No</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <button id="btnforce" type="button" class="btn btn-primary" style="border-radius:10px;">Force</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Tenant Name</label>
+                            <input id="tenantname" class="form-control" type="text" style="border-radius: 10px;" />
+                            <input id="tenantid" type="hidden" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Monthly Rent</label>
+                            <input id="monthlyrent" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Voucher Date</label>
+                            <input id="voucherdate" class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Voucher No</label>
+                            <input id="vnotxt" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <table style="width: 1000px;">
+                            <tr>
+                                <td>
+                                    <label class="control-label text-black-50">Rent Period</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Rent for</label>
+                                        <select id="rentfor" class="form-control" style="border-radius: 10px;">
+                                            <option hidden value="">--Select--</option>
+                                            <option value="Month">Month</option>
+                                            <option value="Half Month">Half Month</option>
+                                            <option value="Day">Day</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">No of Month \ Days</label>
+                                        <select id="noofmonthordays" class="form-control" style="border-radius: 10px;">
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">From</label>
+                                        <input id="rentdatefrom" class="form-control" type="date" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">To</label>
+                                        <input id="rentdateto" class="form-control" type="date" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <button id="btnok" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">OK</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="divoldsdpanel" class="row">
+                    <div class="col-lg-12">
+                        <table style="width: 1000px;">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Select Old Voucher No</label>
+                                        <select id="oldvoucherno" class="form-control" style="border-radius: 10px;">
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button id="btnloadvoucherno" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Load More Voucher No</button>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Voucher No</label>
+                                        <input id="oldvouchernotxt" class="form-control" style="border-radius: 10px; width: 190px;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Voucher Date</label>
+                                        <input id="oldvoucherdate" class="form-control" type="date" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Received Amount</label>
+                                        <input id="oldreceivedamt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3">
+                        <table style="width: 500px;">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="chkcomplimentary" type="checkbox" />
+                                        <label class="control-label text-black-50"> Complimentary</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="chknewdepagainstolddep" type="checkbox" />
+                                        <label class="control-label text-black-50"> New Deposit against Old Deposit</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <table style="width: 1000px;">
+                            <tr>
+                                <td>
+                                    <label class="control-label text-black-50">Payment Type</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="chkcash" type="checkbox" /><label class="control-label text-black-50"> Cash</label>
+                                        <input id="cashtxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <input id="chkknet" type="checkbox" /><label class="control-label text-black-50"> K-Net</label>
+                                        <input id="knettxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                                @*<td>
+                                    <div id="divknetauthcode" class="form-group">
+                                        <label class="control-label text-black-50">K-Net Authentication Code</label>
+                                        <input id="knetauthcodetxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>*@
+                                <td>
+                                    <div class="form-group">
+                                        <input id="chkcheque" type="checkbox" /><label class="control-label text-black-50"> Cheque</label>
+                                        <input id="chequetxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="form-group">
+                                        <input id="chkbt" type="checkbox" /><label class="control-label text-black-50"> BT</label>
+                                        <input id="bttxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div id="divchequeno" class="form-group">
+                                        <label id="lblchequeno" class="control-label text-black-50">Cheque No</label>
+                                        <input id="chequenotxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div id="divbankname" class="form-group">
+                                        <label class="control-label text-black-50">Bank Name</label>
+                                        <input id="chequebankname" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Received Amount</label>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <input id="receivedamt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </td>
+                                    <td>
+                                        <input id="receivedamttxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="divpanel34" class="col-lg-3">
+                        <table style="margin-top: 38px; width: 440px;">
+                            <tr>
+                                <td>
+                                    <input id="RBMR" type="radio" />
+                                    <label class="control-label text-black-50"> Based On Monthly Rent</label>
+                                </td>
+                                <td>
+                                    <input id="RBCR" type="radio" />
+                                    <label class="control-label text-black-50"> Based On Collected Rent</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Remarks</label>
+                            <input id="remarks" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3">
+
+                    </div>
+                    <div class="col-lg-3">
+
+                    </div>
+                    <div class="col-lg-3">
+
+                    </div>
+                    <div class="col-lg-3">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <button id="btn14preview" type="button" class="btn btn-primary" style="border-radius: 10px;">Preview</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <button id="btn15print" type="button" class="btn btn-primary" style="border-radius: 10px;">Print</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <button id="btnadd" type="button" class="btn btn-primary" style="border-radius: 10px;">Add</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+
+                <div class="col-lg-12">
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    @*<button type="submit" class="btn btn-primary float-right" onclick="location.href='@Url.Action("NewLOI", "LOI",Model)'">Create</button>*@
+                                    @*<button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Create</button>*@
+                                    <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Load</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Remove</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Generate Voucher No</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Preview</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Print</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@

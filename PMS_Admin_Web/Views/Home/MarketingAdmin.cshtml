@@ -1,0 +1,243 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    //Layout = "_Layout1";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@if (ViewBag.Message == "Access denied")
+{
+    <script>
+        history.back();
+    </script>
+}
+
+@*<script type="text/javascript">
+    function preventBack() { window.history.forward(); }
+    setTimeout("preventBack()", 0);
+    window.onunload = function () { null };
+</script>*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;" asp-action="EnquiryForm" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-align-justify" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Enquiry Form</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;" asp-action="ViewEnquiry" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-file-contract" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>View Enquiry</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="SearchLOI" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Search LOI</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #C38D9E " asp-action="ContactedCorporatesMain" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Contacted Corporates</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 " asp-action="Property" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Property</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E7717D " asp-action="PropertySearch" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-money" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Property Search</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #9A1750 " asp-action="DriverAvailability" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-file-invoice-dollar" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Driver</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #123C69 " asp-action="DailyProgress" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-calendar" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Other - Daily Progress</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: sienna " asp-action="Adhoc" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-comments" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Ad-Hoc</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        @* <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9 " asp-action="AdminFunction" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-sign-in" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>6 x 6</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div> *@
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #61892F " asp-action="ViewInActive" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-gear" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Inactive</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: yellowgreen " asp-action="Other" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-support" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Others</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #0677A1" asp-action="Reports" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-user" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Marketing Reports</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        
+                        @*<div class="col-lg-3">
+                                <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #0677A1 ">
+                                    <div>
+                                        <div>
+                                            <i class="fa fa-user" style="font-size:24px"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Mileage</strong>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>*@
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #0677A1 " asp-action="ClosedLeads" asp-controller="Marketing">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-user" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Closed Leads</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    @*</div>*@
+                </form>
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

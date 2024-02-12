@@ -1,0 +1,565 @@
+﻿@*@model PMS_Admin_Web.Models.Propertymaster*@
+@model PMS_Admin_Web.Models.Property.EditPropertyModel
+
+@{
+    //if (Model.Property.Id == 0)
+    ViewData["Title"] = "Update Property";
+    //else
+    //    ViewData["Title"] = "Update Property";
+}
+
+@using Microsoft.AspNetCore.Http;
+@using PMS_Admin_Web.Repository;
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*@Html.Raw(@ViewBag.Alert)*@
+            @if (ViewBag.Message != null)
+            {
+                <script type="text/javascript">
+
+                        window.onload = function () {
+                            alert("@ViewBag.Message");
+                        };
+                </script>
+            }
+            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+            <script>
+
+                $(document).ready(function () {
+                    var area_hidden = $('#area_hidden').val();
+                    $.ajax({
+                        type: 'GET',
+                        url: "@Url.Action("LoadAreas", "Property")",
+                        success: function (response) {
+                            //alert(response);
+                            //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                            $.each(response, function (k, v) {
+                                $('#areas').append('<option value="' + v + '" > ' + v + '</option>');
+                                if (area_hidden == v) {
+                                    $('#areas').append('<option value="' + v + '" selected="selected"> ' + v + '</option>');
+                                    propertyname(v);
+                                }
+                                else {
+                                    $('#areas').append('<option value="' + v + '" > ' + v + '</option>');
+                                }
+                            });
+                        }
+                    })
+                })
+
+            </script>
+            <form asp-controller="Property" asp-action="CreateProperty">
+                <div class="card" style="color:burlywood">
+                    <div class="card-header" style="background-color: darksalmon;">
+                        <h5 class="text-center" style="color:black"><strong>Update Property</strong></h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#BasicDetails">Basic Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#FurtherDetails">Further Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#OtherDetails">Other Details</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="BasicDetails">
+                                <div class="col-lg-12">
+                                    <br />
+                                    @Html.HiddenFor(model => model.propertymaster.Id)
+                                    @Html.HiddenFor(model => model.propertymaster.PropertyRef)
+                                    @Html.HiddenFor(model => model.propertymaster.PropertySource)
+                                    @Html.HiddenFor(model => model.propertymaster.Floors)
+                                    @Html.HiddenFor(model => model.propertymaster.AptNo)
+                                    @Html.HiddenFor(model => model.propertymaster.Pdate)
+                                    @Html.HiddenFor(model => model.propertymaster.Doc)
+                                    @Html.HiddenFor(model => model.propertymaster.Status)
+                                    @Html.HiddenFor(model => model.propertymaster.Crent)
+                                    @Html.HiddenFor(model => model.propertymaster.Reservedrent)
+                                    @Html.HiddenFor(model => model.propertymaster.Rented)
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Property Name</label>
+                                                <input asp-for="propertymaster.BldgName" class="form-control" type="text" style="border-radius: 10px;" list="buildingName" />
+                                                <datalist id="buildingName">
+                                                </datalist>
+                                                <span asp-validation-for="propertymaster.BldgName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Property Type</label>
+                                                <select asp-for="propertymaster.PropertyType" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Apartment">Apartment</option>
+                                                    <option value="Commercial">Commercial</option>
+                                                    <option value="Commercial Space">Commercial Space</option>
+                                                    <option value="Duplex">Duplex</option>
+                                                    <option value="Penthouse Apartment">Penthouse Apartment</option>
+                                                    <option value="Residential">Residential</option>
+                                                    <option value="Studio">Studio</option>
+                                                    <option value="Villa">Villa</option>
+                                                    <option value="Villa Apartment">Villa Apartment</option>
+                                                    <option value="Villa Floor">Villa Floor</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.PropertyType" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Block Name</label>
+                                                <input asp-for="propertymaster.BlockName" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.BlockName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Building Number</label>
+                                                <input asp-for="propertymaster.BldgNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.BldgNo" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Area/Location</label>
+                                                <select id="areas" asp-for="propertymaster.Location" class="form-control" style="border-radius: 10px;">
+                                                    @*<option value="">--Select--</option>
+                                        @foreach (var area in Model.Areas)
+                                        {
+                                            <option>@area.AreaName</option>
+                                        }*@
+                                                </select>
+                                                <input id="area_hidden" type="hidden" asp-for="propertymaster.Location" />
+                                                <span asp-validation-for="propertymaster.Location" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Street Name</label>
+                                                <input asp-for="propertymaster.StreetName" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.StreetName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Bed</label>
+                                                <select asp-for="propertymaster.Bed" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                    <option value="6">6</option>
+                                                    <option value="7">7</option>
+                                                    <option value="8">8</option>
+                                                    <option value="Mulhaq">Mulhaq</option>
+                                                    <option value="Basement">Basement</option>
+                                                    <option value="Shop">Shop</option>
+                                                    <option value="RT">RT</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Bed" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Bath</label>
+                                                <input asp-for="propertymaster.Bath" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.Bath" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Apt/Units</label>
+                                                <input asp-for="propertymaster.Units" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.Units" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Type(SF/UF/FF)</label>
+                                                <select asp-for="propertymaster.Furnished" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="SF">SF</option>
+                                                    <option value="FF">FF</option>
+                                                    <option value="UF">UF</option>
+                                                </select>
+                                                @*<span asp-validation-for="SalesType" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Rent</label>
+                                                <input asp-for="propertymaster.Amount" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.Amount" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        @*@if (Model.Property.Id == 0)
+                            {
+                                <div class="col-lg-3">
+                                    <div class="form-group" style="padding-top: 31px;">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <button type="submit" class="btn btn-primary" asp-action="Add" asp-controller="Property">Add</button>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <button type="submit" class="btn btn-primary" asp-action="Clear" asp-controller="Property" value="@Model">Clear</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="row" style="width:100%">
+                                        <table id="propertyList" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                            <thead class="bg-success">
+                                                <tr>
+                                                    <th hidden></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 13px;">Property Name</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 13px;">Floor</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 13px;">Type</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 13px;">Bed</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 13px;">Apt No</label></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white">
+                                                @foreach (var item in Model.propertyTables)
+                                                {
+                                                    <tr>
+                                                        <td style="color:black">@item.PropertyName</td>
+                                                        <td style="color:black">@item.Floor</td>
+                                                        <td style="color:black">@item.Type</td>
+                                                        <td style="color:black">@item.Bed</td>
+                                                        <td style="color:black">@item.AptNo</td>
+                                                    </tr>
+                                                    //Model.propertyTables1.Add(item);
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            }*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="FurtherDetails">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Kitchen</label>
+                                                <select asp-for="propertymaster.Kitchen" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Kitchen" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Gym</label>
+                                                <select asp-for="propertymaster.Gym" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Gym" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">CCTV</label>
+                                                <select asp-for="propertymaster.Cctv" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Cctv" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Living Room</label>
+                                                <select asp-for="propertymaster.LivingRoom" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.LivingRoom" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Landlord RESF</label>
+                                                <select asp-for="propertymaster.Resf" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Resf" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Balcony</label>
+                                                <select asp-for="propertymaster.Balcony" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Balcony" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Garden</label>
+                                                <select asp-for="propertymaster.Garden" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Garden" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Internet</label>
+                                                <select asp-for="propertymaster.Internet" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Internet" class="text-danger"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Study Room</label>
+                                                <select asp-for="propertymaster.StudyRoom" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.StudyRoom" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Sea View</label>
+                                                <select asp-for="propertymaster.Seaview" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Seaview" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Parking</label>
+                                                <select asp-for="propertymaster.Parking" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Parking" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">OSN</label>
+                                                <select asp-for="propertymaster.Osn" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Osn" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Cable TV</label>
+                                                <select asp-for="propertymaster.CabelTv" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.CabelTv" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Maid Room</label>
+                                                <select asp-for="propertymaster.MaidRoom" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.MaidRoom" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Pool</label>
+                                                <select asp-for="propertymaster.Pool" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Pool" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Security</label>
+                                                <select asp-for="propertymaster.Security" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Security" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">AC</label>
+                                                <select asp-for="propertymaster.Ac" class="form-control" style="border-radius: 10px;">
+                                                    <option value="">--Select--</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                                <span asp-validation-for="propertymaster.Ac" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        @*<div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Driver's Room</label>
+                                    <select asp-for="Property." class="form-control">
+                                        <option value="">--Select--</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                    <span asp-validation-for="Property." class="text-danger"></span>
+                                </div>
+                            </div>*@
+                                        @*<div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Play Area</label>
+                                    <select asp-for="Property.PlayArea" class="form-control">
+                                        <option value="">--Select--</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                    <span asp-validation-for="Property.PlayArea" class="text-danger"></span>
+                                </div>
+                            </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="OtherDetails">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Source</label>
+                                                <input asp-for="propertymaster.Source" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.Source" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Visited By</label>
+                                                <input asp-for="propertymaster.Vistedby" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.Vistedby" class="text-danger"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Updated By</label>
+                                                <input readonly asp-for="propertymaster.Updatedby" value="@Context.Session.GetString("CurrentUsername")" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="propertymaster.Updatedby" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Description</label>
+                                                @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                                <textarea asp-for="propertymaster.Description" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                                <span asp-validation-for="propertymaster.Description" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                            <thead class="bg-success">
+                                <tr>
+                                    <th hidden></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 15px;">Apt No</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 15px;">Category</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 15px;">Issue</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 15px;">Status</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 15px;">Priority Level</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 15px;">Contractor Type</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 15px;">Remarks</label></th>
+                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody" class="bg-white">
+                                @foreach (var item in Model.missues)
+                                {
+                                    <tr>
+                                        <td hidden>@item.Id</td>
+                                        <td style="color:black;">@item.Aptlocation</td>
+                                        <td style="color:black;">@item.Category</td>
+                                        <td style="color:black;">@CommonRepository.Truncate(item.Issue,30)</td>
+                                        <td style="color:black;">@item.Status</td>
+                                        <td style="color:black;">@item.Pl</td>
+                                        <td style="color:black;">@item.Contractortype</td>
+                                        <td style="color:black;">@item.Remarks</td>
+                                        <td style="text-align: center;">
+                                            <a asp-action="IssueDetails" asp-controller="Property" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                        </td>
+                                        
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @*table for maintenance*@
+            
+
+                <div class="card" style="color:burlywood">
+                    <div class="card-body">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-right" onclick="location.href='@Url.Action("CreateProperty", "Property",Model)'">Update</button>
+                                @*<button type="submit" class="btn btn-primary float-right">Create</button>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,218 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    //Layout = "_Layout1";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@if (ViewBag.Message == "Access denied")
+{
+    <script>
+        history.back();
+    </script>
+}
+
+@*<script type="text/javascript">
+    function preventBack() { window.history.forward(); }
+    setTimeout("preventBack()", 0);
+    window.onunload = function () { null };
+</script>*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;" asp-action="LOI" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-align-justify" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>LOI</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;" asp-action="LC" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-file-contract" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>LC</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="Properties" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Properties</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #C38D9E ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Status</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>FCA</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E7717D " asp-action="Accounting" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-money" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Rental Income</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #9A1750 ">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-file-invoice-dollar" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Cash Request/Statements</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #123C69 ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-calendar" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>DMI</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: sienna ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-comments" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Complaints/Schedules</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9 " asp-action="MovingInOut" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-sign-in" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Moving In/Out</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #61892F " asp-action="Settings" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-gear" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Settings</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: yellowgreen " asp-action="CustomerService" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-support" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Customer Service</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #0677A1 ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-user" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>VMES</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    @*</div>*@
+                </form>
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

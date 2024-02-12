@@ -1,0 +1,366 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+
+@*@model List<PMS_Admin_Web.Models.Paymentvoucher>*@
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "Contract Based Expenses";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    function loadcategory() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadAccCategoryExpenses", "Common")",
+            success: function (response) {
+                $('#category').append(`<option value="" hidden>--Select--</option>`);
+                $.each(response, function (k,v) {
+                    $('#category').append(`<option value="${v}">${v}</option>`);
+                })
+
+            }
+        })
+    }
+
+    function loadPMEsreqGRID(statementmonth, statement) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadPMEsreqGRID", "Accounts")",
+            data: { statementmonth: statementmonth, statement: statement},
+            success: function (response) {
+                $('#totalamount').val(response.maintotamtxt);
+                if (response.pmEsreqGRID != null) {
+                    $('#tbody').html('');
+                    $.each(response.pmEsreqGRID, function (k, v) {
+                        var date = v.date.split("T");
+                        $('#tbody').append(`<tr>
+                                                <td hidden>${v.id}</td>
+                                                <td style="color:black;">${date[0]}</td>
+                                                <td style="color:black;">${v.description}</td>
+                                                <td style="color:black;">${v.pname}</td>
+                                                <td style="color:black;">${v.aptno}</td>
+                                                <td style="color:black;">${v.uprice}</td>
+                                                <td style="color:black;">${v.qty}</td>
+                                                <td style="color:black;">${v.invno}</td>
+                                                <td style="color:black;">${v.amt}</td>
+                                                <td style="color:black;">${v.exp}</td>
+                                                <td style="color:black;">${v.category}</td>
+                                                <td style="color:black;">${v.accounts}</td>
+
+                                            </tr>`);@*<td style="text-align: center;"><a href="@Url.Action("EditTemporaryReceipt", "Accounts")?id=${v.id}"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+                                                <td style="text-align: center;"><a href="javascript:void(0)" id="${v.id}" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>*@
+                    });
+                }
+                if (response.periodexpensesentry != null) {
+                    $('#FULLDGModal').modal({ backdrop: "static" });
+                    $('#tbodyFULLDG').html('');
+                    $.each(response.periodexpensesentry, function (k, v) {
+                        $('#tbodyFULLDG').append(`<tr>
+                                                    <td hidden>${v.id}</td>
+                                                    <td style="color:black;">${v.month}</td>
+                                                    <td style="color:black;">${v.year}</td>
+                                                    <td style="color:black;">${v.amt}</td>
+                                                    <td style="color:black;">${v.gridnum}</td>
+                                                  </tr>`);
+                    });
+                }
+                else {
+                    $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                }
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+        loadcategory();
+
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var id = $(this).attr('id');
+                var voucherno = $(this).attr('data-voucher');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteTemporaryReceipt", "Accounts")",
+                    data: { id: id, voucherno: voucherno },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#statementmonth').change(function () {
+            var statementmonth = $('#statementmonth').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadStatements", "Accounts")",
+                data: { statementmonth: statementmonth},
+                success: function (response) {
+                    $('#statement').html(``);
+                    $('#statement').append(`<option value="" hidden>--Select--</option>`);
+                    $.each(response, function (k, v) {
+                        $('#statement').append(`<option value="${v}">${v}</option>`);
+                    })
+                }
+            })
+        })
+
+        $('#btnview').click(function () {
+            var statementmonth = $('#statementmonth').val();
+            var statement = $('#statement :selected').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Statement month and year');
+                return false;
+            }
+
+            if (statement == null || statement == "") {
+                alert('Select the Statement NO');
+                return false;
+            }
+
+            loadPMEsreqGRID(statementmonth, statement);
+        })
+
+        $('#btnupdatecategory').click(function () {
+            var category = $('#category :selected').val();
+            var statementmonth = $('#statementmonth').val();
+            var statement = $('#statement :selected').val();
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Statement month and year');
+                return false;
+            }
+            if (statement == null || statement == "") {
+                alert('Select the Statement NO');
+                return false;
+            }
+            if (category == null || category == "") {
+                alert('Select the Category');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateCategory", "Accounts")",
+                data: { statementmonth: statementmonth, statement: statement, category: category},
+                success: function (response) {
+                    alert(response);
+                }
+            })
+        })
+
+        $('#btnverify').click(function () {
+            var statementmonth = $('#statementmonth').val();
+            var statement = $('#statement :selected').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Statement month and year');
+                return false;
+            }
+
+            if (statement == null || statement == "") {
+                alert('Select the Statement NO');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateAccToVerified", "Accounts")",
+                data: { statementmonth: statementmonth, statement: statement},
+                success: function (response) {
+                    if (response == "Verified") {
+                        loadPMEsreqGRID(statementmonth, statement);
+                    }
+                }
+            })
+        })
+
+        $('#btnremoveverification').click(function () {
+            var statementmonth = $('#statementmonth').val();
+            var statement = $('#statement :selected').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Statement month and year');
+                return false;
+            }
+
+            if (statement == null || statement == "") {
+                alert('Select the Statement NO');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateAccToVerified", "Accounts")",
+                data: { statementmonth: statementmonth, statement: statement},
+                success: function (response) {
+                    if (response == "Verification Removed") {
+                        loadPMEsreqGRID(statementmonth, statement);
+                    }
+                }
+            })
+        })
+
+        //end of the document ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    @*<input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+        <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />*@
+                    <form method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>Contract Based Expenses</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group" style="width: 150px;">
+                                                <label class="control-label text-black-50">Statement Month</label>
+                                                <input id="statementmonth" class="form-control" type="date" style="border-radius: 10px;" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group" style="margin-left: -70px; ">
+                                                <label class="control-label text-black-50">Statement</label>
+                                                <select id="statement" class="form-control" style="border-radius: 10px;">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button id="btnview" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -26px; margin-top: 31px; ">View</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" style="margin-left: -366px;">
+                                    <div class="row" style="width: 1100px;">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Category</label>
+                                                <select id="category" class="form-control" style="border-radius: 10px; width: 256px;">
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px; ">
+                                            <button id="btnupdatecategory" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -10px; ">Update Category</button>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button id="btnverify" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -130px; ">Verify</button>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button id="btnremoveverification" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -335px; ">Remove Verification</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" style="margin-left: -198px;">
+                                    <div class="form-group" style="width: 150px;">
+                                        <label class="control-label text-black-50">Total Amount</label>
+                                        <input id="totalamount" disabled class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            @*<input type="hidden" id="oreceipt" />*@
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 215px;">Items/Work Description</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 135px;">Property Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Apt No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Unit Price</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Quantity</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Invoice No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 102px;">Amount(KD)</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 160px;">Expenses Source</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Category</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 240px;">Accounts</label></th>
+                                            @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+                    <!--popup for FULLDG-->
+                    <div id="FULLDGModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+
+                            <div class="card" style="width: 1355px; margin-left: -265px; ">
+                                <div class="card-body">
+                                    <form>
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                @*<h5 class="modal-title">Show Clients from Sublease</h5>*@
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div style="overflow-y:auto">
+                                                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                        <thead class="bg-success">
+                                                            <tr>
+                                                                <th hidden></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 395px;">Month</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 65px;">Year</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Amount</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 300px;">Row No</label></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tbodyFULLDG" class="bg-white">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                @*<button id="importall" type="button" class="btn btn-primary" style="border-radius:10px;">Import All in Accounts Master</button>*@
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

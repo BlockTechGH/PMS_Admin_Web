@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "View LC";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+            window.history.back();
+        };
+    </script>
+}

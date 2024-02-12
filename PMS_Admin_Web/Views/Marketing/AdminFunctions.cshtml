@@ -1,0 +1,151 @@
+﻿@model PMS_Admin_Web.Models.Marketing.AdminFunctionsModel
+@using Microsoft.AspNetCore.Http;
+@using PMS_Admin_Web.Repository;
+
+@{
+    //if (Model.Id == 0)
+    ViewData["Title"] = "Admin Functions";
+    //else
+    //    ViewData["Title"] = "Update User";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    function loadLename() {
+        $.ajax({
+            type:"GET",
+            url: "@Url.Action("LoadLeName", "Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#lename').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        loadLename();
+        $('#divOtherReason').hide();
+
+        $('#reason').change(function () {
+            var reason = $('#reason :selected').val();
+            if (reason == "Other") {
+                $('#divOtherReason').show();
+            }
+            else {
+                $('#divOtherReason').hide();
+                $('#otherreason').val('');
+            }
+        })
+
+        /*var id;*/
+        
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3">
+            @*<button type="button" class="btn btn-primary" data-target="#createPAModal" data-toggle="modal" style="border-radius:10px; float:right;">Create PA <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>*@
+        </div>
+    </div>
+    <br />
+    <form asp-controller="Marketing" asp-action="AdminFunctions">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Admin Function</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Date</label>
+                            <input id="date" class="form-control" asp-for="adminactivity.Date" type="date" style="border-radius:10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">From</label>
+                            <input id="from" class="form-control" asp-for="adminactivity.Fromtime" type="time" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">To</label>
+                            <input id="to" class="form-control" asp-for="adminactivity.Totime" type="time" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    @if (Context.Session.GetString("CurrentUserRole") == "Administrator")
+                    {
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">LE Name</label>
+                                <select id="lename" class="form-control" asp-for="adminactivity.Username" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                </select>
+                            </div>
+                        </div>
+                    }
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Reason</label>
+                            <select id="reason" class="form-control" asp-for="adminactivity.Reason" style="border-radius: 10px;">
+                                <option hidden>--Select--</option>
+                                <option value="Marketing Meeting">Marketing Meeting</option>
+                                <option value="Marketing Training">Marketing Training</option>
+                                <option value="Training material Prep">Training material Prep</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="divOtherReason" class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Other Reason</label>
+                            <textarea id="otherreason" class="form-control" asp-for="adminactivity.OtherReason" style="border-radius: 10px; height: 100px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Advertising</label>
+                            <textarea id="advertising" class="form-control" asp-for="adminactivity.Advertising" style="border-radius: 10px; height: 100px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="border-radius: 10px; float: right; margin-top: 102px;">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@
+
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

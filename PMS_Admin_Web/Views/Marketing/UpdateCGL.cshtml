@@ -1,0 +1,1301 @@
+﻿@model PMS_Admin_Web.Models.Marketing.UpdateCGLModel
+
+@{
+    ViewData["Title"] = "Edit CGL";
+}
+
+@using Microsoft.AspNetCore.Http;
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+    };
+        /*location.reload();*/
+    </script>
+}
+
+@if (ViewBag.Message == "Maximum Budget cannot be less than the Minimum Budget")
+{
+    <script>
+        $('#maxbudget').focus();
+    </script>
+}
+
+@*@if (ViewBag.Message == "PGL is created Successfully")
+    {
+        <script>
+            $(document).ready(function () {
+                var clientname = $('#clientname').val();
+                $('#popupName').val(clientname);
+                var company = $('#company').val();
+                $('#popupCompany').val(company);
+                var mobile = $('#mobile').val();
+                $('#popupContactno').val(mobile);
+                var email = $('#email').val();
+                $('#popupEmail').val(email);
+                var nationality = $('#nationality').val();
+                $('#popupNationality').val(nationality);
+                var minbudget = $('#minbudget').val();
+                var maxbudget = $('#maxbudget').val();
+                var budget = minbudget + '-' + maxbudget;
+                $('#popupBudget').val(budget);
+
+                var enquirySource = $('#enquirySource :selected').val();
+                if (enquirySource == "Other") {
+                    var otherSource = $('#otherSource :selected').val();
+                    $('#popupSource').val(otherSource);
+                }
+                else {
+                    $('#popupSource').val(enquirySource);
+                }
+                var bed = $('#bed').val();
+                $('#popupRequirements').val(bed);
+                var areasSelected = $('#areasSelected :selected').val();
+                $('#popupArealooking').val(areasSelected);
+            })
+
+        </script>
+    }*@
+@*@if (ViewBag.Message == "CGL is created Successfully")
+    {
+        <script>
+            $(document).ready(function () {
+
+                var clientname = $('#clientname').val();
+                $('#popupName').val(clientname);
+                var company = $('#company').val();
+                $('#popupCompany').val(company);
+                var mobile = $('#mobile').val();
+                $('#popupContactno').val(mobile);
+                var email = $('#email').val();
+                $('#popupEmail').val(email);
+                var nationality = $('#nationality').val();
+                $('#popupNationality').val(nationality);
+                var minbudget = $('#minbudget').val();
+                var maxbudget = $('#maxbudget').val();
+                var budget = minbudget + '-' + maxbudget;
+                $('#popupBudget').val(budget);
+
+                var enquirySource = $('#enquirySource :selected').val();
+                if (enquirySource == "Other") {
+                    var otherSource = $('#otherSource :selected').val();
+                    $('#popupSource').val(otherSource);
+                }
+                else {
+                    $('#popupSource').val(enquirySource);
+                }
+                var bed = $('#bed').val();
+                $('#popupRequirements').val(bed);
+                var areasSelected = $('#areasSelected :selected').val();
+                $('#popupArealooking').val(areasSelected);
+            })
+
+        </script>
+    }*@
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    function loadnationality() {
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("LoadNationality", "Common")",
+            success: function (response) {
+                //alert(response);
+                //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                $.each(response, function (k, v) {
+                    $('#nationalityList').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+    function areaname() {
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("LoadAreaName", "Common")",
+            success: function (response) {
+                //alert(response);
+                //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                $.each(response, function (k, v) {
+                    $('#arealist').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+    function source() {
+        var hiddenEnquirysource = $('#hiddenEnquirysource').val();
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("LoadSource", "Common")",
+            success: function (response) {
+                //alert(response);
+                //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                $.each(response, function (k, v) {
+                    if (hiddenEnquirysource == v) {
+                        $('#enquirySource').append('<option selected="selected" value="' + v + '" > ' + v + '</option>');
+                    }
+                    else {
+                        $('#enquirySource').append('<option value="' + v + '" > ' + v + '</option>');
+                    }
+
+                });
+            }
+        })
+    }
+    function allocated() {
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("LoadLeDetails", "Common")",
+            success: function (response) {
+                //alert(response);
+                //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                $.each(response, function (k, v) {
+                    $('#allocatedTo').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        loadnationality();
+        areaname();
+        source();
+        //allocated();
+
+
+
+        //var clientname = $('#clientname').val();
+        //$('#popupName').val(clientname);
+        //var company = $('#company').val();
+        //$('#popupCompany').val(company);
+        //var mobile = $('#mobile').val();
+        //$('#popupContactno').val(mobile);
+        //var email = $('#email').val();
+        //$('#popupEmail').val(email);
+        //var nationality = $('#nationality').val();
+        //$('#popupNationality').val(nationality);
+        //var minbudget = $('#minbudget').val();
+        //var maxbudget = $('#maxbudget').val();
+        //var budget = minbudget + '-' + maxbudget;
+        //$('#popupBudget').val(budget);
+        //var areasSelected = $('#areasSelected').val();
+        //$('#popupArealooking').val(areasSelected);
+        //var bed = $('#hiddenBed').val();
+        //$('#popupBed').val(bed);
+
+        //var enquirySource = $('#enquirySource :selected').val();
+        //if (enquirySource == "Other") {
+        //    var otherSource = $('#hiddenOthersource').val();
+        //    $('#popupSource').val(otherSource);
+        //}
+        //else {
+        //    var enquirySource = $('#hiddenEnquirysource').val();
+        //    $('#popupSource').val(enquirySource);
+        //}
+
+        var selectedarea;
+        $('#arealist').change(function () {
+            var area = $('#arealist :selected').val();
+
+            if (selectedarea == null) {
+                selectedarea = area;
+                $('#areasSelected').val(selectedarea);
+            }
+            else {
+                selectedarea = selectedarea + ',' + area;
+                $('#areasSelected').val(selectedarea);
+            }
+        })
+
+        var selectedblock;
+        $('#blocklist').change(function () {
+            var block = $('#blocklist :selected').val();
+
+            if (selectedblock == null) {
+                selectedblock = block;
+                $('#blocksSelected').val(selectedblock);
+            }
+            else {
+                selectedblock = selectedblock + ',' + block;
+                $('#blocksSelected').val(selectedblock);
+            }
+        })
+
+        $('#btnClear1').click(function () {
+            $('#areasSelected').val('');
+            selectedarea = null;
+        })
+
+        $('#btnClear2').click(function () {
+            $('#blocksSelected').val('');
+            selectedblock = null;
+        })
+
+        //var enquirySource = $('#enquirySource :selected').val();
+        //if (enquirySource == "Other") {
+
+        //}
+        //else {
+
+        //}
+
+        $('#enquirySource').change(function () {
+            var enquirySource = $('#enquirySource :selected').val();
+            if (enquirySource == "Other") {
+                //$('#divOthersource').show();
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("LoadOtherSource", "Common")",
+                    success: function (response) {
+                        //alert(response);
+                        //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                        $.each(response, function (k, v) {
+                            $('#othersourcelist').append('<option value="' + v + '" > ' + v + '</option>');
+                        });
+                    }
+                })
+            }
+            else {
+                $('#othersourcelist').val('');
+                //$('#divOthersource').hide();
+
+            }
+        })
+
+        $('#otherSource').change(function () {
+            var otherSource = $('#otherSource :selected').val();
+            $('#hiddenOthersource').val(otherSource);
+        })
+
+        $('#bed').change(function () {
+            var bed = $('#bed :selected').val();
+            $('#hiddenBed').val(bed);
+        })
+
+        var propertyType = $('#propertyType :selected').val();
+        if (propertyType == "Commercial Space") {
+            $('#sqmtr').prop('disabled', false);
+            $('#bed').prop('disabled', true);
+            $('#bed').val('');
+            $('#furnished').prop('disabled', true);
+            $('#furnished').val('');
+            $('#garden').prop('disabled', true);
+            $('#garden').val('');
+            $('#gym').prop('disabled', true);
+            $('#gym').val('');
+            $('#balcony').prop('disabled', true);
+            $('#balcony').val('');
+            $('#pool').prop('disabled', true);
+            $('#pool').val('');
+            $('#parking').prop('disabled', true);
+            $('#parking').val('');
+            $('#internet').prop('disabled', true);
+            $('#internet').val('');
+            $('#tv').prop('disabled', true);
+            $('#tv').val('');
+            $('#maidroom').prop('disabled', true);
+            $('#maidroom').val('');
+            $('#driverroom').prop('disabled', true);
+            $('#driverroom').val('');
+        }
+        else {
+            $('#sqmtr').prop('disabled', true);
+            $('#bed').prop('disabled', false);
+            $('#furnished').prop('disabled', false);
+            $('#garden').prop('disabled', false);
+            $('#gym').prop('disabled', false);
+            $('#balcony').prop('disabled', false);
+            $('#pool').prop('disabled', false);
+            $('#parking').prop('disabled', false);
+            $('#internet').prop('disabled', false);
+            $('#tv').prop('disabled', false);
+            $('#maidroom').prop('disabled', false);
+            $('#driverroom').prop('disabled', false);
+        }
+
+        $('#propertyType').change(function () {
+            var propertyType = $('#propertyType :selected').val();
+            if (propertyType == "Commercial Space") {
+                $('#sqmtr').prop('disabled', false);
+                $('#bed').prop('disabled', true);
+                $('#bed').val('');
+                $('#furnished').prop('disabled', true);
+                $('#furnished').val('');
+                $('#garden').prop('disabled', true);
+                $('#garden').val('');
+                $('#gym').prop('disabled', true);
+                $('#gym').val('');
+                $('#balcony').prop('disabled', true);
+                $('#balcony').val('');
+                $('#pool').prop('disabled', true);
+                $('#pool').val('');
+                $('#parking').prop('disabled', true);
+                $('#parking').val('');
+                $('#internet').prop('disabled', true);
+                $('#internet').val('');
+                $('#tv').prop('disabled', true);
+                $('#tv').val('');
+                $('#maidroom').prop('disabled', true);
+                $('#maidroom').val('');
+                $('#driverroom').prop('disabled', true);
+                $('#driverroom').val('');
+            }
+            else {
+                $('#sqmtr').prop('disabled', true);
+                $('#bed').prop('disabled', false);
+                $('#furnished').prop('disabled', false);
+                $('#garden').prop('disabled', false);
+                $('#gym').prop('disabled', false);
+                $('#balcony').prop('disabled', false);
+                $('#pool').prop('disabled', false);
+                $('#parking').prop('disabled', false);
+                $('#internet').prop('disabled', false);
+                $('#tv').prop('disabled', false);
+                $('#maidroom').prop('disabled', false);
+                $('#driverroom').prop('disabled', false);
+            }
+        })
+
+        $('#inquiryStatus').change(function () {
+            var inquiryStatus = $('#inquiryStatus :selected').val();
+            if (inquiryStatus == "cancelled") {
+                $('#inquirystatuscancelreasonModal').modal({ backdrop: "static" });
+            }
+        })
+
+        $('#popupUndecided').click(function () {
+            var popupUndecided = $('#popupUndecided').val();
+            $('#popuprsntxt').val(popupUndecided);
+            $('#popupreasontxt').val(popupUndecided);
+        })
+        $('#popupNotinhurry').click(function () {
+            var popupNotinhurry = $('#popupNotinhurry').val();
+            $('#popuprsntxt').val(popupNotinhurry);
+            $('#popupreasontxt').val(popupNotinhurry);
+        })
+        $('#popupNotinterested').click(function () {
+            var popupNotinterested = $('#popupNotinterested').val();
+            $('#popuprsntxt').val(popupNotinterested);
+            $('#popupreasontxt').val(popupNotinterested);
+        })
+        $('#popupFoundanotherproperty').click(function () {
+            var popupFoundanotherproperty = $('#popupFoundanotherproperty').val();
+            $('#popuprsntxt').val(popupFoundanotherproperty);
+            $('#popupreasontxt').val(popupFoundanotherproperty);
+        })
+        $('#popupRequirementmismatch').click(function () {
+            var popupRequirementmismatch = $('#popupRequirementmismatch').val();
+            $('#popuprsntxt').val(popupRequirementmismatch);
+            $('#popupreasontxt').val(popupRequirementmismatch);
+        })
+        $('#popupUnreachable').click(function () {
+            var popupUnreachable = $('#popupUnreachable').val();
+            $('#popuprsntxt').val(popupUnreachable);
+            $('#popupreasontxt').val(popupUnreachable);
+        })
+        $('#popupKuwaiti').click(function () {
+            var popupKuwaiti = $('#popupKuwaiti').val();
+            $('#popuprsntxt').val(popupKuwaiti);
+            $('#popupreasontxt').val(popupKuwaiti);
+        })
+        $('#popupAgent').click(function () {
+            var popupAgent = $('#popupAgent').val();
+            $('#popuprsntxt').val(popupAgent);
+            $('#popupreasontxt').val(popupAgent);
+        })
+
+        $('#btncancelenquiry').click(function () {
+            var sessionUsername = $('#sessionUsername').val();
+            var sessionRole = $('#sessionRole').val();
+            var popuprsntxt = $('#popuprsntxt').val();
+            var popupreasontxt = $('#popupreasontxt').val();
+            var referenceNo = $('#referenceNo').val();
+            var popupdate = $('#popupdate').val();
+            if (popuprsntxt == null || popuprsntxt == "") {
+                alert('Select the Reason to Cancel the Inquiry');
+                return false;
+            }
+            if (popupreasontxt == null || popupreasontxt == "") {
+                alert('Reason is required to Cancel the Inquiry');
+                return false;
+            }
+            if (sessionRole == "Administrator" && sessionUsername == "Admin") {
+                $.ajax({
+                    type: "POST",
+                    data: { popuprsntxt: popuprsntxt, popupreasontxt: popupreasontxt, referenceNo: referenceNo, popupdate: popupdate },
+                    url: "@Url.Action("CancelEnquiry", "Marketing")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+            else {
+                $('#passwordaccessModal').modal({ backdrop: "static" });
+            }
+        })
+
+        $('#btnokPassAccess').click(function () {
+            var key = $('#key').val();
+            var popuprsntxt = $('#popuprsntxt').val();
+            var popupreasontxt = $('#popupreasontxt').val();
+            var referenceNo = $('#referenceNo').val();
+            var popupdate = $('#popupdate').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadPasswordAccess", "Common")",
+                success: function (response) {
+                    if (response == key) {
+                        $.ajax({
+                            type: "POST",
+                            data: { popuprsntxt: popuprsntxt, popupreasontxt: popupreasontxt, referenceNo: referenceNo, popupdate: popupdate },
+                            url: "@Url.Action("CancelEnquiry", "Marketing")",
+                            success: function (response) {
+                                alert(response);
+                                window.location.reload();
+                            }
+                        })
+                    }
+                }
+            })
+        })
+
+        $('#btnquestionnaire').click(function () {
+            var referenceNo = $('#referenceNo').val();
+            window.location.href = `@Url.Action("Questions", "Marketing")?inqno=${referenceNo}`;
+        })
+    })
+
+
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+    <input type="hidden" id="sessionUsername" value="@Context.Session.GetString("CurrentUsername")" />
+    <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />
+    <form asp-controller="Marketing" asp-action="UpdateCGL">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Edit Enquiry</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Enquiry No</label>
+                                    <input disabled id="referenceNo" asp-for="cgl.Cglrefno" class="form-control" style="border-radius:10px" />
+                                    <input type="hidden" asp-for="refno" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">ClientType</label>
+                                    <input disabled id="clienttype" asp-for="cgl.Enquirytype" class="form-control" style="border-radius:10px" />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Status</label>
+                                    <select id="inquiryStatus" asp-for="cgl.InquiryStatus" class="form-control" style="border-radius:10px">
+                                        <option hidden>--Select--</option>
+                                        <option value="Open">Open</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Date</label>
+                                    <input asp-for="cgl.EnquiryDate" class="form-control" type="date" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">LE Name</label>
+                                    <input id="lename" asp-for="cgl.Completedby" class="form-control" style="border-radius:10px" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <button class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">Change</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs" role="tablist">
+
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#ContactDetails">Client Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Requirements">Housing/Accommodation Requirements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Interest">Area of Interest</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Actions">Actions Taken</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Tour">Property Tour</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+
+                    <div class="tab-pane active" id="ContactDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Client Name</label>
+                                        <input id="clientname" asp-for="cgl.ClientName" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Company</label>
+                                        <input id="company" asp-for="cgl.ContactPerson" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Address</label>
+                                        <textarea asp-for="cgl.Address" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Mobile</label>
+                                        <input id="mobile" asp-for="cgl.Mobile" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Landline</label>
+                                        <input asp-for="cgl.Phone" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Email</label>
+                                        <input id="email" asp-for="cgl.Email" class="form-control" type="email" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Nationality</label>
+                                        <input id="nationality" asp-for="cgl.Nationality" class="form-control" type="text" style="border-radius: 10px;" list="nationalityList" />
+                                        <datalist id="nationalityList"></datalist>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Nationality 2</label>
+                                        <input asp-for="cgl.Nationality2" class="form-control" type="text" style="border-radius: 10px;" list="nationalityList" />
+                                        <datalist id="nationalityList"></datalist>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Move in Date</label>
+                                        <input asp-for="cgl.Movingdate" class="form-control" type="date" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Source</label>
+                                        <select id="enquirySource" asp-for="cgl.Source" class="form-control" style="border-radius:10px">
+                                            <option hidden>--Select--</option>
+                                        </select>
+                                        <input type="hidden" id="hiddenEnquirysource" asp-for="cgl.Source" />
+                                    </div>
+                                </div>
+                                <div id="divOthersource" class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Other Source</label>
+                                        @*<select id="otherSource" asp-for="pgl.Othersource" class="form-control" style="border-radius:10px">
+                                                <option hidden>--Select--</option>
+                                            </select>*@
+                                        <input type="text" id="otherSource" asp-for="cgl.Othersource" class="form-control" style="border-radius:10px" list="othersourcelist" />
+                                        <datalist id="othersourcelist"></datalist>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="Requirements">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Type</label>
+                                        <select id="propertyType" asp-for="cgl.Propertytype" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Apartment">Apartment</option>
+                                            <option value="Commercial">Commercial</option>
+                                            <option value="Commercial Space">Commercial Space</option>
+                                            <option value="Floor Apartment">Floor Apartment</option>
+                                            <option value="Penthouse Apartment">Penthouse Apartment</option>
+                                            <option value="Villa">Villa</option>
+                                            <option value="Villa Apartment">Villa Apartment</option>
+                                            <option value="Villa Floor">Villa Floor</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Requirements</label>
+                                        <select id="bed" asp-for="cgl.Bed" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="1 Bedroom">1 Bedroom</option>
+                                            <option value="2 Bedroom">2 Bedroom</option>
+                                            <option value="3 Bedroom">3 Bedroom</option>
+                                            <option value="4 Bedroom">4 Bedroom</option>
+                                            <option value="5 Bedroom">5 Bedroom</option>
+                                            <option value="6 Bedroom">6 Bedroom</option>
+                                            <option value="7 Bedroom">7 Bedroom</option>
+                                            <option value="8 Bedroom">8 Bedroom</option>
+                                        </select>
+                                        <input type="hidden" class="form-control" id="hiddenBed" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Minimum Budget</label>
+                                        <input id="minbudget" asp-for="cgl.MinBudget" class="form-control" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Maximum Budget</label>
+                                        <input id="maxbudget" asp-for="cgl.Maxbudget" class="form-control" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Garden</label>
+                                        <select id="garden" asp-for="cgl.Garden" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Pool</label>
+                                        <select id="pool" asp-for="cgl.Pool" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Satellite TV</label>
+                                        <select id="tv" asp-for="cgl.Tv" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Bathrooms</label>
+                                        <input asp-for="cgl.Bath" class="form-control" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Gym</label>
+                                        <select id="gym" asp-for="cgl.Gym" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Parking</label>
+                                        <select id="parking" asp-for="cgl.Parking" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Furnished</label>
+                                        <select id="furnished" asp-for="cgl.Furnished" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="SF">SF</option>
+                                            <option value="FF">FF</option>
+                                            <option value="UF">UF</option>
+                                            <option value="SF/FF/UF">SF/FF/UF</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Balcony</label>
+                                        <select id="balcony" asp-for="cgl.Balcony" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Internet</label>
+                                        <select id="internet" asp-for="cgl.Internet" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div id="divSqmtr" class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Square Metres</label>
+                                        <input id="sqmtr" asp-for="cgl.Sqmtrs" class="form-control" style="border-radius: 10px;" type="text" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Maid Room</label>
+                                        @*<input asp-for="MaidRoom" type="checkbox" />*@
+                                        <select id="maidroom" asp-for="cgl.Maidroom" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Driver's Room</label>
+                                        @*<input asp-for="DriverRoom" type="checkbox" />*@
+                                        <select id="driverroom" asp-for="cgl.DriverRoom" class="form-control">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="Interest">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Select Area</label>
+                                        <select id="arealist" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Areas Selected</label>
+                                        <input id="areasSelected" asp-for="cgl.Interest" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <button id="btnClear1" type="button" class="btn btn-primary" style="margin-top: 31px; border-radius:10px;">Clear</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Select Block</label>
+                                        <select id="blocklist" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Block-1">Block-1</option>
+                                            <option value="Block-2">Block-2</option>
+                                            <option value="Block-3">Block-3</option>
+                                            <option value="Block-4">Block-4</option>
+                                            <option value="Block-5">Block-5</option>
+                                            <option value="Block-6">Block-6</option>
+                                            <option value="Block-7">Block-7</option>
+                                            <option value="Block-8">Block-8</option>
+                                            <option value="Block-9">Block-9</option>
+                                            <option value="Block-10">Block-10</option>
+                                            <option value="Block-11">Block-11</option>
+                                            <option value="Block-12">Block-12</option>
+                                            <option value="Block-13">Block-13</option>
+                                            <option value="Block-14">Block-14</option>
+                                            <option value="Block-15">Block-15</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Blocks Selected</label>
+                                        <input id="blocksSelected" asp-for="cgl.Block" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <button id="btnClear2" type="button" class="btn btn-primary" style="margin-top: 31px; border-radius:10px;">Clear</button>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Other Information</label>
+                                        <textarea asp-for="cgl.OtherInfo" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <button class="btn btn-primary" id="btnquestionnaire" type="button" style="border-radius: 10px; margin-top: 55px;">Questionnaire</button>
+                                </div>
+                                <div class="col-lg-3">
+                                    <button class="btn btn-primary" type="button" style="border-radius: 10px; margin-top: 55px;">Feedback Form</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="Actions">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <button class="btn btn-primary" style="border-radius:10px;">Enter Actions Taken</button>
+                                </div>
+                                <div class="col-lg-3">
+                                    @*<button class="btn btn-primary" style="border-radius:10px;">Print Actions Taken</button>*@
+                                </div>
+                                <div class="col-lg-3">
+
+                                </div>
+                                <div class="col-lg-3">
+
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                        <thead class="bg-success">
+                                            <tr>
+                                                <th hidden></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">Date</label></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">Actions</label></th>
+
+                                                @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbody" class="bg-white">
+                                            @if (Model.actiondetails != null)
+                                            {
+                                                @foreach (var item in Model.actiondetails)
+                                                {
+                                                    <tr>
+                                                        <td hidden>@item.Id</td>
+                                                        <td style="color:black;">@item.Date</td>
+                                                        <td style="color:black;">@item.Actions</td>
+
+                                                        @*<td style="text-align: center;">
+                                                                <a asp-controller="User" asp-action="EditUser" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                            </td>*@
+                                                        @*<td style="text-align: center;">
+                                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                            </td>*@
+                                                    </tr>
+                                                }
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Special Instruction/Request</label>
+                                        <textarea asp-for="cgl.OtherInfo" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="Tour">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <button class="btn btn-primary" style="border-radius:10px;">Schedule Property Tour</button>
+                                </div>
+                                <div class="col-lg-3">
+
+                                </div>
+                                <div class="col-lg-3">
+
+                                </div>
+                                <div class="col-lg-3">
+
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                        <thead class="bg-success">
+                                            <tr>
+                                                <th hidden></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">LE Name</label></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">Date</label></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">From</label></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">To</label></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">Driver Name</label></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">Remarks</label></th>
+                                                <th class="table-bordered"><label style="color: black; font-size: 17px;">Comments</label></th>
+
+                                                @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbody" class="bg-white">
+                                            @if (Model.driverScheduels != null)
+                                            {
+                                                @foreach (var item in Model.driverScheduels)
+                                                {
+                                                    <tr>
+                                                        <td hidden>@item.Id</td>
+                                                        <td style="color:black;">@item.LEname</td>
+                                                        <td style="color:black;">@Convert.ToDateTime(item.Date).ToShortDateString()</td>
+                                                        <td style="color:black;">@item.FromTime</td>
+                                                        <td style="color:black;">@item.ToTime</td>
+                                                        <td style="color:black;">@item.DriverName</td>
+                                                        <td style="color:black;">@item.Remarks</td>
+                                                        <td style="color:black;">@item.Comments</td>
+                                                        @*<td style="text-align: center;">
+                                                                <a asp-controller="User" asp-action="EditUser" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                            </td>*@
+                                                        @*<td style="text-align: center;">
+                                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                            </td>*@
+                                                    </tr>
+                                                }
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-3" style="float:right;">
+                        <button type="submit" class="btn btn-primary float-right" style="border-radius:10px; float:right;">Update CGL</button>
+                    </div>
+                    @*<div class="col-lg-3" style="float:right;">
+                            <button type="button" data-target="#ClientRegModal" data-toggle="modal" data-backdrop="static" data-keyboard="false" class="btn btn-primary float-right" style="border-radius:10px;float:right">Generate LOI</button>
+                        </div>*@
+                    <div class="col-lg-3" style="float:right;">
+                        <button type="button" data-target="#ClientRegModal" data-toggle="modal" data-backdrop="static" data-keyboard="false" class="btn btn-primary float-right" style="border-radius:10px;float:right">Set Reminder</button>
+                    </div>
+                    @*@if (ViewBag.Message == "PGL is created Successfully")
+                        {
+                            <div class="col-lg-3" style="float:right;">
+                                <button type="button" data-target="#ClientRegModal" data-toggle="modal" data-backdrop="static" data-keyboard="false" class="btn btn-primary float-right" style="border-radius:10px;">Send Enquiry Mail</button>
+                            </div>
+                        }
+                        @if (ViewBag.Message == "CGL is created Successfully")
+                        {
+                            <div class="col-lg-3" style="float:right;">
+                                <button type="button" data-target="#ClientRegModal" data-toggle="modal" data-backdrop="static" data-keyboard="false" class="btn btn-primary float-right" style="border-radius:10px;">Send Enquiry Mail</button>
+                            </div>
+                        }*@
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!--client registration popup-->
+    <div id="ClientRegModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Client Registration</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input id="popupName" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Contact No</label>
+                                    <input id="popupContactno" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input id="popupEmail" type="email" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Budget</label>
+                                    <input id="popupBudget" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Company</label>
+                                    <input id="popupCompany" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Nationality</label>
+                                    <input id="popupNationality" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Requirements</label>
+                                    <input id="popupBed" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Source</label>
+                                    <input id="popupSource" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Area Looking</label>
+                                    <input id="popupArealooking" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Cc</label>
+                                    <input id="popupCc" type="email" class="form-control" style="border-radius: 10px;" value="business@q8realtor.com" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Bcc</label>
+                                    <input id="popupBcc" type="email" class="form-control" style="border-radius: 10px;" value="banoori@q8realtor.com" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" id="sendenquiry" class="btn btn-primary" style="border-radius: 10px;">Send Enquiry</button>
+                        <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!---->
+    <!--inquiry status cancellation reason popup-->
+    <div id="inquirystatuscancelreasonModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="card" style="width: 1115px; margin-left: -277px; ">
+                <div class="card-body">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Enquiry Cancellation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <label id="popupinqno" style="margin-left: 445px; font-size: 20px; "><strong>@Model.cgl.Cglrefno</strong></label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Date</label>
+                                            <input id="popupdate" type="date" class="form-control" style="border-radius: 10px;" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupUndecided" type="radio" name="cancelstatus" value="Undecided/Not serious" />
+                                            <label>Undecided/Not Serious</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupNotinhurry" type="radio" name="cancelstatus" value="Not in hurry" />
+                                            <label>Not in hurry</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupNotinterested" type="radio" name="cancelstatus" value="Not Interested" />
+                                            <label>Not Interested</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupFoundanotherproperty" type="radio" name="cancelstatus" value="Found Another Property" />
+                                            <label>Found Another Property</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupRequirementmismatch" type="radio" name="cancelstatus" value="Requirements doesn't match" />
+                                            <label>Requirements doesn't match</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupUnreachable" type="radio" name="cancelstatus" value="Unreachable" />
+                                            <label>Unreachable</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupKuwaiti" type="radio" name="cancelstatus" value="Kuwaiti" />
+                                            <label>Kuwaiti</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <input id="popupAgent" type="radio" name="cancelstatus" value="Agent" />
+                                            <label>Agent</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Reason to Cancel the Enquiry No:</label>
+                                            <input id="popuprsntxt" type="text" class="form-control" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <textarea id="popupreasontxt" type="text" class="form-control" style="border-radius: 10px;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" id="btncancelenquiry" class="btn btn-primary" style="border-radius: 10px;">Cancel the Enquiry</button>
+                                <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+    <!--password access popup-->
+    <div id="passwordaccessModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="card" style="width: 1115px; margin-left: -277px; ">
+                <div class="card-body">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Password Access</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label>Enter Key</label>
+                                            <input id="key" type="text" class="form-control" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" id="btnokPassAccess" class="btn btn-primary" style="border-radius: 10px;">Ok</button>
+                                <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+</div>
+@*</div>*@

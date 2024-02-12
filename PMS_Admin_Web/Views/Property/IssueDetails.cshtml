@@ -1,0 +1,144 @@
+﻿@model PMS_Admin_Web.Models.Missue
+
+@{
+    
+    ViewData["Title"] = "Issue Details";
+    
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*@Html.Raw(@ViewBag.Alert)*@
+            @if (ViewBag.Message != null)
+            {
+                <script type="text/javascript">
+
+                        window.onload = function () {
+                            alert("@ViewBag.Message");
+                        };
+                </script>
+            }
+            
+            <form>
+                <div class="card" style="color:burlywood">
+                    <div class="card-header" style="background-color: darksalmon;">
+                        <h5 class="text-center" style="color:black"><strong>Issue Details</strong></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-lg-12">
+                            <br />
+                            @*@Html.HiddenFor(model => model.Property.Id)
+        @Html.HiddenFor(model => model.Property.PropertyRef)
+        @Html.HiddenFor(model => model.Property.PropertySource)
+        @Html.HiddenFor(model => model.Property.Floors)
+        @Html.HiddenFor(model => model.Property.AptNo)
+        @Html.HiddenFor(model => model.Property.Pdate)
+        @Html.HiddenFor(model => model.Property.Doc)
+        @Html.HiddenFor(model => model.Property.Status)
+        @Html.HiddenFor(model => model.Property.Crent)
+        @Html.HiddenFor(model => model.Property.Reservedrent)
+        @Html.HiddenFor(model => model.Property.Rented)*@
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apt/Location</label>
+                                        <input asp-for="Aptlocation" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                        @*<span asp-validation-for="Property.BldgName" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Category</label>
+                                        <input asp-for="Category" class="form-control" type="text" style="border-radius: 10px;" />
+
+
+                                        @*<span asp-validation-for="Property.PropertyType" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Status</label>
+                                        <input asp-for="Status" class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="Property.BlockName" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Issue</label>
+                                        <textarea asp-for="Issue" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                        @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-3">
+                                    
+                                </div>*@
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Complaint Created By</label>
+                                        <input asp-for="Paname" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                        @*<span asp-validation-for="Property.BldgName" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Remarks</label>
+                                        <textarea asp-for="Remarks" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                        @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-3">
+                                    
+                                </div>*@
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Complaint Created Date</label>
+                                        <input asp-for="Doc" class="form-control" type="date" style="border-radius: 10px;" />
+
+                                        @*<span asp-validation-for="Property.BldgName" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Work Description</label>
+                                        <textarea asp-for="Workdescription" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                        @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-3">
+                                    
+                                </div>*@
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Maintenance Requested Date</label>
+                                        <input class="form-control" type="date" style="border-radius: 10px;" />
+
+                                        @*<span asp-validation-for="Property.BldgName" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Additional Work done by staff</label>
+                                        <textarea asp-for="Additionalwork" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                        @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @* have to add two tables, date complete and radiobutton exactly same as the app *@
+            </form>
+        </div>
+    </div>
+</div>

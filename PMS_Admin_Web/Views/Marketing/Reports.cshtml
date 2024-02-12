@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+    //Layout = "_Layout1";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@if (ViewBag.Message == "Access denied")
+{
+    <script>
+        history.back();
+    </script>
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-align-justify" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Sales Report</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-file-contract" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Monthly Report</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C ">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>All Enquiries</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #C38D9E ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Open Enquiries</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Cancelled Enquiries</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E7717D ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-money" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Drivers Log</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #9A1750 ">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-file-invoice-dollar" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Source Progress</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+                    <br />
+
+
+                    @*</div>*@
+                </form>
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

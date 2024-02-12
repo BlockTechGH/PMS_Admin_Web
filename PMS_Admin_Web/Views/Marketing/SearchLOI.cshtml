@@ -1,0 +1,293 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+@using PMS_Admin_Web.Repository
+@*@using X.PagedList.Mvc.Core
+    @model X.PagedList.IPagedList<PMS_Admin_Web.Models.Loiinformation>*@
+@model PMS_Admin_Web.Models.LOI.ListLOIModel
+
+
+@{
+    ViewData["Title"] = "Search LOI";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+@if (ViewBag.Message == "Access denied")
+{
+    <script>
+        history.back();
+    </script>
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        @* <div class="card" style="color:burlywood"> *@
+            @* <div class="col-lg-12"> *@
+                <div class="card-body">
+                    @*<input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                        <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />*@
+                    <form asp-action="ListLOI" asp-controller="LOI" method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h4 style="color:black;"><strong>LOIs</strong></h4>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3 float-right">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">LOI Signed Date</label>
+                                    <div class="row">
+                                        <div class="col-lg-5">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">From</label>
+                                                <input id="loisigneddatefrom" class="form-control" type="date" style="border-radius: 10px"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">To</label>
+                                                <input id="loisigneddateto" class="form-control" type="date" style="border-radius: 10px"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <button id="loisigneddatesearch" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 32px; margin-left: -18px;">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">Lease Date</label>
+                                    <div class="row">
+                                        <div class="col-lg-5">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">From</label>
+                                                <input id="leasedatefrom" class="form-control" type="date" style="border-radius: 10px"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">To</label>
+                                                <input id="leasedateto" class="form-control" type="date" style="border-radius: 10px" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <button id="leasedatesearch" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 32px; margin-left: -18px;">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="col-lg-3" style="margin-top: 32px;">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Search LOI No</label>
+                                                <input id="txtSearchLOI" class="form-control" type="text" style="border-radius: 10px" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button id="btnSearch" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 32px; margin-left: -18px;">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+
+                                </div>
+                            </div>
+                            <br />
+                            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                            <!--script goes here...-->
+                            <script>
+                                    $(document).ready(function () {
+                                        //start of the document ready function
+                                        //delcaring global variable to hold primary key value.
+                                        var pryEmpId;
+                                        $('.deleteprompt').click(function () {
+                                            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+                                            if (confirmMessageBox) {
+                                                pryEmpId = $(this).attr('id');
+                                                //alert(pryEmpId);
+                                                $.ajax({
+                                                    type: 'GET',
+                                                    url: "@Url.Action("DeleteLOI", "LOI")",
+                                                    data: { Id: pryEmpId },
+
+                                                    success: function (response) {
+                                                        alert(response);
+                                                        location.reload();
+                                                    },
+                                                    error: function (err) {
+                                                        alert(err);
+                                                        location.reload();
+                                                    }
+                                                });
+
+                                            }
+
+                                        });
+
+                                        $('#btnSearch').click(function () {
+                                            var txtSearchLOI = $('#txtSearchLOI').val();
+                                            var clientname;
+                                            var loimailstatus;
+                                            //var sessionDepartment = $('#sessionDepartment').val();
+                                            //var sessionRole = $('#sessionRole').val();
+
+                                            if (txtSearchLOI != '') {
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "@Url.Action("SearchLOI", "LOI")",
+                                                    data: { loinoKeyword: txtSearchLOI },
+                                                    success: function (response) {
+                                                        $('#tbody').html('');
+                                                        $.each(response, function (k, v) {
+                                                            //alert(v.id)
+                                                            if (v.clientName.length > 40) {
+                                                                clientname = $.trim(v.clientName).substring(0, 40).split(" ").slice(0, -1).join(" ") + "...";
+                                                            }
+                                                            else {
+                                                                clientname = v.clientName;
+                                                            }
+
+                                                            if (v.loimailstatus == null) {
+                                                                loimailstatus = 'Confirm';
+                                                            }
+                                                            else {
+                                                                loimailstatus = v.loimailstatus;
+                                                            }
+
+                                                            $('#tbody').append('<tr>');
+                                                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.loiNo + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.inqno + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.lename + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + clientname + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.clientSource +'</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.propertySource + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.propertyName + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.leasedate + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.loiStatus + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + loimailstatus + '</td>');
+
+                                                            if (v.lccreate != null) {
+                                                                $('#tbody').append('<td style="color:black;">' + v.lccreate + '</td>');
+                                                            }
+                                                            else {
+                                                                $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("CreateLC", "LC")?Id=' + v.id + '">Create LC</a></td>');
+                                                            }
+
+                                                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("CreateLC", "LC")?Id=' + v.id + '">View</a></td>');
+                                                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("CreateLC", "LC")?Id=' + v.id + '">Cancel</a></td>');
+                                                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditLOI", "LOI")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+                                                            $('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                                                            $('#tbody').append('</tr>');
+                                                            $('.pagination').css('display', 'none');
+                                                        });
+                                                    }
+                                                })
+                                            }
+                                            else {
+                                                $('#tbody').html('');
+                                                /*$('#tbody').append('<tr>');*/
+                                                $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                                                /*$('#tbody').append('</tr>');*/
+                                            }
+                                        })
+
+                                        //end of the docuement ready function
+                                    });
+                            </script>
+                            <div style="overflow-y:auto; overflow-x:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px">LOI No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px">Inq No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px">LE Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 125px">LOI Signed on</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 345px;">Client Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 185px">Client Source</label></th>
+
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 330px">Property Name</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px">Lease Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px">LOI Progress</label></th>
+                                    <th class="table-bordered" style="text-align: center;"><label style="color: black; font-size: 17px; width: 60px;">Print</label></th>
+                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 65px; text-align: center;">Actions</label></th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                        @foreach (var item in Model.loiinformations)
+                                        {
+                                            <tr>
+                                                <td hidden>@item.Id</td>
+                                                <td style="color:black;">@item.LoiNo</td>
+                                                <td style="color:black;">@item.Inqno</td>
+                                                <td style="color:black;">@item.Lename</td>
+                                                <td style="color:black;">@(Convert.ToDateTime(item.Loisigndate).ToShortDateString())</td>
+                                                <td style="color:black;">@CommonRepository.Truncate(item.ClientName, 40)</td>
+                                                <td style="color:black;">@item.ClientSource</td>
+
+                                                <td style="color:black;">@item.PropertyName</td>
+                                                <td style="color:black;">@(Convert.ToDateTime(item.Leasedate).ToShortDateString())</td>
+                                                <td style="color:black;">@item.LoiStatus</td>
+                                                <td style="text-align: center;">
+                                                    <a asp-route-id="@item.Id">Print</a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a asp-controller="Marketing" asp-action="MarketingLOIUpdate" asp-route-loino="@item.LoiNo"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+
+
+                        <!--<div id="container">
+                            <p></p>
+                            <p></p>
+                            <div class="pagination">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        Html.PagedListPager(Model, page => Url.Action("ListLOI", new { page, pageSize = Model.PageSize }))
+                                    </div>
+                                </div>
+                            </div>-->
+                        @*<div class="row">
+                                <div class="col-lg-12" style="padding: 10px;padding-top: 50px;margin-left: 215px;">
+                                    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Products
+                                </div>
+                            </div>*@
+                        <!--</div>-->
+
+
+
+                    </form>
+                    @*<script type="text/javascript">
+                            function PagerClick(index) {
+                                document.getElementById("hfCurrentPageIndex").value = index;
+                                document.forms[0].submit();
+                            }
+                        </script>*@
+                </div>
+            @* </div> *@
+        @* </div> *@
+    </div>
+</div>

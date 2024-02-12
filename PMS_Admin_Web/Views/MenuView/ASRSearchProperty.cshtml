@@ -1,0 +1,180 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model List<PMS_Admin_Web.Models.Asrchange>
+
+@{
+    ViewData["Title"] = "ASR - Search Property";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        }
+    </script>
+
+}
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        $('#btnviewall').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BtnViewAllASRSearchProperty", "MenuView")",
+                success: function (response) {
+                    $('#tbody').html('');
+                    $.each(response, function (k, v) {
+                        $('#tbody').append(`<tr>
+                                                <td style="color:black;">${v.pname}</td>
+                                                <td style="color:black;">${v.aptno}</td>
+                                                <td style="color:black;">${v.feature}</td>
+                                                <td style="color:black;">${v.old}</td>
+                                                <td style="color:black;">${v.new}</td>
+                                                <td style="color:black;">${v.doc}</td>
+                                                <td style="color:black;">${v.changeby}</td>
+                                            </tr>`);
+
+                    });
+                }
+            })
+        })
+
+        $('#btnviewcurrentmonthchanges').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BtnCurrentMonthChangeASRSearchProperty", "MenuView")",
+                success: function (response) {
+                    $('#tbody').html('');
+                    $.each(response, function (k, v) {
+                        $('#tbody').append(`<tr>
+                                                <td style="color:black;">${v.pname}</td>
+                                                <td style="color:black;">${v.aptno}</td>
+                                                <td style="color:black;">${v.feature}</td>
+                                                <td style="color:black;">${v.old}</td>
+                                                <td style="color:black;">${v.new}</td>
+                                                <td style="color:black;">${v.doc}</td>
+                                                <td style="color:black;">${v.changeby}</td>
+                                            </tr>`);
+
+                    });
+                }
+            })
+        })
+
+        $('#btnviewclastmonthchanges').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BtnLastMonthChangeASRSearchProperty", "MenuView")",
+                success: function (response) {
+                    $('#tbody').html('');
+                    $.each(response, function (k, v) {
+                        $('#tbody').append(`<tr>
+                                                <td style="color:black;">${v.pname}</td>
+                                                <td style="color:black;">${v.aptno}</td>
+                                                <td style="color:black;">${v.feature}</td>
+                                                <td style="color:black;">${v.old}</td>
+                                                <td style="color:black;">${v.new}</td>
+                                                <td style="color:black;">${v.doc}</td>
+                                                <td style="color:black;">${v.changeby}</td>
+                                            </tr>`);
+
+                    });
+                }
+            })
+        })
+
+        $('#btnchangesseen').click(function () {
+            var confirmmessage = confirm('Are you Sure , changes seen');
+            if (confirmmessage) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("BtnChangesSeenASRSearchProperty", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                    }
+                })
+            }
+        })
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form>
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>ASR - Search Property</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <button id="btnviewall" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">View All</button>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <button id="btnviewcurrentmonthchanges" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; margin-left: -345px;">View Current Month Changes</button>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <button id="btnviewclastmonthchanges" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; margin-left: -535px;">View Last Month Changes</button>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <button id="btnchangesseen" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; margin-left: -750px;">Changes Seen</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div style="overflow-y: auto;">
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success" style="width:100%">
+                                    <tr>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 200px;">Property Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 125px;">Apt No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 165px;">Feature</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 220px;">Before Change</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 220px;">After Change</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 230px;">Change Time</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 230px;">Changed By</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td style="color:black;">@item.Pname</td>
+                                            <td style="color:black;">@item.Aptno</td>
+                                            <td style="color:black;">@item.Feature</td>
+                                            <td style="color:black;">@item.Old</td>
+                                            <td style="color:black;">@item.New</td>
+                                            <td style="color:black;">@item.Doc</td>
+                                            <td style="color:black;">@item.Changeby</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

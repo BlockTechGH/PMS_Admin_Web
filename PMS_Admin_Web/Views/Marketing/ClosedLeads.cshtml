@@ -1,0 +1,114 @@
+﻿@model PMS_Admin_Web.Models.Marketing.ClosedLeadsModel
+
+@{
+    //if (Model.Id == 0)
+    ViewData["Title"] = "Closed Leads";
+    //else
+    //    ViewData["Title"] = "Update User";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@if (ViewBag.Message == "Access denied")
+{
+    <script>
+        history.back();
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#btnchartanalysis').click(function(){
+            // closedall.rpt
+        })
+
+        $('#btnreport').click(function () {
+            // loisign.rpt
+        })
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <br />
+    <br />
+    <form>
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Closed Leads Analysis</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">No of Closed Leads of Current Month</label>
+                            <input disabled asp-for="totclosed" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">No of Fully Closed Leads</label>
+                            <input disabled asp-for="fclosed" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">No of Partially Closed Leads</label>
+                            <input disabled asp-for="parclosed" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">From Date</label>
+                            <input class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">To Date</label>
+                            <input class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <button type="button" id="btnchartanalysis" class="btn btn-primary" style="border-radius: 10px; float: right;">Chart Analysis</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <button type="button" id="btnreport" class="btn btn-primary" style="border-radius: 10px; float: right;">Report</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

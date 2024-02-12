@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Properties";
+    //Layout = "_Layout1";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;" asp-action="ManagedProperty" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-align-justify" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Managed Property</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;" asp-action="ReservedApartments" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-file-contract" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Reserved Apartments</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="VacatingApartments" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Vacating Apartments</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #C38D9E " asp-action="AvailableApartments" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Available Apartments</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 " asp-action="TLC" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-search" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>TLC</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E7717D " asp-action="Sublease" asp-controller="MenuView">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-money" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Sublease</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        
+                    </div>
+                    <br />
+
+                    @*</div>*@
+                </form>
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

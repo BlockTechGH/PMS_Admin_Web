@@ -1,0 +1,1252 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Http;
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+
+@model PMS_Admin_Web.Models.PA.PaDHCModel
+
+@{
+    ViewData["Title"] = "DHC";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        $('#thfloorings').change(function () {
+            var thfloorings = $('#thfloorings :selected').val();
+            $("div.floorings select").val(thfloorings);
+        })
+        $('#thfurnitures').change(function () {
+            var thfurnitures = $('#thfurnitures :selected').val();
+            $("div.furnitures select").val(thfurnitures);
+        })
+        $('#thwatertank').change(function () {
+            var thwatertank = $('#thwatertank :selected').val();
+            $("div.watertank select").val(thwatertank);
+        })
+        $('#thpool').change(function () {
+            var thpool = $('#thpool :selected').val();
+            $("div.swimmingpool select").val(thpool);
+        })
+        $('#thgym').change(function () {
+            var thgym = $('#thgym :selected').val();
+            $("div.gym select").val(thgym);
+        })
+        $('#thlobby').change(function () {
+            var thlobby = $('#thlobby :selected').val();
+            $("div.lobby select").val(thlobby);
+        })
+        $('#thdrain').change(function () {
+            var thdrain = $('#thdrain :selected').val();
+            $("div.drain select").val(thdrain);
+        })
+        $('#thacgrills').change(function () {
+            var thacgrills = $('#thacgrills :selected').val();
+            $("div.ac select").val(thacgrills);
+        })
+        $('#thparking').change(function () {
+            var thparking = $('#thparking :selected').val();
+            $("div.parking select").val(thparking);
+        })
+        $('#thautogate').change(function () {
+            var thautogate = $('#thautogate :selected').val();
+            $("div.autogate select").val(thautogate);
+        })
+        $('#throller').change(function () {
+            var throller = $('#throller :selected').val();
+            $("div.rollershutter select").val(throller);
+        })
+        $('#thplants').change(function () {
+            var thplants = $('#thplants :selected').val();
+            $("div.garden select").val(thplants);
+        })
+        $('#thstairs').change(function () {
+            var thstairs = $('#thstairs :selected').val();
+            $("div.stairs select").val(thstairs);
+        })
+        $('#thcorridors').change(function () {
+            var thcorridors = $('#thcorridors :selected').val();
+            $("div.corridors select").val(thcorridors);
+        })
+        $('#thlighting').change(function () {
+            var thlighting = $('#thlighting :selected').val();
+            $("div.light select").val(thlighting);
+        })
+        $('#thhvac').change(function () {
+            var thhvac = $('#thhvac :selected').val();
+            $("div.hvac select").val(thhvac);
+        })
+        $('#thtransformer').change(function () {
+            var thtransformer = $('#thtransformer :selected').val();
+            $("div.transformer select").val(thtransformer);
+        })
+        $('#thfirealarm').change(function () {
+            var thfirealarm = $('#thfirealarm :selected').val();
+            $("div.firealarm select").val(thfirealarm);
+        })
+        $('#thfireexits').change(function () {
+            var thfireexits = $('#thfireexits :selected').val();
+            $("div.fireexits select").val(thfireexits);
+        })
+        $('#thfirehose').change(function () {
+            var thfirehose = $('#thfirehose :selected').val();
+            $("div.firehose select").val(thfirehose);
+        })
+        $('#thliftroom').change(function () {
+            var thliftroom = $('#thliftroom :selected').val();
+            $("div.liftroom select").val(thliftroom);
+        })
+        $('#thgarbage').change(function () {
+            var thgarbage = $('#thgarbage :selected').val();
+            $("div.garbage select").val(thgarbage);
+        })
+        $('#thstaffaccomo').change(function () {
+            var thstaffaccomo = $('#thstaffaccomo :selected').val();
+            $("div.staffaccomodation select").val(thstaffaccomo);
+        })
+        $('#thstaffpresent').change(function () {
+            var thstaffpresent = $('#thstaffpresent :selected').val();
+            $("div.staffpresentation select").val(thstaffpresent);
+        })
+
+        $('.selectclass').change(function () {
+            var tbodyrowCount = $('#dhctbody tr').length;
+            var id = $(this).attr('id');
+            var value = $(this).val();
+            //console.log(value);
+            if (id == "Floorings_Walls__Windows_Ceilings_Glass_Panel") {
+                //$('select#Floorings-Walls- Windows-Ceilings-Glass Panel0').val(value).select();
+                //$("div.Floorings-Walls- Windows-Ceilings-Glass Panel0 select").val(value);
+                for (let i = 0; i < tbodyrowCount; i++) {
+                    var classname = id;
+                    //var idname = id + i;
+                    //$("div.id_100 select").val(value);
+                    var selector = "div." + classname + " select";
+                    $(selector).val(value);
+
+                    //$("#" + idname).val(value).prop("selected");
+                    //$(`#${id}${i} option[value=${value}]`).attr('selected', 'selected');
+                }
+            }
+            else if (id == "Furnitures") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Water Tank/ Pump Room") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Swimming Pool / Area") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Equipment / Gym") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Floor / Lobby") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Drainage System") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "A/C Grills") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Parking Area") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Auto Gate Barriers") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Roller Shutters") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Plants & Garden") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Staircases") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Corridors") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Lighting System") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "HVAC Rooms") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Transformer & Incoming Switch Room") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Fire Alarm / Security System") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Fire Exits") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Fire Hose Reels, Cabinets & Extinguishers") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Lift Room") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Garbage Chutes") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Staff Accomodation") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else if (id == "Staff Presentation") {
+                for (let i = 0; i < tbodyrowCount; i++) {
+
+                }
+            }
+            else {
+
+            }
+        })
+
+        $('#btnstatusofvacant').click(function () {
+
+        })
+        $('#btnpendingissues').click(function () {
+
+        })
+        $('#btnexportdhc').click(function () {
+            //var bname = $('#bname').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("PaBtnDHCExport", "PA")",
+                success: function (response) {
+                    console.log(response);
+                }
+            })
+        })
+
+        $('#btnsave').click(function () {
+            var locations = "", floorings = "", furnitures = "", watertanks = "", swimmingpools = "", gyms = "", lobbys = "", drains = "", acs = "", parkings = "", autogates = "", rollershutters = "", gardens = "", stairs = "", corridors = "", lights = "", hvacs = "", transformers = "", firealarms = "", fireexits = "", firehoses = "", liftrooms = "", garbages = "", staffaccomodations = "", staffpresentations = "";
+            /*var locations = [], floorings = [], furnitures = [], watertanks = [], swimmingpools = [], gyms = [], lobbys = [], drains = [], acs = [], parkings = [], autogates = [], rollershutters = [], gardens = [], stairs = [], corridors = [], lights = [], hvacs = [], transformers = [], firealarms = [], fireexits = [], firehoses = [], liftrooms = [], garbages = [], staffaccomodations = [], staffpresentations = [];*/
+            //var tbodyrowCount = $('#dhctbody tr').length;
+
+            $('#dhctbody tr').each(function () {
+                var location = $(this).find(".locations").html();
+                if (locations == "") {
+                    locations = location;
+                }
+                else {
+                    locations = locations + ',' + location;
+                }
+                //locations.push(location);
+                var flooring = $(this).find("div.floorings select").val();
+                if (floorings == "") {
+                    floorings = flooring;
+                }
+                else {
+                    floorings = floorings + ',' + flooring;
+                }
+                //floorings.push(flooring);
+                var furniture = $(this).find("div.furnitures select").val();
+                if (furnitures == "") {
+                    furnitures = furniture;
+                }
+                else {
+                    furnitures = furnitures + ',' + furniture;
+                }
+                //furnitures.push(furniture);
+                var watertank = $(this).find("div.watertank select").val();
+                if (watertanks == "") {
+                    watertanks = watertank;
+                }
+                else {
+                    watertanks = watertanks + ',' + watertank;
+                }
+                //watertanks.push(watertank);
+                var swimmingpool = $(this).find("div.swimmingpool select").val();
+                if (swimmingpools == "") {
+                    swimmingpools = swimmingpool;
+                }
+                else {
+                    swimmingpools = swimmingpools + ',' + swimmingpool;
+                }
+                //swimmingpools.push(swimmingpool);
+                var gym = $(this).find("div.gym select").val();
+                if (gyms == "") {
+                    gyms = gym;
+                }
+                else {
+                    gyms = gyms + ',' + gym;
+                }
+                //gyms.push(gym);
+                var lobby = $(this).find("div.lobby select").val();
+                if (lobbys == "") {
+                    lobbys = lobby;
+                }
+                else {
+                    lobbys = lobbys + ',' + lobby;
+                }
+                //lobbys.push(lobby);
+                var drain = $(this).find("div.drain select").val();
+                if (drains == "") {
+                    drains = drain;
+                }
+                else {
+                    drains = drains + ',' + drain;
+                }
+                //drains.push(drain);
+                var ac = $(this).find("div.ac select").val();
+                if (acs == "") {
+                    acs = ac;
+                }
+                else {
+                    acs = acs + ',' + ac;
+                }
+                //acs.push(ac);
+                var parking = $(this).find("div.parking select").val();
+                if (parkings == "") {
+                    parkings = parking;
+                }
+                else {
+                    parkings = parkings + ',' + parking;
+                }
+                //parkings.push(parking);
+                var autogate = $(this).find("div.autogate select").val();
+                if (autogates == "") {
+                    autogates = autogate;
+                }
+                else {
+                    autogates = autogates + ',' + autogate;
+                }
+                //autogates.push(autogate);
+                var rollershutter = $(this).find("div.rollershutter select").val();
+                if (rollershutters == "") {
+                    rollershutters = rollershutter;
+                }
+                else {
+                    rollershutters = rollershutters + ',' + rollershutter;
+                }
+                //rollershutters.push(rollershutter);
+                var garden = $(this).find("div.garden select").val();
+                if (gardens == "") {
+                    gardens = garden;
+                }
+                else {
+                    gardens = gardens + ',' + garden;
+                }
+                //gardens.push(garden);
+                var stair = $(this).find("div.stairs select").val();
+                if (stairs == "") {
+                    stairs = stair;
+                }
+                else {
+                    stairs = stairs + ',' + stair;
+                }
+                //stairs.push(stair);
+                var corridor = $(this).find("div.corridors select").val();
+                if (corridors == "") {
+                    corridors = corridor;
+                }
+                else {
+                    corridors = corridors + ',' + corridor;
+                }
+                //corridors.push(corridor);
+                var light = $(this).find("div.light select").val();
+                if (lights == "") {
+                    lights = light;
+                }
+                else {
+                    lights = lights + ',' + light;
+                }
+                //lights.push(light);
+                var hvac = $(this).find("div.hvac select").val();
+                if (hvacs == "") {
+                    hvacs = hvac;
+                }
+                else {
+                    hvacs = hvacs + ',' + hvac;
+                }
+                //hvacs.push(hvac);
+                var transformer = $(this).find("div.transformer select").val();
+                if (transformers == "") {
+                    transformers = transformer;
+                }
+                else {
+                    transformers = transformers + ',' + transformer;
+                }
+                //transformers.push(transformer);
+                var firealarm = $(this).find("div.firealarm select").val();
+                if (firealarms == "") {
+                    firealarms = firealarm;
+                }
+                else {
+                    firealarms = firealarms + ',' + firealarm;
+                }
+                //firealarms.push(firealarm);
+                var fireexit = $(this).find("div.fireexits select").val();
+                if (fireexits == "") {
+                    fireexits = fireexit;
+                }
+                else {
+                    fireexits = fireexits + ',' + fireexit;
+                }
+                //fireexits.push(fireexit);
+                var firehose = $(this).find("div.firehose select").val();
+                if (firehoses == "") {
+                    firehoses = firehose;
+                }
+                else {
+                    firehoses = firehoses + ',' + firehose;
+                }
+                //firehoses.push(firehose);
+                var liftroom = $(this).find("div.liftroom select").val();
+                if (liftrooms == "") {
+                    liftrooms = liftroom;
+                }
+                else {
+                    liftrooms = liftrooms + ',' + liftroom;
+                }
+                //liftrooms.push(liftroom);
+                var garbage = $(this).find("div.garbage select").val();
+                if (garbages == "") {
+                    garbages = garbage;
+                }
+                else {
+                    garbages = garbages + ',' + garbage;
+                }
+                //garbages.push(garbage);
+                var staffaccomodation = $(this).find("div.staffaccomodation select").val();
+                if (staffaccomodations == "") {
+                    staffaccomodations = staffaccomodation;
+                }
+                else {
+                    staffaccomodations = staffaccomodations + ',' + staffaccomodation;
+                }
+                //staffaccomodations.push(staffaccomodation);
+                var staffpresentation = $(this).find("div.staffpresentation select").val();
+                if (staffpresentations == "") {
+                    staffpresentations = staffpresentation;
+                }
+                else {
+                    staffpresentations = staffpresentations + ',' + staffpresentation;
+                }
+                //staffpresentations.push(staffpresentation);
+
+            });
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveDHC", "PA")",
+                traditional: true,
+                data: { locations: locations, floorings: floorings, furnitures: furnitures, watertanks: watertanks, swimmingpools: swimmingpools, gyms: gyms, lobbys: lobbys, drains: drains, acs: acs, parkings: parkings, autogates: autogates, rollershutters: rollershutters, gardens: gardens, stairs: stairs, corridors: corridors, lights: lights, hvacs: hvacs, transformers: transformers, firealarms: firealarms, fireexits: fireexits, firehoses: firehoses, liftrooms: liftrooms, garbages: garbages, staffaccomodations: staffaccomodations, staffpresentations: staffpresentations },
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            })
+        })
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form>
+                    @*<input id="bname" hidden value="@{Context.Session.GetString("CurrentUserDepartment")}" />*@
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>DHC</strong></h5>
+                            </div>
+                            <div class="col-lg-9">
+                                <table style="margin-left: 350px;">
+                                    <tr>
+                                        <td>
+                                            <button id="btnstatusofvacant" type="button" class="btn btn-primary" style="border-radius: 10px; width: 430px;">STATUS OF VACANT/VACATING/RESERVED APARTMENTS</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnpendingissues" type="button" class="btn btn-primary" style="border-radius: 10px; width: 261px;">PENDING MAINTENANCE ISSUES</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnexportdhc" type="button" class="btn btn-primary" style="border-radius: 10px; width: 120px;">EXPORT DHC</button>
+                                        </td>
+                                        @if (Model.recordcount > 0)
+                                        {
+                                            <td>
+                                                <button type="button" class="btn btn-primary" data-target="#RecentDHCModal" data-toggle="modal" data-backdrop="static" style="border-radius: 10px; width: 149px;">View Recent DHC</button>@*for popuping recent dhc report*@
+                                            </td>
+                                        }
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div style="overflow-x: auto; overflow-y:auto;">
+                            <table id="dhctable" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success">
+                                    <tr>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Location</label>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Floorings-Walls- Windows-Ceilings-Glass Panel</label>
+                                            <select id="thfloorings" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Furnitures</label>
+                                            <select id="thfurnitures" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Water Tank/ Pump Room</label>
+                                            <select id="thwatertank" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Swimming Pool / Area</label>
+                                            <select id="thpool" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Equipment / Gym</label>
+                                            <select id="thgym" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Floor / Lobby</label>
+                                            <select id="thlobby" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Drainage System</label>
+                                            <select id="thdrain" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">A/C Grills</label>
+                                            <select id="thacgrills" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Parking Area</label>
+                                            <select id="thparking" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Auto Gate Barriers</label>
+                                            <select id="thautogate" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Roller Shutters</label>
+                                            <select id="throller" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Plants & Garden</label>
+                                            <select id="thplants" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Staircases</label>
+                                            <select id="thstairs" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Corridors</label>
+                                            <select id="thcorridors" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Lighting System</label>
+                                            <select id="thlighting" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">HVAC Rooms</label>
+                                            <select id="thhvac" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Transformer & Incoming Switch Room</label>
+                                            <select id="thtransformer" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Fire Alarm / Security System</label>
+                                            <select id="thfirealarm" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Fire Exits</label>
+                                            <select id="thfireexits" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Fire Hose Reels, Cabinets & Extinguishers</label>
+                                            <select id="thfirehose" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Lift Room</label>
+                                            <select id="thliftroom" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Garbage Chutes</label>
+                                            <select id="thgarbage" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Staff Accomodation</label>
+                                            <select id="thstaffaccomo" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        <th class="table-bordered">
+                                            <label style="color: black; font-size: 15px; width: 335px;">Staff Presentation</label>
+                                            <select id="thstaffpresent" class="selectclass form-control" style="border-radius: 10px;">
+                                                <option value="" hidden>--Select--</option>
+                                                <option value="U">Unsatisfactory</option>
+                                                <option value="S">Satisfactory</option>
+                                                <option value="NA">Needs Action</option>
+                                                <option value="R">Reported</option>
+                                                <option value="N">None</option>
+                                            </select>
+                                        </th>
+                                        @*<th hidden></th>*@
+                                        @*@for(int i=0;i<Model.DHCHeader.Count;i++)*@
+                                        @*@foreach (var item in Model.DHCHeader)*@
+                                        @*{
+                                                <th class="table-bordered">
+                                                    <label style="color: black; font-size: 15px; width: 335px;">@Model.DHCHeader[i]</label>
+                                                    @if(@Model.DHCHeader[i] != "Location")
+                                                    {
+                                                        <select id="@Model.DHCHeader[i]" class="selectclass form-control" style="border-radius: 10px;">
+                                                            <option value="" hidden>--Select--</option>
+                                                            <option value="U">Unsatisfactory</option>
+                                                            <option value="S">Satisfactory</option>
+                                                            <option value="NA">Needs Action</option>
+                                                            <option value="R">Reported</option>
+                                                            <option value="N">None</option>
+                                                        </select>
+                                                    }
+
+                                                </th>
+                                            }*@
+
+                                    </tr>
+                                </thead>
+                                <tbody id="dhctbody" class="bg-white">
+                                    @for (int j = 0; j < Model.pfFloor.Count; j++)
+                                    {
+                                        <tr>
+                                            <td class="locations" style="color:black;">@Model.pfFloor[j]</td>
+                                            @*<td id="location_@j" style="color:black;">@Model.pfFloor[j]</td>*@
+                                            <td>
+                                                <div class="floorings">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="furnitures">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="watertank">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="swimmingpool">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="gym">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="lobby">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="drain">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="ac">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="parking">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="autogate">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="rollershutter">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="garden">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="stairs">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="corridors">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="light">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="hvac">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="transformer">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="firealarm">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fireexits">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="firehose">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="liftroom">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="garbage">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="staffaccomodation">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="staffpresentation">
+                                                    <select id="" class="form-control" style="border-radius: 10px;">
+                                                        <option value="" hidden>--Select--</option>
+                                                        <option value="U">Unsatisfactory</option>
+                                                        <option value="S">Satisfactory</option>
+                                                        <option value="NA">Needs Action</option>
+                                                        <option value="R">Reported</option>
+                                                        <option value="N">None</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            @*@for(int i=1;i<=Model.DHCHeader.Count-1;i++)
+                                                {
+                                                    <td>
+                                                        <div class="@Model.DHCHeaderTrim[i]">
+                                                            <select id="@Model.DHCHeader[i]@j" class="form-control" style="border-radius: 10px;">
+                                                                <option value="" hidden>--Select--</option>
+                                                                <option value="U">Unsatisfactory</option>
+                                                                <option value="S">Satisfactory</option>
+                                                                <option value="NA">Needs Action</option>
+                                                                <option value="R">Reported</option>
+                                                                <option value="N">None</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </td>
+                                                }*@
+
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="color:burlywood">
+        <div class="card-body">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <button id="btnsave" type="button" class="btn btn-primary float-right" style="border-radius:10px;">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@
+
+<!--recent dhc popup-->
+<div id="RecentDHCModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 1700px; margin-left: -598px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Recent DHC Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="col-lg-12" style="overflow-x: auto; overflow-y:auto;">
+                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                        <thead class="bg-success">
+                            <tr>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 335px;">Location</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 380px;">Floorings-Walls- Windows-Ceilings-Glass Panel</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Furnitures</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 210px;">Water Tank/ Pump Room</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 190px;">Swimming Pool / Area</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Equipment / Gym</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Floor / Lobby</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 140px;">Drainage System</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">A/C Grills</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Parking Area</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Auto Gate Barriers</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Roller Shutters</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 135px;">Plants & Garden</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Staircases</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Corridors</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Lighting System</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">HVAC Rooms</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 310px;">Transformer & Incoming Switch Room</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 230px;">Fire Alarm / Security System</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Fire Exits</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 335px;">Fire Hose Reels, Cabinets & Extinguishers</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Lift Room</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Garbage Chutes</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 160px;">Staff Accomodation</label></th>
+                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Staff Presentation</label></th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            @foreach (var item in Model.popupModel)
+                            {
+                                <tr>
+                                    <td style="color:black;">@item.location</td>
+                                    <td style="color:black;">@item.flooring</td>
+                                    <td style="color:black;">@item.furniture</td>
+                                    <td style="color:black;">@item.watertank</td>
+                                    <td style="color:black;">@item.swimming</td>
+                                    <td style="color:black;">@item.gym</td>
+                                    <td style="color:black;">@item.lobby</td>
+                                    <td style="color:black;">@item.drain</td>
+                                    <td style="color:black;">@item.ac</td>
+                                    <td style="color:black;">@item.parking</td>
+                                    <td style="color:black;">@item.autogate</td>
+                                    <td style="color:black;">@item.rollershutter</td>
+                                    <td style="color:black;">@item.plants</td>
+                                    <td style="color:black;">@item.stair</td>
+                                    <td style="color:black;">@item.corridor</td>
+                                    <td style="color:black;">@item.lighting</td>
+                                    <td style="color:black;">@item.hvac</td>
+                                    <td style="color:black;">@item.transformer</td>
+                                    <td style="color:black;">@item.firealarm</td>
+                                    <td style="color:black;">@item.fireexits</td>
+                                    <td style="color:black;">@item.firehose</td>
+                                    <td style="color:black;">@item.lift</td>
+                                    <td style="color:black;">@item.garbage</td>
+                                    <td style="color:black;">@item.staffacc</td>
+                                    <td style="color:black;">@item.staffpresent</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!---->

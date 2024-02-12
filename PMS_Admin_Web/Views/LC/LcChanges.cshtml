@@ -1,0 +1,118 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+@using PMS_Admin_Web.Repository
+@using X.PagedList.Mvc.Core
+@*@model X.PagedList.IPagedList<PMS_Admin_Web.Models.Lcchange>*@
+@model List<PMS_Admin_Web.Models.Lcchange>
+
+@{
+    ViewData["Title"] = "LC Changes";
+}
+
+
+@*<div class="row">*@
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    <form asp-action="LcChanges" asp-controller="LC" method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black"><strong>LC Changes</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3 float-right">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <input class="form-control" type="date" style="border-radius: 10px; width: 180px; margin-left: -69px; " />
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <button class="btn btn-primary" type="submit">Search</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 175px;">Change Topic</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 220px;">Change Feature</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 220px;">Reason For Change</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Change Date & Time</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Status</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 160px;">Changed By</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 235px;">Old Update</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">LC No</label></th>
+                                            @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white">
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td hidden>@item.Id</td>
+                                                <td style="color:black;">@item.Category</td>
+                                                <td style="color:black;">@CommonRepository.Truncate(item.Feature, 25)</td>
+                                                <td style="color:black;">@item.Reason</td>
+                                                <td style="color:black;">@Convert.ToDateTime(item.ChangeDateTime).ToShortDateString()</td>
+                                                <td style="color:black;">@item.Status</td>
+                                                <td style="color:black;">@item.Changeby</td>
+                                                <td style="color:black;">
+                                                    @if (item.Oldupdate != null)
+                                                    {
+                                                        @CommonRepository.Truncate(item.Oldupdate, 20)
+
+                                                    }
+                                                </td>
+                                                <td style="color:black;">@item.Lcno</td>
+                                                @*<td style="text-align: center;">
+                                                        <a asp-controller="User" asp-action="EditUser" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                    </td>
+                                                    <td style="text-align: center;">
+                                                        <a asp-controller="User" asp-action="DeleteUser" asp-route-id="@item.Id"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                    </td>*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                        <!--<div id="container" style="margin-left: 120px">
+                            <p></p>
+                            <p></p>-->
+                            @*<div class="pagination">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        @Html.PagedListPager(Model, page => Url.Action("LcChanges", new { page, pageSize = Model.PageSize }))
+                                    </div>
+                                </div>
+                            </div>*@
+                            @*<div class="row">
+                                    <div class="col-lg-12" style="padding: 10px;padding-top: 50px;margin-left: 215px;">
+                                        Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Products
+                                    </div>
+                                </div>*@
+                        <!--</div>
+                        <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />-->
+                    </form>
+                    @*<script type="text/javascript">
+                        function PagerClick(index) {
+                            document.getElementById("hfCurrentPageIndex").value = index;
+                            document.forms[0].submit();
+                        }
+                    </script>*@
+                </div>
+            </div>
+        </div>
+    </div>
+@*</div>*@

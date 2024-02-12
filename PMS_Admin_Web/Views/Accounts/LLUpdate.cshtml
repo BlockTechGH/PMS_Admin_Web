@@ -1,0 +1,194 @@
+﻿@model PMS_Admin_Web.Models.Accounts.LLUpdateModel
+
+@{
+    ViewData["Title"] = "Update Landlord";
+}
+@using Microsoft.AspNetCore.Http;
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+    })
+</script>
+
+
+<div class="col-lg-12">
+    <form asp-controller="Accounts" asp-action="LLUpdate">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Update Landlord</strong></h5>
+            </div>
+            <input hidden id="id" asp-for="lldetail.Id" />
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Property Name</label>
+                                <input id="propertyname" asp-for="lldetail.Pname" type="text" class="form-control" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Code</label>
+                                <input id="code" type="text" asp-for="lldetail.Code" class="form-control" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Property Name in Report</label>
+                                <input id="pnameinreport" asp-for="lldetail.Reportname" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Property Name(Arabic)</label>
+                                <input id="pnamearabic" asp-for="lldetail.Pnameinarabic" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Landlord Name</label>
+                                <input id="landlordname" asp-for="lldetail.Llname" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Location</label>
+                                <input id="location" asp-for="lldetail.Location" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Landlord Name(Arabic)</label>
+                                <input id="landlordnamearabic" asp-for="lldetail.Arabicllname" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Address</label>
+                                <textarea id="address" asp-for="lldetail.Address" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Address(Arabic)</label>
+                                <textarea id="addressarabic" asp-for="lldetail.Arabicaddress" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Accountant Name</label>
+                                <input id="accountantname" asp-for="lldetail.AccName" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Account No</label>
+                                <input id="accountno" asp-for="lldetail.AccNo" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Bank</label>
+                                <input id="bank" asp-for="lldetail.Accbank" class="form-control" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Phone</label>
+                                <input id="phone" asp-for="lldetail.Attph" class="form-control" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Fax</label>
+                                <input id="fax" asp-for="lldetail.Attfax" class="form-control" style="border-radius: 10px;" />
+                                <div class="form-group">
+                                    <input type="checkbox" id="chkvisibleinreport" asp-for="chkvisibleinreport" />
+                                    <label class="control-label text-black-50">Visible in Report</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Attention</label>
+                                <input id="fax" asp-for="lldetail.Attname" class="form-control" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Designation</label>
+                                <input id="fax" asp-for="lldetail.Attdesg" class="form-control" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Received By</label>
+                                <input id="receivedby1" asp-for="lldetail.R1" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Received By</label>
+                                <input id="receivedby2" asp-for="lldetail.R2" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Received By</label>
+                                <input id="receivedby3" asp-for="lldetail.R3" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        @if (Context.Session.GetString("CurrentUserDepartment") != "CustomerService")
+                        {
+                            <button type="submit" class="btn btn-primary" asp-route-update="update" style="border-radius: 10px; float: right; margin-right: -1362px;">Update</button>
+                        }
+                    </div>
+                    <div class="col-lg-3">
+                        <button type="submit" class="btn btn-primary" asp-route-update="arabicupdate" style="border-radius: 10px; float: right; margin-right: -1070px;">Arabic Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@
+
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

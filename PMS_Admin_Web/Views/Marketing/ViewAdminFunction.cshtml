@@ -1,0 +1,177 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@model List<PMS_Admin_Web.Models.Adminactivity>
+@using PMS_Admin_Web.Repository;
+
+@{
+    ViewData["Title"] = "View Admin Function";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form asp-action="ViewAdminFunction" asp-controller="Marketing" method="post">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>View Admin Activities</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3 float-right">
+                                @*<button asp-action="CreateUser" class="btn btn-primary">Create New User <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>*@
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12" style="">
+                                <div class="row">
+                                    <div class="col-lg-3">
+
+                                    </div>
+                                    <div class="col-lg-3" style="margin-top: 30px;">
+
+                                    </div>
+                                    <div class="col-lg-3" style="margin-top: 30px;">
+                                        @*<div class="form-group">
+                                            <label class="control-label text-black-50">Search Username</label>
+                                            <input id="txtSearchUser" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>*@
+                                    </div>
+                                    <div class="col-lg-3" style="margin-top: 60px;">
+                                        @*<div class="form-group">
+                                            <button id="btnSearch" type="button" class="btn btn-primary" style="">Search</button>
+                                        </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                        <!--script goes here...-->
+                        <script>
+                            $(document).ready(function () {
+                                //start of the document ready function
+                                //delcaring global variable to hold primary key value.
+                                $('.deleteprompt').click(function () {
+                                    var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+                                    if (confirmMessageBox) {
+                                        var id = $(this).attr('id');
+
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: "@Url.Action("DeleteAdminFunction", "Marketing")",
+                                            data: { Id: id },
+
+                                            success: function (response) {
+                                                alert(response);
+                                                location.reload();
+                                            },
+                                            error: function (err) {
+                                                alert(err);
+                                                location.reload();
+                                            }
+                                        });
+                                    }
+                                });
+
+                                $('#btnSearch').click(function () {
+                                    var txtSearchUser = $('#txtSearchUser').val();
+
+                                    if (txtSearchUser != '') {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("SearchUser", "User")",
+                                            data: { searchUsername: txtSearchUser },
+                                            success: function (response) {
+                                                $('#tbody').html('');
+                                                $.each(response, function (k, v) {
+
+                                                    $('#tbody').append('<tr>');
+                                                    $('#tbody').append('<td hidden>' + v.id + '</td>');
+                                                    $('#tbody').append('<td style="color:black;">' + v.usrname + '</td>');
+                                                    $('#tbody').append('<td style="color:black;">' + v.department + '</td>');
+                                                    $('#tbody').append('<td style="color:black;">' + v.role + '</td>');
+                                                    $('#tbody').append('<td style="color:black;">' + v.designation + '</td>');
+
+                                                    $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditUser", "User")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+                                                    $('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                                                    $('#tbody').append('</tr>');
+                                                    $('.pagination').css('display', 'none');
+                                                });
+                                            }
+                                        })
+                                    }
+                                    else {
+                                        $('#tbody').html('');
+                                        /*$('#tbody').append('<tr>');*/
+                                        $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                                        /*$('#tbody').append('</tr>');*/
+                                    }
+                                });
+
+                                //end of the docuement ready function
+                            });
+                        </script>
+                        <div>
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success">
+                                    <tr>
+                                        <th hidden></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">Date</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">LE</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">From</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">To</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 165px;">Reason</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Other Reason</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Advertising</label></th>
+                                        <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody" class="bg-white">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td hidden>@item.Id</td>
+                                            <td style="color:black;">@Convert.ToDateTime(item.Date).ToShortDateString()</td>
+                                            <td style="color:black;">@item.Username</td>
+                                            <td style="color:black;">@item.Fromtime</td>
+                                            <td style="color:black;">@item.Totime</td>
+                                            <td style="color:black;">@item.Reason</td>
+                                            <td style="color:black;">@CommonRepository.Truncate(item.OtherReason, 120)</td>
+                                            <td style="color:black;">@item.Advertising</td>
+                                            <td style="text-align: center;">
+                                                <a asp-controller="Marketing" asp-action="EditAdminFunction" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                    
+                    
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

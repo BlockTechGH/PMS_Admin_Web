@@ -1,0 +1,1452 @@
+﻿@model PMS_Admin_Web.Models.LC.NewLCModel
+
+
+
+@{
+    //if (Model.Property.Id == 0)
+    ViewData["Title"] = "Edit LC";
+    //else
+    //    ViewData["Title"] = "Update Property";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+            window.location.href="@Url.Action("ListLC", "LC")";
+        };
+    </script>
+}
+
+<script>
+    function loadNationality() {
+        var hiddenNationality = $('#hiddenNationality').val();
+        $.ajax({
+            type:"GET",
+            url:"@Url.Action("LoadNationality", "Common")",
+            dataType: "json",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    if (hiddenNationality == v) {
+                        $('#nationality').append('<option selected value="' + v + '" > ' + v + '</option>');
+                    }
+                    else {
+                        $('#nationality').append('<option value="' + v + '" > ' + v + '</option>');
+                    }
+
+                });
+            }
+        })
+    }
+
+    function propertysource() {
+        var propertyname_hidden = $('#propertyname_hidden').val();
+        var psource = $('#propertysource :selected').val();
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadProperties", "LC")",
+            data: { propertysource: psource },
+            dataType: "json",
+            success: function (response) {
+                //alert(response)
+                $('#propertyname').html('');
+                $('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                $('#aptno').html('');
+                $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                $('#refno').val('');
+                $.each(response, function (k, v) {
+                    if (propertyname_hidden == v) {
+                        $('#propertyname').append('<option value="' + v + '" selected="selected"> ' + v + '</option>');
+                        propertyname(v);
+                    }
+                    else {
+                        $('#propertyname').append('<option value="' + v + '" > ' + v + '</option>');
+                    }
+
+                });
+
+            }
+        })
+    }
+
+    function propertyname(p_name) {
+        var aptno_hidden = $('#aptno_hidden').val();
+        var pname = p_name;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadApartmentNo", "LC")",
+            data: { propertyname: pname },
+            dataType: "json",
+            success: function (response) {
+                //alert(response)
+                $('#aptno').html('');
+                $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                $('#refno').val('');
+                $.each(response, function (k, v) {
+                    if (aptno_hidden == v) {
+                        $('#aptno').append('<option value="' + v + '" selected="selected"> ' + v + '</option>');
+                        aptno(pname, v);
+                    }
+                    else {
+                        $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                    }
+
+                });
+
+            }
+        })
+    }
+
+    function aptno(propertyname, aptno) {
+        var pname = propertyname;
+        var ano = aptno;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadRefNo", "LC")",
+            data: { propertyname: pname, aptno: ano },
+            dataType: "json",
+            success: function (response) {
+                //alert(response)
+                $('#refno').val(response.propertyRef);
+
+            }
+        })
+    }
+    $(document).ready(function () {
+        loadNationality();
+        propertysource();
+        $("#propertysource").change(function () {
+            var psource = $('#propertysource :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadProperties", "LC")",
+                data: { propertysource: psource },
+                dataType: "json",
+                success: function (response) {
+                    //alert(response)
+                    $('#propertyname').html('');
+                    $('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                    $('#aptno').html('');
+                    $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                    $('#refno').val('');
+                    $.each(response, function (k, v) {
+                        $('#propertyname').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+
+                }
+            })
+        })
+        $("#propertyname").change(function () {
+            var pname = $('#propertyname :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadApartmentNo", "LC")",
+                data: { propertyname: pname },
+                dataType: "json",
+                success: function (response) {
+                    //alert(response)
+                    $('#aptno').html('');
+                    $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                    $('#refno').val('');
+                    $.each(response, function (k, v) {
+                        $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+
+                }
+            })
+        })
+        $("#aptno").change(function () {
+
+            var pname = $('#propertyname :selected').val();
+            var ano = $('#aptno :selected').val();
+            $.ajax({
+                type: "POST",
+
+                url: "@Url.Action("LoadRefNo", "LC")",
+                data: { propertyname: pname, aptno: ano },
+                dataType: "json",
+                success: function (response) {
+                    //alert(response)
+                    $('#refno').val(response.propertyRef);
+
+                }
+            })
+
+        });
+
+        var YMD_hidden = $('#YMD_hidden').val();
+        var NoYMD_hidden = $('#NoYMD_hidden').val();
+        if (YMD_hidden == "Year") {
+            for (var i = 1; i <= 10; i++) {
+                if (NoYMD_hidden == i) {
+                    $('#NoYMD').append('<option value="' + i + '" selected="selected"> ' + i + '</option>');
+                }
+                else {
+                    $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                }
+
+            }
+        }
+        else if (YMD_hidden == "Month") {
+            for (var i = 1; i <= 12; i++) {
+                if (NoYMD_hidden == i) {
+                    $('#NoYMD').append('<option value="' + i + '" selected="selected"> ' + i + '</option>');
+                }
+                else {
+                    $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                }
+
+            }
+        }
+        else {
+            for (var i = 1; i <= 30; i++) {
+                if (NoYMD_hidden == i) {
+                    $('#NoYMD').append('<option value="' + i + '" selected="selected"> ' + i + '</option>');
+                }
+                else {
+                    $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                }
+
+            }
+        }
+
+        $("#YMD").change(function () {
+            $('#NoYMD').html('');
+            $('#NoYMD').append('<option value="" hidden> --Select-- </option>');
+            var str = $('#YMD :selected').val();
+            if (str == "Year") {
+                for (var i = 1; i <= 10; i++) {
+                    $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                }
+            }
+            else if (str == "Month") {
+                for (var i = 1; i <= 12; i++) {
+                    $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                }
+            }
+            else {
+                for (var i = 1; i <= 30; i++) {
+                    $('#NoYMD').append('<option value="' + i + '" > ' + i + '</option>');
+                }
+            }
+        });
+
+        $('#changeCID').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var civilIdNo = $('#civilIdNo').val();
+                $('#oldCivilId').val(civilIdNo);
+                $('#civilIdNo').prop('readonly', false);
+            }
+        })
+
+        $("#lcrent").change(function () {
+            $('#deposit').html('');
+            $('#clientresf').html('');
+            $('#aptrent').html('');
+
+
+            var lcrent = $('#lcrent').val();
+            $('#deposit').val(lcrent);
+            $('#payable').val(lcrent);
+            var resf = lcrent / 2;
+            $('#resf').val(resf);
+            $('#aptrent').val(lcrent);
+        });
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form>
+
+        @Html.HiddenFor(model => model.LcInfo.Id)
+
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Edit LC</strong></h5>
+            </div>
+            <div class="card-body">
+                @*<br />*@
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">LC Number</label>
+                                <input readonly asp-for="LcInfo.LcNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                <span asp-validation-for="LcInfo.LcNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-9" style="margin-top: 40px;">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">New LC</label>
+                                        <input disabled type="radio" asp-for="LcInfo.Lctype" value="New LC">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC Transfer</label>
+                                        <input disabled type="radio" asp-for="LcInfo.Lctype" value="LC Transfer">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Renewal LC</label>
+                                        <input disabled type="radio" asp-for="LcInfo.Lctype" value="Renewal LC">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Revised LC</label>
+                                        <input disabled type="radio" asp-for="LcInfo.Lctype" value="Revised LC">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">LOI Number</label>
+                                <input readonly id="loino" asp-for="LcInfo.LoiNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                <span asp-validation-for="LcInfo.LoiNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style=" margin-top: 31px;">
+                            <button class="btn btn-primary" type="button" style="border-radius: 10px;" data-target="#paymentViewModal" data-toggle="modal">View Payment</button>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 38px;">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Sublease</label>
+                                <input asp-for="Sublease" type="checkbox" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style=" margin-top: 31px;">
+                            <div class="form-group">
+                                @if (Model.LcInfo.Lct != null)
+                                {
+                                    @if (Model.LcInfo.Lct == "Renewable")
+                                    {
+                                        <a asp-route-currentLcNo="@Model.LcInfo.LcNo" asp-action="RenewLC" asp-controller="LC">Renew this LC</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-route-currentLcNo="@Model.LcInfo.LcNo" asp-action="RenewLC" asp-controller="LC" style="cursor:default;pointer-events:none;">Renew this LC</a>
+                                    }
+                                }
+                                else
+                                {
+                                    <a asp-route-currentLcNo="@Model.LcInfo.LcNo" asp-action="RenewLC" asp-controller="LC" style="cursor:default;pointer-events:none;">Renew this LC</a>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#ClientAndPropertyDetails">Client and Property Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#AgreementPeriodType">Agreement Period and Date Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#PaymentDetails">Rent/Deposits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#OtherDetails">Other Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#Additional">Documents Submitted</a>
+                    </li>
+                </ul>
+                @*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+                <div class="tab-content">
+                    <div class="tab-pane active" id="ClientAndPropertyDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Client Name</label>
+                                        <input asp-for="LcInfo.Tenname" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Company Name</label>
+                                        <input asp-for="LcInfo.Compaddress" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Compaddress" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Nationality</label>
+                                        <select id="nationality" asp-for="LcInfo.Nationality" class="form-control" style="border-radius: 10px;">
+                                            <option hidden value="">--Select--</option>
+                                            @*@foreach (var area in Model.Nationalities)
+                                                {
+                                                    <option value="@area.Nationalityname">@area.Nationalityname</option>
+                                                }*@
+                                        </select>
+                                        <input id="hiddenNationality" type="hidden" asp-for="LcInfo.Nationality" />
+                                        <span asp-validation-for="LcInfo.Nationality" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Client Source</label>
+                                        <input asp-for="LcInfo.Source" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Source" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Contact No</label>
+                                        <input asp-for="LcInfo.Lcmob" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Lcmob" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Passport No</label>
+                                        <input asp-for="LcInfo.Ppno" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Ppno" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Civil ID No</label>
+                                                <input id="civilIdNo" readonly asp-for="LcInfo.Civilid" class="form-control" type="text" style="border-radius: 10px;" />
+                                                <span asp-validation-for="LcInfo.Civilid" class="text-danger"></span>
+                                                <input type="hidden" id="oldCivilId" asp-for="oldCivilId" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <button id="changeCID" class="btn btn-primary" type="button" style="border-radius: 10px; width: 110px; margin-top: 31px;">Change CID</button>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Type</label>
+                                        <select id="propertysource" asp-for="LcInfo.Ptype" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="ManagedProperty">Managed Property</option>
+                                            <option value="StandAloneProperty">Standalone Property</option>
+                                        </select>
+                                        <span asp-validation-for="LcInfo.Ptype" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Name</label>
+                                        <select id="propertyname" asp-for="LcInfo.Pname" class="form-control" style="border-radius: 10px;">
+                                            @*<option value="" hidden>--Select--</option>*@
+                                        </select>
+                                        <input type="hidden" id="propertyname_hidden" asp-for="LcInfo.Pname" />
+                                        <span asp-validation-for="LcInfo.Pname" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apartment No</label>
+                                        <select id="aptno" asp-for="LcInfo.Aptno" class="form-control" style="border-radius: 10px;">
+                                            @*<option value="" hidden>--Select--</option>*@
+                                        </select>
+                                        <input type="hidden" id="aptno_hidden" asp-for="LcInfo.Aptno" />
+                                        <span asp-validation-for="LcInfo.Aptno" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50"> Multiple Apartments</label>
+                                            <input type="checkbox" asp-for=""
+                                            <span asp-validation-for="LOI.Aptno" class="text-danger"></span>
+                                        </div>
+                                    </div>*@
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Reference No</label>
+                                        <input id="refno" asp-for="LcInfo.Pref" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Pref" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Type</label>
+                                        <select asp-for="LcInfo.Fstatus" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="SF">SF</option>
+                                            <option value="FF">FF</option>
+                                            <option value="UF">UF</option>
+                                        </select>
+                                        <span asp-validation-for="LcInfo.Fstatus" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Bedrooms</label>
+                                        <select asp-for="LcInfo.Btype" class="form-control" style="border-radius: 10px;">
+                                            <option value="">--Select--</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="Mulhaq">Mulhaq</option>
+                                            <option value="Basement">Basement</option>
+                                            <option value="Shop">Shop</option>
+                                            @*<option value="RT">RT</option>*@
+                                        </select>
+                                        <span asp-validation-for="LcInfo.Btype" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="tab-pane" id="AgreementPeriodType">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Lease Start Date</label>
+                                        <input asp-for="LcInfo.Leasestart" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Leasestart" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Year/Month/Day</label>
+                                        <select id="YMD" asp-for="LcInfo.Type" class="form-control" style="border-radius: 10px;">
+                                            <option selected hidden>--Select--</option>
+                                            <option value="Year">Year</option>
+                                            <option value="Month">Month</option>
+                                            <option value="Day">Day</option>
+                                        </select>
+                                        <input type="hidden" asp-for="LcInfo.Type" id="YMD_hidden" />
+                                        <span asp-validation-for="LcInfo.Type" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">No Of Year/Month/Day</label>
+                                        <select id="NoYMD" asp-for="LcInfo.Period" class="form-control" style="border-radius: 10px;">
+                                        </select>
+                                        <input type="hidden" asp-for="LcInfo.Period" id="NoYMD_hidden" />
+                                        <span asp-validation-for="LcInfo.Period" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Lease End Date</label>
+                                        <input asp-for="LcInfo.Leaseend" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Leaseend" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="tab-pane" id="PaymentDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC Rent</label>
+                                        <input id="lcrent" asp-for="LcInfo.Rent" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Rent" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Payable</label>
+                                        <input id="payable" asp-for="LcInfo.Payable" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Payable" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Deposit</label>
+                                        <input id="deposit" asp-for="LcInfo.Deposit" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Deposit" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">RESF</label>
+                                        <input id="resf" asp-for="LcInfo.Resf" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Resf" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apt Rent</label>
+                                        <input readonly id="aptrent" asp-for="AptRent" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="OtherDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC Made Date</label>
+                                        <input asp-for="LcInfo.Lcmadeon" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Lcmadeon" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC sent to tenant on</label>
+                                        <input asp-for="LcInfo.Orginallcsent" class="form-control" type="date" style="border-radius: 10px;" />@*asp-for="LcInfo.d"*@
+                                        @*<span asp-validation-for="LOI.Movingindate" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC sent to Landlord on</label>
+                                        <input asp-for="LcInfo.Lcsenttollon" class="form-control" type="date" style="border-radius: 10px;" />@*asp-for="LcInfo.d"*@
+                                        @*<span asp-validation-for="LOI.Movingindate" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">RV sent to tenant on</label>
+                                        <input asp-for="LcInfo.Rvsent" class="form-control" type="date" style="border-radius: 10px;" />@*asp-for="LcInfo.d"*@
+                                        @*<span asp-validation-for="LOI.Movingindate" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Received On</label>
+                                        <input asp-for="LcInfo.Lcreceivedfromtenanton" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="LcInfo.Lcmadeon" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Individual Client</label>
+                                        <input type="radio" asp-for="LcInfo.Enqtype" value="Individual Enquiry">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Corporate Client</label>
+                                        <input type="radio" asp-for="LcInfo.Enqtype" value="Corporate Enquiry">
+                                    </div>
+
+                                    <span asp-validation-for="LcInfo.Enqtype" class="text-danger"></span>
+                                </div>
+                                <div class="col-lg-3">
+
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Renewable</label>
+                                        <input type="radio" asp-for="LcInfo.Lct" value="Renewable">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Not Renewable</label>
+                                        <input type="radio" asp-for="LcInfo.Lct" value="Not Renewable">
+                                    </div>
+
+                                    <span asp-validation-for="LcInfo.Enqtype" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Annually</label>
+                                        <input type="radio" value="Annually" asp-for="PaymentMethod">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Monthly</label>
+                                        <input type="radio" value="Monthly" asp-for="PaymentMethod">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Quarterly</label>
+                                        <input type="radio" value="Quarterly" asp-for="PaymentMethod">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Semesterly</label>
+                                        <input type="radio" value="Semesterly" asp-for="PaymentMethod">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC Doc</label>
+                                        <input type="radio">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LOI Doc</label>
+                                        <input type="radio" value="Semesterly">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <input type="file">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Legal</label>
+                                        <select asp-for="LcInfo.Legal" class="form-control" style="border-radius: 10px;">
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <label><strong>Renewal Details</strong></label>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Reason of Renewal</label>
+                                        <select asp-for="LcInfo.Renewreason" class="form-control" style="border-radius: 10px;">
+                                            <option value="Yes">Apartment Transfer</option>
+                                            <option value="No">Change in Name</option>
+                                            <option value="No">LC Transfer</option>
+                                            <option value="No">Other</option>
+                                            <option value="No">Parking</option>
+                                            <option value="No">Rent Increase</option>
+                                            <option value="No">Rent Deduction</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Other Reason</label>
+                                        <input class="form-control" asp-for="LcInfo.Otherreason" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Updated and Renewed LC?</label>
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input type="radio" asp-for="UpdatedRenewalLC" value="Yes">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input type="radio" asp-for="UpdatedRenewalLC" value="No">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input asp-for="filetxt" type="file" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="Additional">
+                        <div class="col-lg-12">
+                            <br />
+
+                            @*<div class="row">
+                                <table style="width:100%">
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Pp != null || Model.LcInfo.Pp != "")
+                                                        {
+                                                            <input type="checkbox" id="passport1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="passport2">
+                                                        }
+                                                        <label> Passport(PP)</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Cid != null || Model.LcInfo.Cid != "")
+                                                        {
+                                                            <input type="checkbox" id="cid1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="cid2">
+                                                        }
+
+                                                        <label> Civil ID(CID)</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Noc != null || Model.LcInfo.Noc != "")
+                                                        {
+                                                            <input type="checkbox" id="noc1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="noc2">
+                                                        }
+                                                        <label> NOC Visa</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Mc != null || Model.LcInfo.Mc != "")
+                                                        {
+                                                            <input type="checkbox" id="mc1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="mc2">
+                                                        }
+                                                        <label> Marriage Contract</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Moc != null || Model.LcInfo.Moc != "")
+                                                        {
+                                                            <input type="checkbox" id="moc1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="moc2">
+                                                        }
+                                                        <label> MOC License/Itemmatokiya</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Cas != null || Model.LcInfo.Cas != "")
+                                                        {
+                                                            <input type="checkbox" id="cas1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="cas2">
+                                                        }
+                                                        <label> Civil ID of AS</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Coe != null || Model.LcInfo.Coe != "")
+                                                        {
+                                                            <input type="checkbox" id="coe1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="coe2">
+                                                        }
+                                                        <label> Cert of Employement/Salary Certificate</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Cosign != null || Model.LcInfo.Cosign != "")
+                                                        {
+                                                            <input type="checkbox" id="cosign1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="cosign2">
+                                                        }
+                                                        <label> Company Authorised Signatory</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Cidpp != null || Model.LcInfo.Cidpp != "")
+                                                        {
+                                                            <input type="checkbox" id="cidpp1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="cidpp2">
+                                                        }
+                                                        <label> CID or PP copies of employee/staff</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Cg != null || Model.LcInfo.Cg != "")
+                                                        {
+                                                            <input type="checkbox" id="cg1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="cg2">
+                                                        }
+                                                        <label> Company Guarantee</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="col-lg-4">
+                                                        @if (Model.LcInfo.Lcpath != null || Model.LcInfo.Lcpath != null)
+                                                        {
+                                                            <input type="checkbox" id="lc1" checked>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" id="lc2">
+                                                        }
+
+                                                        <label> LC</label><br>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">View</a>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <a href="#">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>*@
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 700px; "></th>
+                                                <th style="width: 400px;"></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Passport(PP)</label>
+                                                    <input id="passport" type="file" name="passportfile" />
+                                                </td>
+                                                @if (Model.LcInfo.Pp != null && Model.LcInfo.Pp != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewPassport" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Pp" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Civil ID(CID)</label>
+                                                    <input type="file" name="civilidfile" />
+                                                </td>
+                                                @if (Model.LcInfo.Cid != null && Model.LcInfo.Cid != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCid" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Cid" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">NOC Visa</label>
+                                                    <input type="file" name="nocvisafile" />
+                                                </td>
+                                                @if (Model.LcInfo.Noc != null && Model.LcInfo.Noc != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewNoc" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Noc" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Marriage Contract</label>
+                                                    <input type="file" name="marriagecontractfile" />
+                                                </td>
+                                                @if (Model.LcInfo.Mc != null && Model.LcInfo.Mc != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewMc" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Mc" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">MOC License/Itemmatokiya</label>
+                                                    <input type="file" name="moclicensefile" />
+                                                </td>
+                                                @if (Model.LcInfo.Moc != null && Model.LcInfo.Moc != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewMoc" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Moc" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Civil ID of AS</label>
+                                                    <input type="file" name="civilidASfile" />
+                                                </td>
+                                                @if (Model.LcInfo.Cas != null && Model.LcInfo.Cas != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCas" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Cas" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Cert of Employement/Salary Certificate</label>
+                                                    <input type="file" name="salarycertificatefile" />
+                                                </td>
+                                                @if (Model.LcInfo.Coe != null && Model.LcInfo.Coe != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCoe" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Coe" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Company Authorised Signatory</label>
+                                                    <input type="file" name="companysignfile" />
+                                                </td>
+                                                @if (Model.LcInfo.Cosign != null && Model.LcInfo.Cosign != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCosign" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Cosign" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">CID or PP copies of employee/staff</label>
+                                                    <input type="file" name="staffemployeefile" />
+                                                </td>
+                                                @if (Model.LcInfo.Cidpp != null && Model.LcInfo.Cidpp != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCidpp" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Cidpp" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">Company Guarantee</label>
+                                                    <input type="file" name="companyguaranteefile" />
+                                                </td>
+                                                @if (Model.LcInfo.Cg != null && Model.LcInfo.Cg != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewCg" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Cg" style="width: 500px;" />
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr></tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="control-label text-black-50">LC</label>
+                                                    <input type="file" name="lcfile" />
+                                                </td>
+                                                @if (Model.LcInfo.Lcpath != null && Model.LcInfo.Lcpath != "")
+                                                {
+                                                    <td>
+                                                        <a asp-action="ViewLC" asp-controller="LC" asp-route-id="@Model.LcInfo.Id">View</a>
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="text" asp-for="LcInfo.Lcpath" style="width: 500px;" />
+                                                    </td>
+                                                }
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Remarks</label>
+                                        @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                        <textarea asp-for="LcInfo.Remarks" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Current State of LC</label>
+                                        @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                        <textarea class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <button asp-controller="LC" asp-action="EditLC" type="button" class="btn btn-primary float-right" style="border-radius: 10px;">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--popup for payment view-->
+
+
+    <div id="paymentViewModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            @*<div class="card">*@
+            @*<div class="card-body">*@
+            @*<form asp-action="LC" asp-controller="MenuView" method="post">*@
+            <div class="modal-content" style="width: 1000px;">
+                @**@
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <script>
+                            $(document).ready(function () {
+                                var loino = $('#loino').val();
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("PaymentView", "Common")",
+                                    data: { loiNo: loino },
+                                    success: function (response) {
+                                        //alert(response)
+                                        $('#rentPaid').val(response.rentPaid);
+                                        $('#depositPaid').val(response.depositPaid);
+                                        $('#clresfPaid').val(response.clResfPaid);
+                                        $('#llresfPaid').val(response.llResfPaid);
+                                        $('#rentDue').val(response.rentDue);
+                                        $('#depositDue').val(response.depositDue);
+                                        $('#clresfDue').val(response.clResfDue);
+                                        $('#llresfDue').val(response.llResfDue);
+                                        if (response.rentDue <= 0 && response.depositDue <= 0 && response.clResfDue <= 0 && response.llResfDue <= 0) {
+                                            $('#dueRow').hide();
+                                            //$('#depositDue').hide();
+                                            //$('#clresfDue').hide();
+                                            //$('#llresfDue').hide();
+                                        }
+
+                                        $.each(response.viewPaymentListModels, function (k, v) {
+                                            //alert(v.voucherType)
+                                            $('#tbody').append('<tr>');
+                                            $('#tbody').append('<td>' + v.voucherType + '</td>');
+                                            $('#tbody').append('<td>' + v.amt + '</td>');
+                                            $('#tbody').append('<td>' + v.cash + '</td>');
+                                            $('#tbody').append('<td>' + v.knet + '</td>');
+                                            $('#tbody').append('<td>' + v.cheque + '</td>');
+                                            $('#tbody').append('<td>' + v.bt + '</td>');
+                                            $('#tbody').append('<td>' + v.dateFrom +' - '+ v.dateTo + '</td>');
+                                            $('#tbody').append('<td>' + v.remarks + '</td>');
+                                            $('#tbody').append('</tr>');
+                                        });
+                                    }
+                                })
+                            });
+                </script>
+                <div class="modal-body">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label style="color:black">Rent Paid</label>
+                                    <input id="rentPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label style="color:black">Deposit Paid</label>
+                                    <input id="depositPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>CL RESF Paid</label>
+                                    <input id="clresfPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>LL RESF Paid</label>
+                                    <input id="llresfPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dueRow" class="row">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>Rent Due</label>
+                                    <input id="rentDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>Deposit Due</label>
+                                    <input id="depositDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>CL RESF Due</label>
+                                    <input id="clresfDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label>LL RESF Due</label>
+                                    <input id="llresfDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+
+                                <div style="overflow-y:auto">
+                                    <table class="table-bordered" style=" width: 100%;">
+                                        <thead class="bg-success">
+                                            <tr>
+                                                <th style="width: 130px;">Voucher Type</th>
+                                                <th style="width: 75px;">Amt</th>
+                                                <th style="width: 75px;">Cash</th>
+                                                <th style="width: 75px;">Knet</th>
+                                                <th style="width: 75px;">Cheque</th>
+                                                <th style="width: 50px;">BT</th>
+                                                <th style="width: 190px;">Payment Period</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*</form>*@
+            @*</div>*@
+            @*</div>*@
+        </div>
+    </div>
+    <!---->
+</div>
+@*</div>*@
+
+
+@{
+
+}

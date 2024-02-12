@@ -1,0 +1,99 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+@using PMS_Admin_Web.Repository
+@using X.PagedList.Mvc.Core
+@*@model X.PagedList.IPagedList<PMS_Admin_Web.Models.LC.ListRentChangeModel>*@
+@model List<PMS_Admin_Web.Models.LC.ListRentChangeModel>
+
+@{
+    ViewData["Title"] = "Rent Changes";
+}
+
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form asp-action="ListRentChange" asp-controller="LC" method="post">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Rent Changes</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3 float-right">
+                                <button asp-action="RentChange" class="btn btn-primary" style="border-radius: 10px;">Rent Change <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>
+                            </div>
+                        </div>
+                        <br />
+                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                            <thead class="bg-success">
+                                <tr>
+                                    <th hidden></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Property Name</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Apt No</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">LC No</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Old Rent</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">New Rent</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Effective Date</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Created Date</label></th>
+                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td hidden>@item.Id</td>
+                                        <td style="color:black;">@CommonRepository.Truncate(item.PropertyName, 20)</td>
+                                        <td style="color:black;">@item.AptNo</td>
+                                        <td style="color:black;">@item.LCNo</td>
+                                        <td style="color:black;">@item.OldRent</td>
+                                        <td style="color:black;">@item.NewRent</td>
+                                        <td style="color:black;">@item.EffectFrom.ToShortDateString()</td>
+                                        <td style="color:black;">@item.Created.ToShortDateString()</td>
+                                        <td style="text-align: center;">
+                                            <a asp-action="EditRentChange" asp-controller="LC" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                        </td>
+                                        @*<td style="text-align: center;">
+                                                <a asp-route-id="@item.Id"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                            </td>*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br />
+                    <!--<div id="container">
+                        <p></p>
+                        <p></p>-->
+                        @*<div class="pagination">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    @Html.PagedListPager(Model, page => Url.Action("ListRentChange", new { page, pageSize = Model.PageSize }))
+                                </div>
+                            </div>
+                        </div>*@
+                        @*<div class="row">
+                                <div class="col-lg-12" style="padding: 10px;padding-top: 50px;margin-left: 215px;">
+                                    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Products
+                                </div>
+                            </div>*@
+                    <!--</div>
+                    <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />-->
+                </form>
+                @*<script type="text/javascript">
+                    function PagerClick(index) {
+                        document.getElementById("hfCurrentPageIndex").value = index;
+                        document.forms[0].submit();
+                    }
+                </script>*@
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

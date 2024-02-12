@@ -1,0 +1,398 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model PMS_Admin_Web.Models.PA.MaintenanceIssueModel
+
+@using PMS_Admin_Web.Repository
+@*@using X.PagedList.Mvc.Core
+    @model X.PagedList.IPagedList<PMS_Admin_Web.Models.Missue>*@
+
+@{
+    ViewData["Title"] = "Maintenance Issue";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+        var pryEmpId;
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                pryEmpId = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteUser", "User")",
+                    data: { Id: pryEmpId },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+
+            }
+
+        });
+
+        $('#reload').click(function () {
+            location.reload();
+        })
+
+        $('.holdComplaint').click(function () {
+            var confirmMessageBox = confirm('Are you sure to hold the Complaint?');
+            if (confirmMessageBox) {
+                Id = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("HoldComplaint", "PA")",
+                    data: { id: Id },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#jobsdone').click(function () {
+            var Issue;
+
+            $.ajax({
+                type: 'GET',
+                url:"@Url.Action("Recent100Jobs", "PA")",
+                success: function (response) {
+                    $('#tbody').html('');
+                    $('#thead').html('');
+                    $('#pagelabel').html('');
+                    $('#pagelabel').html('100 Recent Jobs Done')
+                    $('#thead').append('<tr>');
+                    $('#thead').append('<th hidden>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Apt#/Location</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Issue</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Completed Date</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Work Description</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Status</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Complaint Number</label></th>');
+                    $('#thead').append('<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>');
+
+                    $.each(response, function (k, v) {
+                        //alert(v.id)
+                        if (v.issue.length > 30) {
+                            Issue = $.trim(v.issue).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                        }
+                        else {
+                            Issue = v.issue;
+                        }
+
+                        //var date = new Date(v.wcdate),
+                        //    yr = date.getFullYear(),
+                        //    month = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth(),
+                        //    day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate(),
+                        //    wcdate = day + '-' + month + '-' + yr;
+
+                        var date = new Date(v.wcdate);
+                        var dd = String(date.getDate()).padStart(2, '0');
+                        var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        var yyyy = date.getFullYear();
+
+                        var wcdate = dd + '-' + mm + '-' + yyyy;
+
+
+                        $('#tbody').append('<tr>');
+                        $('#tbody').append('<td hidden>' + v.id + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + v.aptlocation + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + Issue + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + wcdate + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + v.workdescription + '</td>');
+
+                        $('#tbody').append('<td style="color:black;">' + v.wdstatus +'</td>');
+                        $('#tbody').append('<td style="color:black;">' + v.issueNo + '</td>');
+
+
+                        /*$('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id=' + v.Id + ' class="holdComplaint">Hold Complaint</a></td>');*/
+
+                        $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("WorkDescriptionUpdate", "PA")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+
+                        $('#tbody').append('</tr>');
+                        /*$('.pagination').css('display', 'none');*/
+                    });
+                }
+            })
+        })
+
+        $('#alljobs').click(function () {
+            var Issue;
+
+            $.ajax({
+                type: 'GET',
+                url:"@Url.Action("AllJobs", "PA")",
+                success: function (response) {
+                    $('#tbody').html('');
+                    $('#thead').html('');
+                    $('#pagelabel').html('');
+                    $('#pagelabel').html('All Jobs');
+                    $('#thead').append('<tr>');
+                    $('#thead').append('<th hidden>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Apt#/Location</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Issue</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Completed Date</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Work Description</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Status</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Complaint Number</label></th>');
+                    $('#thead').append('<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>');
+
+                    $.each(response, function (k, v) {
+                        //alert(v.id)
+                        if (v.issue.length > 30) {
+                            Issue = $.trim(v.issue).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                        }
+                        else {
+                            Issue = v.issue;
+                        }
+
+                        //var date = new Date(v.wcdate),
+                        //    yr = date.getFullYear(),
+                        //    month = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth(),
+                        //    day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate(),
+                        //    wcdate = day + '-' + month + '-' + yr;
+
+                        var date = new Date(v.wcdate);
+                        var dd = String(date.getDate()).padStart(2, '0');
+                        var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        var yyyy = date.getFullYear();
+
+                        var wcdate = dd + '-' + mm + '-' + yyyy;
+
+
+                        $('#tbody').append('<tr>');
+                        $('#tbody').append('<td hidden>' + v.id + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + v.aptlocation + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + Issue + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + wcdate + '</td>');
+                        $('#tbody').append('<td style="color:black;">' + v.workdescription + '</td>');
+
+                        $('#tbody').append('<td style="color:black;">' + v.wdstatus +'</td>');
+                        $('#tbody').append('<td style="color:black;">' + v.issueNo + '</td>');
+
+
+                        /*$('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id=' + v.Id + ' class="holdComplaint">Hold Complaint</a></td>');*/
+
+                        $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("WorkDescriptionUpdate", "PA")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+
+                        $('#tbody').append('</tr>');
+                        /*$('.pagination').css('display', 'none');*/
+                    });
+                }
+            })
+        })
+
+        $('#holdcomplaints').click(function () {
+            var Issue;
+
+            $.ajax({
+                type: 'GET',
+                url:"@Url.Action("ViewHoldComplaints", "PA")",
+                success: function (response) {
+                    if (response == null) {
+                        alert("There is No Issues On Hold")
+                    }
+                    else {
+                        $('#tbody').html('');
+                    $('#thead').html('');
+                    $('#pagelabel').html('');
+                    $('#pagelabel').html('Held Complaints');
+                    $('#thead').append('<tr>');
+                    $('#thead').append('<th hidden>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Apt#/Location</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Complaint Date</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Category</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Issue</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Status</label></th>');
+                    $('#thead').append('<th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Request for DMS</label></th>');
+                    $('#thead').append('<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>');
+
+                        $.each(response, function (k, v) {
+                            //alert(v.id)
+                            if (v.issue.length > 30) {
+                                Issue = $.trim(v.issue).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                            }
+                            else {
+                                Issue = v.issue;
+                            }
+
+                            //var date = new Date(v.doc),
+                            //    yr = date.getFullYear(),
+                            //    month = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth(),
+                            //    day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate(),
+                            //    doc = day + '-' + month + '-' + yr;
+
+                            var date = new Date(v.doc);
+                            var dd = String(date.getDate()).padStart(2, '0');
+                            var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                            var yyyy = date.getFullYear();
+
+                            var doc = dd + '-' + mm + '-' + yyyy;
+
+
+                            $('#tbody').append('<tr>');
+                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.aptlocation + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + doc + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.category + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + Issue + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.status + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.request + '</td>');
+
+
+                            /*$('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id=' + v.Id + ' class="holdComplaint">Hold Complaint</a></td>');*/
+
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("UpdateComplaint", "PA")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+
+                            $('#tbody').append('</tr>');
+                            /*$('.pagination').css('display', 'none');*/
+                        });
+                    }
+
+                }
+            })
+        })
+
+
+        //end of the docuement ready function
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form>
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 id="pagelabel" style="color:black"><strong>Maintenance Issue</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3">
+
+                            </div>
+                            <div class="col-lg-3">
+                                <button asp-action="AddComplaint" asp-controller="PA" class="btn btn-primary" style="border-radius:10px; float:right;">Add Complaints <i class="fa fa-plus-square-o" style="font-size:20px"></i></button>
+                                <!--<div class="row">
+                                    <div class="col-lg-6"><button asp-action="AddComplaint" asp-controller="PA" class="btn btn-primary" style="border-radius:10px; float:right;">Add Complaints <i class="fa fa-plus-square-o" style="font-size:20px"></i></button></div>-->
+                                    @*<div class="col-lg-6"><button id="reload" class="btn btn-primary" style="border-radius:10px; float:right;"><i class="fa fa-refresh" style="font-size:24px"></i></button></div>*@
+                                <!--</div>-->
+
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div style="overflow-y:auto; overflow-x:auto;">
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead id="thead" class="bg-success">
+                                    <tr>
+                                        <th hidden></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 250px;">Apt#/Location</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Complaint Date</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 140px;">Category</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 220px;">Issue</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Email Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Hold</label></th>
+                                        <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody" class="bg-white">
+                                    @foreach (var item in Model.missueList)
+                                    {
+                                        <tr>
+                                            <td hidden>@item.Id</td>
+                                            <td style="color:black;">@item.Aptlocation</td>
+                                            <td style="color:black;">@Convert.ToDateTime(item.Doc).ToShortDateString()</td>
+                                            <td style="color:black;">@item.Category</td>
+                                            <td style="color:black;">@CommonRepository.Truncate(item.Issue, 28)</td>
+                                            <td style="color:black;">@item.Status</td>
+                                            <td style="color:black;">@item.Remarks</td>
+                                            <td style="text-align: center;">
+                                                <a href="javascript:void(0)" id="@item.Id" class="holdComplaint">Hold Complaint</a>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <a asp-controller="PA" asp-action="UpdateComplaint" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            </td>
+                                            @*<td style="text-align: center;">
+                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                </td>*@
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-lg-12">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><button type="button" id="jobsdone" class="btn btn-primary" style="border-radius:10px;">100 Recent Jobs Done</button></td>
+                                    <td><button type="button" id="alljobs" class="btn btn-primary" style="border-radius:10px;">Show All Jobs</button></td>
+                                    @*<td> <button type="button" class="btn btn-primary" style="border-radius:10px;">Reports</button></td>*@
+                                    <td> <button type="submit" asp-action="WMR" asp-controller="PA" class="btn btn-primary" style="border-radius:10px;">WMR</button></td>
+                                    <td><button type="button" id="holdcomplaints" class="btn btn-primary" style="border-radius:10px;">View On Hold Complaints</button></td>
+                                    <td><button type="button" class="btn btn-primary" style="border-radius:10px;">Cancelled Request By DMS</button></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    @*<div id="container">
+                            <p></p>
+                            <p></p>
+                            <div class="pagination">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        @Html.PagedListPager(Model, page => Url.Action("ListUser", new { page, pageSize = Model.PageSize }))
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>*@
+                    @*<input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />*@
+                </form>
+                @*<script type="text/javascript">
+                        function PagerClick(index) {
+                            document.getElementById("hfCurrentPageIndex").value = index;
+                            document.forms[0].submit();
+                        }
+                    </script>*@
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

@@ -1,0 +1,188 @@
+﻿@model PMS_Admin_Web.Models.LOI.LOIModel;
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "LOI";
+
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+@if (Context.Session.GetString("CurrentUserDepartment") != "Administration" && Context.Session.GetString("CurrentUserRole") != "Administrator")
+{
+    <script>
+        alert('Access denied');
+        history.back();
+    </script>
+}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                @*<div class="card" style="color:burlywood">*@
+                @*<div class="card-header bg-transparent"></div>*@
+                <div class="col-lg-12">
+                    <form>
+                        @*<div class="card-body">*@
+                        <br />
+                        <br />
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60" asp-action="NewLOI" asp-controller="LOI">
+                                    <div>
+                                        <div>
+                                            <i class="fa fa-align-justify" style="font-size:24px"></i> <i class="fa fa-plus" aria-hidden="true" style="font-size:15px"></i>
+                                        </div>
+                                        <div>
+                                            <strong>New LOI</strong>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="col-lg-3">
+                                <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60" asp-action="ListLOI" asp-controller="LOI">
+                                    <div>
+                                        <div>
+                                            <i class="fa fa-list" style="font-size:24px"></i>
+                                        </div>
+                                        <div>
+                                            <strong>LOI List</strong>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="col-lg-3">
+                                <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="Properties" asp-controller="MenuView">
+                                    <div>
+                                        <div>
+                                            <i class="fa-solid fa-house" style="font-size:24px"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Properties</strong>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="col-lg-3">
+                                <button class="btn btn-primary button2" type="button" data-target="#LOINoFixingModal" data-toggle="modal" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60 ">
+                                    <div>
+                                        <div>
+                                            <i class="fa fa-gears" style="font-size:24px"></i>
+                                        </div>
+                                        <div>
+                                            <strong>LOI No Fixing</strong>
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <br />
+                        @*</div>*@
+                    </form>
+                    <!--popup for LOI No Fixing-->
+
+
+                    <div id="LOINoFixingModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">LOI No Fixing</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <script>
+                                            function loadnewloinoformat() {
+                                                var d = new Date();
+                                                var date = d.getDate().toString();
+                                                //var dte = '';
+                                                var month = d.getMonth() + 1;
+                                                //var mnth = '';
+                                                var year = d.getFullYear();
+
+                                                if (date.length == 1) {
+                                                    date = '0' + date;
+                                                }
+
+                                                if (month.toString().length == 1) {
+                                                    month = '0' + month;
+                                                }
+
+                                                var format = "LOI-" + year + "-" + date + month + "-" + "0000";
+                                                $('#newLoiNo').val(format);
+                                            }
+
+                                            function loadloino() {
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "@Url.Action("LoadLOINos","Common")",
+                                                    success: function (response) {
+                                                        $.each(response, function (k, v) {
+                                                            $('#LoiNo').append(`<option value="${v}">${v}</option>`);
+                                                        })
+                                                    }
+                                                })
+                                            }
+                                            $(document).ready(function () {
+                                                loadnewloinoformat();
+                                                loadloino();
+
+                                                $('#updateLOI').click(function () {
+                                                    var LoiNo = $('#LoiNo :selected').val();
+                                                    var newLoiNo = $('#newLoiNo').val();
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        data: { oldloino: LoiNo, newloino: newLoiNo },
+                                                        url: "@Url.Action("UpdateLOINo", "LOI")",
+                                                        success: function (response) {
+                                                            alert(response);
+                                                            location.reload();
+                                                        }
+                                                    })
+                                                })
+                                            })
+
+                                        </script>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label style="color:black">Select LOI No</label>
+                                                <select id="LoiNo" class="form-control" style="border-radius: 10px;">
+                                                    <option hidden>--Select--</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>New LOI No</label>
+                                                <input id="newLoiNo" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button id="updateLOI" type="button" class="btn btn-primary" style="border-radius:10px;">Update</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:10px;">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+                @*</div>*@
+            </div>
+        </div>
+    </div>

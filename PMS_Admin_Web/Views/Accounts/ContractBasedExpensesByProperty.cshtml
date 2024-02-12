@@ -1,0 +1,326 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+
+@*@model List<PMS_Admin_Web.Models.Paymentvoucher>*@
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "Contract Based Expenses";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    function loadproperty() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadPropertyName", "Common")",
+            success: function (response) {
+                $('#pname').append(`<option value="" hidden>--Select--</option>`);
+                $.each(response, function (k,v) {
+                    $('#pname').append(`<option value="${v}">${v}</option>`);
+                })
+
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+        loadproperty();
+
+        @*$('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var id = $(this).attr('id');
+                var voucherno = $(this).attr('data-voucher');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteTemporaryReceipt", "Accounts")",
+                    data: { id: id, voucherno: voucherno },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });*@
+
+
+        $('#btnview').click(function () {
+            var statementmonth = $('#statementmonth').val();
+            var pname = $('#pname :selected').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Statement month and year');
+                return false;
+            }
+
+            if (pname == null || pname == "") {
+                alert('Select the Property');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Loadpmepropgrid", "Accounts")",
+                data: { statementmonth: statementmonth, pname: pname},
+                success: function (response) {
+                    $('#totalamount').val(response.maintotamtxt);
+                    if (response.pmepropgrid != null) {
+                        $('#tbody').html('');
+                        $.each(response.pmepropgrid, function (k, v) {
+                            var date = v.date.split("T");
+
+                            var description = v.description;
+                            if (description == null)
+                                description = "";
+
+                            var pname = v.pname;
+                            if (pname == null)
+                                pname = "";
+
+                            var aptno = v.aptno;
+                            if (aptno == null)
+                                aptno = "";
+
+                            var uprice = v.uprice;
+                            if (uprice == null)
+                                uprice = "";
+
+                            var qty = v.qty;
+                            if (qty == null)
+                                qty = "";
+
+                            var invno = v.invno;
+                            if (invno == null)
+                                invno = "";
+
+                            var exp = v.exp;
+                            if (exp == null)
+                                exp = "";
+
+                            var category = v.category;
+                            if (category == null)
+                                category = "";
+
+                            var no = v.no;
+                            if (no == null)
+                                no = "";
+
+                            var accounts = v.accounts;
+                            if (accounts == null)
+                                accounts = "";
+
+                            $('#tbody').append(`<tr>
+                                                    <td hidden>${v.id}</td>
+                                                    <td style="color:black;">${date[0]}</td>
+                                                    <td style="color:black;">${description}</td>
+                                                    <td style="color:black;">${pname}</td>
+                                                    <td style="color:black;">${aptno}</td>
+                                                    <td style="color:black;">${uprice}</td>
+                                                    <td style="color:black;">${qty}</td>
+                                                    <td style="color:black;">${invno}</td>
+                                                    <td style="color:black;">${v.amt}</td>
+                                                    <td style="color:black;">${exp}</td>
+                                                    <td style="color:black;">${category}</td>
+                                                    <td style="color:black;">${no}</td>
+                                                    <td style="color:black;">${accounts}</td>
+                                                </tr>`);
+                        });
+                    }
+                    else {
+                        $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                    }
+                }
+            })
+        })
+
+        $('#btnviewall').click(function () {
+            var statementmonth = $('#statementmonth').val();
+            var pname = $('#pname :selected').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Statement month and year');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Loadallpmepropgrid", "Accounts")",
+                data: { statementmonth: statementmonth},
+                success: function (response) {
+                    $('#totalamount').val(response.maintotamtxt);
+                    if (response.pmepropgrid != null) {
+                        $('#tbody').html('');
+                        $.each(response.pmepropgrid, function (k, v) {
+                            var date = v.date.split("T");
+
+                            var description = v.description;
+                            if (description == null)
+                                description = "";
+
+                            var pname = v.pname;
+                            if (pname == null)
+                                pname = "";
+
+                            var aptno = v.aptno;
+                            if (aptno == null)
+                                aptno = "";
+
+                            var uprice = v.uprice;
+                            if (uprice == null)
+                                uprice = "";
+
+                            var qty = v.qty;
+                            if (qty == null)
+                                qty = "";
+
+                            var invno = v.invno;
+                            if (invno == null)
+                                invno = "";
+
+                            var exp = v.exp;
+                            if (exp == null)
+                                exp = "";
+
+                            var category = v.category;
+                            if (category == null)
+                                category = "";
+
+                            var no = v.no;
+                            if (no == null)
+                                no = "";
+
+                            var accounts = v.accounts;
+                            if (accounts == null)
+                                accounts = "";
+
+                            $('#tbody').append(`<tr>
+                                                    <td hidden>${v.id}</td>
+                                                    <td style="color:black;">${date[0]}</td>
+                                                    <td style="color:black;">${description}</td>
+                                                    <td style="color:black;">${pname}</td>
+                                                    <td style="color:black;">${aptno}</td>
+                                                    <td style="color:black;">${uprice}</td>
+                                                    <td style="color:black;">${qty}</td>
+                                                    <td style="color:black;">${invno}</td>
+                                                    <td style="color:black;">${v.amt}</td>
+                                                    <td style="color:black;">${exp}</td>
+                                                    <td style="color:black;">${category}</td>
+                                                    <td style="color:black;">${no}</td>
+                                                    <td style="color:black;">${accounts}</td>
+                                                </tr>`);
+                        });
+                    }
+                    else {
+                        $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                    }
+                }
+            })
+        })
+
+        //end of the document ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    @*<input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                        <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />*@
+                    <form method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>Contract Based Expenses</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group" style="width: 225px;">
+                                                <label class="control-label text-black-50">Property Name</label>
+                                                <select id="pname" class="form-control" style="border-radius: 10px;">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group" style="width: 150px;">
+                                                <label class="control-label text-black-50">Statement Month</label>
+                                                <input id="statementmonth" class="form-control" type="date" style="border-radius: 10px;" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button id="btnview" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -75px; margin-top: 31px; ">View</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" style="margin-left: -366px;">
+                                    <button id="btnviewall" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -100px; margin-top: 31px; ">View All Properties</button>
+                                </div>
+                                <div class="col-lg-3" style="margin-left: -198px;">
+                                    <div class="form-group" style="width: 150px;">
+                                        <label class="control-label text-black-50">Total Amount</label>
+                                        <input id="totalamount" disabled class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            @*<input type="hidden" id="oreceipt" />*@
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 215px;">Items/Work Description</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 135px;">Property Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Apt No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Unit Price</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">Quantity</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Invoice No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 102px;">Amount(KD)</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 135px;">Expenses Source</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">Category</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Statement</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 220px;">Accounts</label></th>
+                                            @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

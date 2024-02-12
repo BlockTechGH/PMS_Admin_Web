@@ -1,0 +1,861 @@
+﻿@model PMS_Admin_Web.Models.Marketing.DriverSchedulingModel
+@using Microsoft.AspNetCore.Http;
+
+@{
+
+    ViewData["Title"] = "Edit Ad-Hoc Driver Scheduling";
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+        /*location.reload();*/
+    </script>
+}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    function loadDriver() {
+        var hiddenDriver = $('#hiddenDriver').val();
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("LoadDriver", "Common")",
+            success: function (response) {
+                //alert(response);
+                //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                $.each(response, function (k, v) {
+                    if (hiddenDriver == v) {
+                        $('#drivername').append('<option selected value="' + v + '" > ' + v + '</option>');
+                    }
+                    else {
+                        $('#drivername').append('<option value="' + v + '" > ' + v + '</option>');
+                    }
+                });
+            }
+        })
+    }
+
+    function loadLename() {
+        $.ajax({
+            type:"GET",
+            url: "@Url.Action("LoadLeName", "Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#lenamelist').append('<option value="' + v + '" > ' + v + '</option>');
+                    $('#lecombo1').append('<option value="' + v + '" > ' + v + '</option>');
+                    $('#lecombo2').append('<option value="' + v + '" > ' + v + '</option>');
+                    $('#namecombo').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    function loadReasonList() {
+        var scheduletype = $('#scheduletype :selected').val();
+        var Hiddenreason = $('#hiddenReason').val();
+        if (scheduletype == "AD-HOC ACTIVITIES") {
+            if (Hiddenreason == "PROPERTY VISIT LL REQUEST") {
+                $('#reason').append('<option selected value="PROPERTY VISIT LL REQUEST">PROPERTY VISIT LL REQUEST</option>');
+            }
+            else {
+                $('#reason').append('<option value="PROPERTY VISIT LL REQUEST">PROPERTY VISIT LL REQUEST</option>');
+            }
+            if (Hiddenreason == "PROPERTY - PHOTOGRAPHS") {
+                $('#reason').append('<option selected value="PROPERTY - PHOTOGRAPHS">PROPERTY - PHOTOGRAPHS</option>');
+            }
+            else {
+                $('#reason').append('<option value="PROPERTY - PHOTOGRAPHS">PROPERTY - PHOTOGRAPHS</option>');
+            }
+            if (Hiddenreason == "MANAGED PROPERTY INSPECTION") {
+                $('#reason').append('<option selected value="MANAGED PROPERTY INSPECTION">MANAGED PROPERTY INSPECTION</option>');
+            }
+            else {
+                $('#reason').append('<option value="MANAGED PROPERTY INSPECTION">MANAGED PROPERTY INSPECTION</option>');
+            }
+            if (Hiddenreason == "CORPORATE CLIENT MEETING") {
+                $('#reason').append('<option selected value="CORPORATE CLIENT MEETING">CORPORATE CLIENT MEETING</option>');
+            }
+            else {
+                $('#reason').append('<option value="CORPORATE CLIENT MEETING">CORPORATE CLIENT MEETING</option>');
+            }
+            if (Hiddenreason == "AFTER HRS EVENT ATTEND") {
+                $('#reason').append('<option selected value="AFTER HRS EVENT ATTEND">AFTER HRS EVENT ATTEND</option>');
+            }
+            else {
+                $('#reason').append('<option value="AFTER HRS EVENT ATTEND">AFTER HRS EVENT ATTEND</option>');
+            }
+            if (Hiddenreason == "CLIENT MOVE-IN ASSIST") {
+                $('#reason').append('<option selected value="CLIENT MOVE-IN ASSIST">CLIENT MOVE-IN ASSIST</option>');
+            }
+            else {
+                $('#reason').append('<option value="CLIENT MOVE-IN ASSIST">CLIENT MOVE-IN ASSIST</option>');
+            }
+            if (Hiddenreason == "CLIENT AIRPORT MEET") {
+                $('#reason').append('<option selected value="CLIENT AIRPORT MEET">CLIENT AIRPORT MEET</option>');
+            }
+            else {
+                $('#reason').append('<option value="CLIENT AIRPORT MEET">CLIENT AIRPORT MEET</option>');
+            }
+            if (Hiddenreason == "Other") {
+                $('#reason').append('<option selected value="Other">Other</option>');
+            }
+            else {
+                $('#reason').append('<option value="Other">Other</option>');
+            }
+        }
+    }
+
+    function reason() {
+        var Hiddenreason = $('#hiddenReason').val();
+        if (Hiddenreason == "Other") {
+            $('#divOtherReason').show();
+        }
+        else {
+            $('#divOtherReason').hide();
+            $('#otherreason').val('');
+        }
+    }
+
+    $(document).ready(function () {
+        loadDriver();
+        loadLename();
+        loadReasonList();
+        reason();
+        /*$('#divGrpLeName').hide();*/
+        /*$('#divOtherReason').hide();*/
+
+        //$('#multipleLe').change(function () {
+        //    var multipleLe = $('#multipleLe').prop('checked');
+        //    if (multipleLe) {
+        //        $('#divGrpLeName').show();
+        //        $('#lenamelist').prop('multiple', true);
+        //        $('#lename').val('');
+
+        //    }
+        //    else {
+        //        $('#grouplename').val('');
+        //        $('#divGrpLeName').hide();
+        //        $('#lenamelist').prop('multiple', false);
+        //    }
+        //})
+
+        var previouslySelected = [];
+        $("#lenamelist").change(function () {
+            var multipleLe = $('#multipleLe').prop('checked');
+
+            var date = $('#date').val();
+            var from = $('#from').val();
+            var to = $('#to').val();
+            /*var lenamelist = $('#lenamelist option:selected').val();*/
+            /*var lenamelist = this.value;*/
+
+
+            if (from == to) {
+                alert('Invalid Time');
+                return false;
+            }
+            if (date == null) {
+                alert('Select the Date');
+                return false;
+            }
+            if (from == null) {
+                alert('Enter Start time');
+                return false;
+            }
+            if (to == null) {
+                alert('Enter End time');
+                return false;
+            }
+
+            if (multipleLe) {
+
+                var lenamelist = $(this).val();
+
+                //var currentlySelected = $(this).val();
+                var newSelections = lenamelist.filter(function (element) {
+                    return previouslySelected.indexOf(element) == -1;
+                });
+                previouslySelected = lenamelist;
+
+                if (newSelections.length) {
+                    // If there are multiple new selections, we'll take the last in the list
+                    var lastSelected = newSelections.reverse()[0];
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("GroupLeNameAdding", "Marketing")",
+                    data: { date: date, ft: from, tt: to, lenamelist: lastSelected},
+                    success: function (response) {
+                        if (response == "") {
+                            var grple = $('#lenamelist option:selected').toArray().map(item => item.text).join();
+                            $('#grouplename').val(grple);
+                        }
+                        else {
+                            alert(response);
+                        }
+                        /*location.reload();*/
+                    }
+                });
+
+
+            }
+            else {
+                $('#lename').val('');
+                var le = $('#lenamelist :selected').val();
+                $('#lename').val(le);
+            }
+        });
+
+        $('#reason').change(function () {
+            var reason = $('#reason :selected').val();
+            if (reason == "Other") {
+                $('#divOtherReason').show();
+            }
+            else {
+                $('#divOtherReason').hide();
+                $('#otherreason').val('');
+            }
+        })
+
+        var fromtime;
+        $('#from').change(function () {
+            var from = $('#from :selected').val();
+            if (from == "5:00am") {
+                fromtime = "5:00";
+            }
+            if (from == "5:30am") {
+                fromtime = "5:30";
+            }
+            if (from == "6:00am") {
+                fromtime = "6:00";
+            }
+            if (from == "6:30am") {
+                fromtime = "6:30";
+            }
+            if (from == "7:00am") {
+                fromtime = "7:00";
+            }
+            if (from == "7:30am") {
+                fromtime = "7:30";
+            }
+            if (from == "8:00") {
+                fromtime = "8:00";
+            }
+            if (from == "8:30") {
+                fromtime = "8:30";
+            }
+            if (from == "9:00") {
+                fromtime = "9:00";
+            }
+            if (from == "9:30") {
+                fromtime = "9:30";
+            }
+            if (from == "10:00") {
+                fromtime = "10:00";
+            }
+            if (from == "11:00") {
+                fromtime = "11:00";
+            }
+            if (from == "11:30") {
+                fromtime = "11:30";
+            }
+            if (from == "12:00") {
+                fromtime = "12:00";
+            }
+            if (from == "12:30") {
+                fromtime = "12:30";
+            }
+            if (from == "1:00") {
+                fromtime = "13:00";
+            }
+            if (from == "1:30") {
+                fromtime = "13:30";
+            }
+            if (from == "2:00") {
+                fromtime = "14:00";
+            }
+            if (from == "2:30") {
+                fromtime = "14:30";
+            }
+            if (from == "3:00") {
+                fromtime = "15:00";
+            }
+            if (from == "3:30") {
+                fromtime = "15:30";
+            }
+            if (from == "4:00") {
+                fromtime = "16:00";
+            }
+            if (from == "4:30") {
+                fromtime = "16:30";
+            }
+            if (from == "5:00") {
+                fromtime = "17:00";
+            }
+            if (from == "5:30") {
+                fromtime = "17:30";
+            }
+            if (from == "6:00") {
+                fromtime = "18:00";
+            }
+            if (from == "6:30") {
+                fromtime = "18:30";
+            }
+            if (from == "7:00") {
+                fromtime = "19:00";
+            }
+            if (from == "7:30") {
+                fromtime = "19:30";
+            }
+            if (from == "8:00pm") {
+                fromtime = "20:00";
+            }
+        })
+
+        var totime;
+        $('#to').change(function () {
+            var to = $('#to :selected').val();
+            if (to == "5:00am") {
+                totime = "5:00";
+            }
+            if (to == "5:30am") {
+                totime = "5:30";
+            }
+            if (to == "6:00am") {
+                totime = "6:00";
+            }
+            if (to == "6:30am") {
+                totime = "6:30";
+            }
+            if (to == "7:00am") {
+                totime = "7:00";
+            }
+            if (to == "7:30am") {
+                totime = "7:30";
+            }
+            if (to == "8:00") {
+                totime = "8:00";
+            }
+            if (to == "8:30") {
+                totime = "8:30";
+            }
+            if (to == "9:00") {
+                totime = "9:00";
+            }
+            if (ftorom == "9:30") {
+                totime = "9:30";
+            }
+            if (to == "10:00") {
+                totime = "10:00";
+            }
+            if (to == "11:00") {
+                totime = "11:00";
+            }
+            if (to == "11:30") {
+                totime = "11:30";
+            }
+            if (to == "12:00") {
+                totime = "12:00";
+            }
+            if (to == "12:30") {
+                totime = "12:30";
+            }
+            if (to == "1:00") {
+                totime = "13:00";
+            }
+            if (to == "1:30") {
+                totime = "13:30";
+            }
+            if (to == "2:00") {
+                fromtime = "14:00";
+            }
+            if (to == "2:30") {
+                totime = "14:30";
+            }
+            if (to == "3:00") {
+                totime = "15:00";
+            }
+            if (to == "3:30") {
+                totime = "15:30";
+            }
+            if (to == "4:00") {
+                totime = "16:00";
+            }
+            if (to == "4:30") {
+                totime = "16:30";
+            }
+            if (to == "5:00") {
+                totime = "17:00";
+            }
+            if (to == "5:30") {
+                totime = "17:30";
+            }
+            if (to == "6:00") {
+                totime = "18:00";
+            }
+            if (to == "6:30") {
+                totime = "18:30";
+            }
+            if (to == "7:00") {
+                totime = "19:00";
+            }
+            if (to == "7:30") {
+                totime = "19:30";
+            }
+            if (to == "8:00pm") {
+                totime = "20:00";
+            }
+        })
+
+        $('#updateschedule').click(function () {
+            var Id = $('#Id').val();
+            var replacele = $('#replacele').val();
+            var date = $('#date').val();
+            var from = $('#from').val();
+            var to = $('#to').val();
+            var scheduletype = $('#scheduletype :selected').val();
+            var clientname = $('#clientname').val();
+            var contactno = $('#contactno').val();
+            var referenceno = $('#referenceno').val();
+            var address = $('#address').val();
+            var drivername = $('#drivername :selected').val();
+            var multipleLe = $('#multipleLe').prop('checked');
+            var lenamelist = $('#lenamelist :selected').val();
+            var grouplename = $('#grouplename').val();
+            var lename = $('#lename').val();
+            var reasonPN = $('#reason :selected').val();
+            var otherreason = $('#otherreason').val();
+            var detailsRemarks = $('#detailsRemarks').val();
+            var otherinstructionComments = $('#otherinstructionComments').val();
+            var returntime = $('#returntime').val();
+
+            if (scheduletype == null) {
+                alert('Schedule type is Required');
+                return false;
+            }
+            if (from == to) {
+                alert('Invalid Time');
+                return false;
+            }
+            if (date == null) {
+                alert('Select the Date');
+                return false;
+            }
+            if (from == null) {
+                alert('Enter Start time');
+                return false;
+            }
+            if (to == null) {
+                alert('Enter End time');
+                return false;
+            }
+            if (drivername == null) {
+                alert('Driver Name is required');
+                return false;
+            }
+            if (lename == null) {
+                alert('L.E Name is Required');
+                return false;
+            }
+            if (reasonPN == null) {
+                alert('Reason is Required');
+                return false;
+            }
+            if (clientname == null) {
+                alert('Enter the Client Name');
+                return false;
+            }
+            if (detailsRemarks == null) {
+                alert('Detail is required');
+                return false;
+            }
+            if (address == null) {
+                alert('Enter the Address');
+                return false;
+            }
+
+            var confirmMessageBox = confirm('Are you Sure, you want to Update this activity?');
+            if (confirmMessageBox) {
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("UpdateDriverSchedule", "Marketing")",
+                    data: { Id: Id, replacele: replacele, date: date, ft: fromtime, FromTime: from, tt: totime, ToTime: to, scheduletype: scheduletype, clientname: clientname, contactno: contactno, referenceno: referenceno, address: address, drivername: drivername, multipleLe: multipleLe, lenamelist: lenamelist, grouplename: grouplename, lename: lename, reasonPN: reasonPN, otherreason: otherreason, detailsRemarks: detailsRemarks, otherinstructionComments: otherinstructionComments, returntime: returntime},
+                    success: function (response) {
+                        alert(response);
+                        if (response == "This Schedule is Updated succesfully!") {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+            else {
+                alert('Driver Log is cancelled!');
+                /*return false;*/
+            }
+        })
+
+        $('#submitbtn').click(function () {
+
+            var date = $('#date').val();
+            var from = $('#from').val();
+            var to = $('#to').val();
+            var scheduletype = $('#scheduletype :selected').val();
+            var clientname = $('#clientname').val();
+            var contactno = $('#contactno').val();
+            var referenceno = $('#referenceno').val();
+            var address = $('#address').val();
+            var drivername = $('#drivername :selected').val();
+            var multipleLe = $('#multipleLe').prop('checked');
+            var lenamelist = $('#lenamelist :selected').val();
+            var grouplename = $('#grouplename').val();
+            var lename = $('#lename').val();
+            var reasonPN = $('#reason :selected').val();
+            var otherreason = $('#otherreason').val();
+            var detailsRemarks = $('#detailsRemarks').val();
+            var otherinstructionComments = $('#otherinstructionComments').val();
+            var namecombo = $('#namecombo :selected').val();
+
+            if (namecombo == lename) {
+                alert('Already this LE is available in activity');
+                return false;
+            }
+            var groupletxt=$('#groupletxt').val(grouplename + ',' + namecombo);
+
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("AddLESubmit", "Marketing")",
+                data: { date: date, ft: fromtime, FromTime: from, tt: totime, ToTime: to, scheduletype: scheduletype, clientname: clientname, contactno: contactno, referenceno: referenceno, address: address, drivername: drivername, multipleLe: multipleLe, lenamelist: lenamelist, grouplename: grouplename, lename: lename, reasonPN: reasonPN, otherreason: otherreason, detailsRemarks: detailsRemarks, otherinstructionComments: otherinstructionComments, namecombo: namecombo, groupletxt: groupletxt},
+                success: function (response) {
+                    alert(response);
+                    if (response == "Leasing executive is added in the Scheduled activity") {
+                        location.reload();
+                    }
+                }
+            });
+
+            @*var confirmMessageBox = confirm('Are you Sure, you want to Update this activity?');
+            if (confirmMessageBox) {
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("UpdateDriverSchedule", "Marketing")",
+                    data: { Id: Id, replacele: replacele, date: date, ft: from, tt: to, scheduletype: scheduletype, clientname: clientname, contactno: contactno, referenceno: referenceno, address: address, drivername: drivername, multipleLe: multipleLe, lenamelist: lenamelist, grouplename: grouplename, lename: lename, reasonPN: reasonPN, otherreason: otherreason, detailsRemarks: detailsRemarks, otherinstructionComments: otherinstructionComments, returntime: returntime},
+                    success: function (response) {
+                        alert(response);
+                        if (response == "This Schedule is Updated succesfully!") {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+            else {
+                alert('Driver Log is cancelled!');
+                /*return false;*/
+            }*@
+        })
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    
+
+    <form asp-controller="Marketing" asp-action="UpdateDriverScheduling">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Edit Ad-Hoc Driver Scheduling</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <br />
+                    @*@Html.HiddenFor(model => model.replacele)*@
+                    <input type="hidden" id="Id" asp-for="driverScheduel.Id" />
+                    <input type="hidden" id="replacele" asp-for="replacele" />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Date</label>
+                                <input id="date" asp-for="driverScheduel.Date" class="form-control" type="date" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">From</label>
+                                @*<input id="from" asp-for="driverScheduel.FromTime" class="form-control" type="time" style="border-radius: 10px;" />*@
+                                <select id="from" asp-for="driverScheduel.FromTime" class="form-control" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                    <option value="5:00am">5:00am</option>
+                                    <option value="5:30am">5:30am</option>
+                                    <option value="6:00am">6:00am</option>
+                                    <option value="6:30am">6:30am</option>
+                                    <option value="7:00am">7:00am</option>
+                                    <option value="7:30am">7:30am</option>
+                                    <option value="8:00">8:00am</option>
+                                    <option value="8:30">8:30am</option>
+                                    <option value="9:00">9:00am</option>
+                                    <option value="9:30">9:30am</option>
+                                    <option value="10:00">10:00am</option>
+                                    <option value="10:30">10:30am</option>
+                                    <option value="11:00">11:00am</option>
+                                    <option value="11:30">11:30am</option>
+                                    <option value="12:00">12:00pm</option>
+                                    <option value="12:30">12:30pm</option>
+                                    <option value="1:00">1:00pm</option>
+                                    <option value="1:30">1:30pm</option>
+                                    <option value="2:00">2:00pm</option>
+                                    <option value="2:30">2:30pm</option>
+                                    <option value="3:00">3:00pm</option>
+                                    <option value="3:30">3:30pm</option>
+                                    <option value="4:00">4:00pm</option>
+                                    <option value="4:30">4:30pm</option>
+                                    <option value="5:00">5:00pm</option>
+                                    <option value="5:30">5:30pm</option>
+                                    <option value="6:00">6:00pm</option>
+                                    <option value="6:30">6:30pm</option>
+                                    <option value="7:00">7:00pm</option>
+                                    <option value="7:30">7:30pm</option>
+                                    <option value="8:00pm">8:00pm</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">To</label>
+                                @*<input id="to" asp-for="driverScheduel.ToTime" class="form-control" type="time" style="border-radius: 10px;" />*@
+                                <select id="to" asp-for="driverScheduel.ToTime" class="form-control" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                    <option value="5:00am">5:00am</option>
+                                    <option value="5:30am">5:30am</option>
+                                    <option value="6:00am">6:00am</option>
+                                    <option value="6:30am">6:30am</option>
+                                    <option value="7:00am">7:00am</option>
+                                    <option value="7:30am">7:30am</option>
+                                    <option value="8:00">8:00am</option>
+                                    <option value="8:30">8:30am</option>
+                                    <option value="9:00">9:00am</option>
+                                    <option value="9:30">9:30am</option>
+                                    <option value="10:00">10:00am</option>
+                                    <option value="10:30">10:30am</option>
+                                    <option value="11:00">11:00am</option>
+                                    <option value="11:30">11:30am</option>
+                                    <option value="12:00">12:00pm</option>
+                                    <option value="12:30">12:30pm</option>
+                                    <option value="1:00">1:00pm</option>
+                                    <option value="1:30">1:30pm</option>
+                                    <option value="2:00">2:00pm</option>
+                                    <option value="2:30">2:30pm</option>
+                                    <option value="3:00">3:00pm</option>
+                                    <option value="3:30">3:30pm</option>
+                                    <option value="4:00">4:00pm</option>
+                                    <option value="4:30">4:30pm</option>
+                                    <option value="5:00">5:00pm</option>
+                                    <option value="5:30">5:30pm</option>
+                                    <option value="6:00">6:00pm</option>
+                                    <option value="6:30">6:30pm</option>
+                                    <option value="7:00">7:00pm</option>
+                                    <option value="7:30">7:30pm</option>
+                                    <option value="8:00pm">8:00pm</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Schedule Type</label>
+                                @*<input id="scheduletype" class="form-control" type="text" style="border-radius: 10px;" value="AD-HOC ACTIVITIES" />*@
+                                <select id="scheduletype" asp-for="driverScheduel.Stype" class="form-control" style="border-radius: 10px;">
+                                    <option selected value="AD-HOC ACTIVITIES">AD-HOC ACTIVITIES</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Client Name</label>
+                                <input id="clientname" asp-for="driverScheduel.ClentName" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Contact No</label>
+                                <input id="contactno" asp-for="driverScheduel.Mobile" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Reference No</label>
+                                <input id="referenceno" asp-for="driverScheduel.ReferenceNo" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Address</label>
+                                <textarea id="address" asp-for="driverScheduel.Address" class="form-control" style="width: 427px; border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Driver Name</label>
+                                <select id="drivername" asp-for="driverScheduel.DriverName" class="form-control" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                </select>
+                                <input type="hidden" id="hiddenDriver" asp-for="driverScheduel.DriverName" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Return Time</label>
+                                <input id="returntime" asp-for="driverScheduel.Returntime" class="form-control" type="time" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">LE Name</label>
+                                <input disabled id="lename" asp-for="driverScheduel.LEname" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        @if (Context.Session.GetString("CurrentUserRole") == "Administrator")
+                        {
+                            @*<div class="col-lg-3">
+                                    <div class="form-group" style="margin-top: 34px;">
+                                        <label class="control-label text-black-50">Multiple LE</label>
+                                        <input id="multipleLe" asp-for="multipleLe" type="checkbox" />
+                                    </div>
+                                </div>*@
+
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Select LE Name</label>
+                                    <select id="lenamelist" class="form-control" type="text" style="border-radius: 10px;">
+                                        <option hidden>--Select--</option>
+                                    </select>
+                                    @*<label class="control-label text-black-50" style="font-size: 13px;">Note: To select multiple LE, if Multiple LE option is checked ,press ctrl and click the LE.</label>*@
+                                    <a href="#" data-target="#AddLEModel" data-backdrop="static" data-keyboard="false" data-toggle="modal">Add LE</a>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="col-lg-6">
+                            <div class="row" style="width: 1150px;">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LE Group</label>
+                                        <textarea id="grouplename" asp-for="driverScheduel.Grouple" class="form-control" type="text" style="border-radius: 10px; height: 100px;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" style="margin-top: 30px;">
+                                    <div class="row"><button class="btn btn-primary" style="border-radius: 10px;">=</button></div>
+                                    <br />
+                                    <div class="row"><button class="btn btn-primary" style="border-radius: 10px;">+</button></div>
+                                </div>
+                                @if (Context.Session.GetString("CurrentUserRole") == "Administrator")
+                                {
+                                    <div class="col-lg-3" style="margin-top: 30px; margin-left: -233px;">
+                                        <div class="row">
+                                            <select id="lecombo1" class="form-control" style="border-radius: 10px;">
+                                                <option hidden>--Select--</option>
+                                            </select>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <select id="lecombo2" class="form-control" style="border-radius: 10px;">
+                                                <option hidden>--Select--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Reason</label>
+                                <select id="reason" asp-for="driverScheduel.PropertyName" class="form-control" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                </select>
+                                <input type="hidden" id="hiddenReason" asp-for="driverScheduel.PropertyName" />
+                            </div>
+                        </div>
+                        <div id="divOtherReason" class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Other Reason</label>
+                                <textarea id="otherreason" asp-for="driverScheduel.Otherreason" class="form-control" style="width: 427px; border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Details</label>
+                                <textarea id="detailsRemarks" asp-for="driverScheduel.Remarks" class="form-control" style="width: 427px; border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Other Instructions</label>
+                                <textarea id="otherinstructionComments" asp-for="driverScheduel.Comments" class="form-control" style="width: 427px; border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        @*<button type="submit" class="btn btn-primary float-right" style="border-radius:10px;" onclick="location.href='@Url.Action("CreateProperty", "Property",Model)'">Create</button>*@
+                        <button id="updateschedule" type="button" class="btn btn-primary float-right" style="border-radius:10px;">Update Schedule</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!--popup for Add LE-->
+    <div id="AddLEModel" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="card">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Leasing Executive</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Select LE to add in the activity</label>
+                                    <select id="namecombo" class="form-control" style="border-radius: 10px;" >
+                                        <option hidden>--Select--</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Group LE</label>
+                                    <textarea id="groupletxt" class="form-control" style="border-radius: 10px;" ></textarea>
+                                </div>
+                                
+                                <div class="modal-footer">
+                                    <button type="button" id="submitbtn" class="btn btn-primary">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+</div>
+@*</div>*@

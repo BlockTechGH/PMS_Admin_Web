@@ -1,0 +1,882 @@
+﻿@model PMS_Admin_Web.Models.PA.UpdateComplaintModel
+
+@using Microsoft.AspNetCore.Http;
+
+@{
+
+    ViewData["Title"] = "Update Complaint";
+
+}
+
+
+    @*<div class="row">*@
+        <div class="col-lg-12">
+            @*@Html.Raw(@ViewBag.Alert)*@
+            @if (ViewBag.Message != null)
+            {
+                <script type="text/javascript">
+
+                        window.onload = function () {
+                            alert("@ViewBag.Message");
+                            window.location.href = "@Url.Action("MaintenanceIssue", "PA")";
+                        };
+                        /*location.reload();*/
+                </script>
+            }
+            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+            <script>
+
+                function loadCategory() {
+                    $.ajax({
+                        type: 'GET',
+                        url: "@Url.Action("LoadCategory", "Common")",
+                        success: function (response) {
+                            //alert(response);
+                            //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                            var hiddenCategory = $('#hiddenCategory').val();
+                            $.each(response, function (k, v) {
+                                if (hiddenCategory == v) {
+                                    $('#category').append('<option selected value="' + v + '" > ' + v + '</option>');
+                                }
+                                else {
+                                    $('#category').append('<option value="' + v + '" > ' + v + '</option>');
+                                }
+                                
+                            });
+                        }
+                    })
+                }
+                function loadStatus() {
+                    $.ajax({
+                        type: 'GET',
+                        url: "@Url.Action("LoadStatus", "Common")",
+                        success: function (response) {
+                            //alert(response);
+                            var hiddenStatus = $('#hiddenStatus').val();
+                            $.each(response, function (k, v) {
+                                if (v == hiddenStatus) {
+                                    $('#status').append('<option selected value="' + v + '" > ' + v + '</option>');
+                                }
+                                else {
+                                    $('#status').append('<option value="' + v + '" > ' + v + '</option>');
+                                }
+                            });
+                        }
+                    })
+                }
+
+                $(document).ready(function () {
+                    loadStatus();
+                    loadCategory();
+                    $('#divWorkdescription').hide();
+                    /*$('#divWorkdescriptionLabel').hide();*/
+                    $('#divWorkdescriptionOption').hide();
+                    $('#divAddworkdone').hide();
+                    $('#divDateComplete').hide();
+                    $('#divItempurchase').hide();
+
+                    var underObservationStop = $('#underObservationStop').val();
+                    if (underObservationStop <= Date.now.toString()) {
+                        $('#status').prop('disabled', true);
+                    }
+                    else {
+                        $('#status').prop('disabled', false);
+                    }
+
+                    $('#status').change(function () {
+                        var status = $('#status :selected').val();
+                        if (status == "Done") {
+                            
+                            $('#divWorkdescription').show();
+                            /*$('#divWorkdescriptionLabel').show();*/
+                            $('#divWorkdescriptionOption').show();
+                            $('#divAddworkdone').show();
+                            $('#divDateComplete').show();
+                            $('#divItempurchase').show();
+                        }
+                        else {
+                            
+                            $('#divWorkdescription').hide();
+                            /*$('#divWorkdescriptionLabel').hide();*/
+                            $('#divWorkdescriptionOption').hide();
+                            $('#divAddworkdone').hide();
+                            $('#divDateComplete').hide();
+                            $('#divItempurchase').hide();
+                        }
+                    })
+
+                    $('#itempurchasedYes').click(function () {
+                        //$('#itemdescription').prop('disabled', false);
+                        //$('#qty').prop('disabled', false);
+                        $("#StatusDoneModal").modal('show');
+                    })
+                    $('#itempurchasedNo').click(function () {
+                        //$('#itemdescription').prop('disabled', true);
+                        //$('#qty').prop('disabled', true);
+                        $("#StatusDoneModal").modal('hide');
+                    })
+
+                    $('#updateFollowup').click(function () {
+                        var remarks = $('#remarks').val();
+                        var MissueId = $('#MissueId').val();
+                        if (remarks.length < 1) {
+                            alert("Follow up remark is mandatory");
+                            return false;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            data: { MissueId: MissueId, remarks: remarks},
+                            url: "@Url.Action("InsertMIssueFollowup", "PA")",
+                            success: function (response) {
+                                console.log(response);
+                                window.location.reload();
+                            }
+                        })
+                    })
+                })
+
+
+            </script>
+            <form asp-controller="PA" asp-action="UpdateComplaint">
+                <div class="card" style="color:burlywood">
+                    <div class="card-header" style="background-color: darksalmon;">
+                        <h5 class="text-center" style="color:black"><strong>Edit Complaint</strong></h5>
+                    </div>
+                    <div class="card-body">
+                        <br />
+                        <div class="col-lg-12">
+                            <div class="row">
+                                @Html.HiddenFor(model => model.missue.Id)
+                                <input type="hidden" id="MissueId" asp-for="missue.Id" />
+                                @Html.HiddenFor(model => model.EmailCC)
+                                @Html.HiddenFor(model => model.EmailTo)
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Created By</label>
+                                        <input asp-for="missue.Paname" class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="LcInfo.LcNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Created On</label>
+                                        <input asp-for="missue.Doc" class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="LcInfo.LcNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Complaint No</label>
+                                        <input asp-for="missue.IssueNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="LcInfo.LcNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Maintenance Requested On</label>
+                                        <input asp-for="missue.Requestdate" class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="LcInfo.LcNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                @if (Model.missue.Underobservationstart != null)
+                                {
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Observation Started from</label>
+                                            <input asp-for="missue.Underobservationstart" class="form-control" type="text" style="border-radius: 10px;" />
+                                            @*<span asp-validation-for="LcInfo.LcNo" class="text-danger"></span>*@
+                                        </div>
+                                    </div>
+                                    @*@Html.HiddenFor(model => model.missue.Underobservationstop)*@
+                                    <input id="underObservationStop" hidden asp-for="missue.Underobservationstop" />
+                                }
+
+                            </div>
+                        </div>
+
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#IssueDetails">Issue Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#ApartmentStatus">Apartment Status</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#MaintenanceInfo">Maintenance Info from DMS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#RemarksDailyBasis">Remarks on Daily Basis for DHC</a>
+                            </li>
+                        </ul>
+                        <br />
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="IssueDetails">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Property Name</label>
+                                                <input disabled id="propertyName" asp-for="missue.Pname" class="form-control" type="text" style="border-radius: 10px;" value=" @Context.Session.GetString("CurrentUserDepartment")" />
+                                                @*<span asp-validation-for="Pname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Apt/Location</label>
+                                                <input disabled id="aptnoLocation" asp-for="missue.Aptlocation" class="form-control" type="text" style="border-radius: 10px;" />
+                                                @*<select id="aptno" asp-for="missue.Aptlocation" class="form-control" style="border-radius: 10px;">
+                        <option hidden>--Select--</option>
+                    </select>*@
+                                                @*<span asp-validation-for="Aptlocation" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Property Ref</label>
+                                                <input disabled id="propertyRef" asp-for="missue.Pref" class="form-control" type="text" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="Pname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Category</label>
+                                                <select id="category" asp-for="missue.Category" class="form-control" style="border-radius: 10px;">
+                                                    <option hidden value="">--Select--</option>
+                                                </select>
+                                                <input id="hiddenCategory" hidden asp-for="missue.Category" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Issue</label>
+                                                <textarea asp-for="missue.Issue" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                                @*<span asp-validation-for="Property.Bath" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Priority Level</label>
+                                                <select id="level" asp-for="missue.Pl" class="form-control" style="border-radius: 10px;">
+                                                    <option hidden value="">--Select--</option>
+                                                    <option value="URGENT">Urgent</option>
+                                                    <option value="HIGH">High</option>
+                                                    <option value="MEDIUM">Medium</option>
+                                                    <option value="LOW">Low</option>
+                                                </select>
+                                                @*<span asp-validation-for="Property.Bed" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Remarks</label>
+                                                <textarea id="units" asp-for="missue.Remarks" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                                @*<span asp-validation-for="Property.Units" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <label>Contractor Type</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Outsource Contractor</label>
+                                                @if (Model.missue.Contractortype != null)
+                                                {
+                                                    @if (Model.missue.Contractortype == "Outside")
+                                                    {
+                                                        <input id="outsourceContractor" asp-for="missue.Contractortype" type="radio" checked value="Outside" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="outsourceContractor" asp-for="missue.Contractortype" type="radio" value="Outside" />
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input id="outsourceContractor" asp-for="missue.Contractortype" type="radio" value="Outside" />
+                                                }
+
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Handyman (In-house)</label>
+                                                @if (Model.missue.Contractortype != null)
+                                                {
+                                                    @if (Model.missue.Contractortype == "Handyman")
+                                                    {
+                                                        <input id="handyman" asp-for="missue.Contractortype" type="radio" checked value="Handyman" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="handyman" asp-for="missue.Contractortype" type="radio" value="Handyman" />
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input id="handyman" asp-for="missue.Contractortype" type="radio" value="Handyman" />
+                                                }
+
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">IT Admin/Other</label>
+                                                @if (Model.missue.Contractortype != null)
+                                                {
+                                                    @if (Model.missue.Contractortype == "Q8realtor")
+                                                    {
+                                                        <input id="itAdminOther" asp-for="missue.Contractortype" type="radio" checked value="Q8realtor" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="itAdminOther" asp-for="missue.Contractortype" type="radio" value="Q8realtor" />
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input id="itAdminOther" asp-for="missue.Contractortype" type="radio" value="Q8realtor" />
+                                                }
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Landlord</label>
+                                                @if (Model.missue.Contractortype != null)
+                                                {
+                                                    @if (Model.missue.Contractortype == "Landlord")
+                                                    {
+                                                        <input id="landlord" asp-for="missue.Contractortype" type="radio" checked value="Landlord" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="landlord" asp-for="missue.Contractortype" type="radio" value="Landlord" />
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input id="landlord" asp-for="missue.Contractortype" type="radio" value="Landlord" />
+                                                }
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+
+                                                @if (Model.missue.Contractorname != null)
+                                                {
+                                                    <label class="control-label text-black-50">Contractor Name</label>
+                                                    <input id="name" asp-for="missue.Contractorname" class="form-control" type="text" style="border-radius: 10px;" />
+                                                }
+                                                else
+                                                {
+                                                    <label hidden class="control-label text-black-50">Contractor Name</label>
+                                                    <input hidden id="name" asp-for="missue.Contractorname" class="form-control" type="text" style="border-radius: 10px;" />
+                                                }
+                                                @*<span asp-validation-for="Pname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Status</label>
+                                                @*<input disabled asp-for="missue.Status" class="form-control" type="text" style="border-radius: 10px;" value="Pending" />*@
+                                                <select id="status" asp-for="missue.Status" class="form-control" style="border-radius: 10px;">
+                                                    <option hidden value="">--Select--</option>
+                                                </select>
+                                                <input id="hiddenStatus" hidden asp-for="missue.Status" />
+                                                @*<span asp-validation-for="Property.StreetName" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div id="divWorkdescription" class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">Work Description</label>
+                                                <textarea id="workdescription" asp-for="missue.Workdescription" type="text" class="form-control" style="border-radius: 10px;"></textarea>
+                                                <label class="control-label text-black-50" style="font-size: 13px;">Note: Do not leave unnecessary space lines.</label>
+                                            </div>
+                                        </div>
+
+
+
+                                        
+                                    </div>
+                                    @*<div class="row">
+                                        <div id="divWorkdescriptionLabel" class="row">
+                                            <div class="col-lg-6">
+                                                <label>Default Work Description</label>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                    <div id="divWorkdescriptionOption" class="row">
+                                        <div class="col-lg-12">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th><label>Default Work Description</label></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="form-group">
+                                                                <input id="firefightingsystem" asp-for="defaultworkDescription" type="radio" value="Monthly Routine Maintenance Service for Fire Alarm System, Fire Fighting System and Fire Extinguishers was done by Bader Al Mulla Co." />
+                                                                <label>Fire Fighting System</label>
+
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 135px;">
+                                                            <div class="form-group">
+                                                                <input id="landscaping" asp-for="defaultworkDescription" type="radio" value="Landscaping Maintenance in the Garden & Swimming Pool Areas was done by Awad Al Murtaji Gen. Trading & Contracting Co." />
+                                                                <label>Landscaping</label>
+
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 210px;">
+                                                            <div class="form-group">
+                                                                <input id="basementparkingarea" asp-for="defaultworkDescription" type="radio" value="Monthly Maintenance Service for Barrier Gate, Card Reader, Loop Detector, Roller Shutter and Tire Killer was done by UTC Co." />
+                                                                <label>Basement Parking Area</label>
+
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 110px;">
+                                                            <div class="form-group">
+                                                                <input id="elevators" asp-for="defaultworkDescription" type="radio" value="Monthly Maintenance for 9 Elevators from Nos.2271 till 2279 was done by OTIS Co." />
+                                                                <label>Elevators</label>
+
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 135px;">
+                                                            <div class="form-group">
+                                                                <input id="pestcontrol" asp-for="defaultworkDescription" type="radio" value="Monthly Pest Control Service for all common areas was done by Verminex Co." />
+                                                                <label>Pest Control</label>
+
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div id="divAddworkdone" class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Additional Work Done by Maintenance Staff</label>
+                                                <textarea asp-for="missue.Additionalwork" type="text" class="form-control" style="border-radius: 10px;"></textarea>
+                                            </div>
+                                        </div>
+                                        <div id="divDateComplete" class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Date Completed</label>
+                                                <input asp-for="missue.Wcdate" type="date" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div id="divItempurchase" class="col-lg-3">
+                                            <label>Items Purchased?</label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label>Yes</label>
+                                                        <input id="itempurchasedYes" asp-for="missue.Itempurchase" type="radio" value="Yes" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label>No</label>
+                                                        <input id="itempurchasedNo" asp-for="missue.Itempurchase" type="radio" value="No" checked />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="ApartmentStatus">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        @if (Model.mrequestCount == 0)
+                                        {
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Status Of Apartment</label>
+                                                    <input disabled asp-for="aptstatus" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Tenant Available Date</label>
+                                                    <input disabled asp-for="missue.Tavailability" class="form-control" type="datetime-local" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Tenant Name</label>
+                                                    <input disabled asp-for="missue.Tname" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Contact No</label>
+                                                    <input disabled asp-for="missue.Contactno" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Lease No</label>
+                                                    <input disabled asp-for="missue.Lcno" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Status Of Apartment</label>
+                                                    <input asp-for="aptstatus" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Tenant Available Date</label>
+                                                    <input asp-for="missue.Tavailability" class="form-control" type="datetime-local" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Tenant Name</label>
+                                                    <input asp-for="missue.Tname" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Contact No</label>
+                                                    <input asp-for="missue.Contactno" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Lease No</label>
+                                                    <input asp-for="missue.Lcno" class="form-control" type="text" style="border-radius: 10px;" />
+                                                    @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                                </div>
+                                            </div>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="MaintenanceInfo">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <label><strong>To be filled by Maintenance</strong></label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Status from Maintenance</label>
+                                                <textarea asp-for="StatusfromMaintenance" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                                @*<span asp-validation-for="Property.Bath" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Attenders</label>
+                                                <textarea asp-for="Attender" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                                @*<span asp-validation-for="Property.Bath" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Remarks from Maintenance</label>
+                                                <textarea asp-for="RemarksfromMaintenance" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                                @*<span asp-validation-for="Property.Bath" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="RemarksDailyBasis">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                            <thead class="bg-success">
+                                                <tr>
+                                                    <th hidden></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Followup Date</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Followup Remarks</label></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbody" class="bg-white">
+                                                @if (Model.missueFollowups == null)
+                                                {
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <label style="text-align: center;color: black;">Search string empty</label>
+                                                        </td>
+                                                    
+                                                    </tr>
+                                                    }
+                                                else
+                                                {
+                                                    @foreach (var item in Model.missueFollowups)
+                                                    {
+                                                        <tr>
+                                                            <td hidden>@item.FollowupId</td>
+                                                            <td style="color:black;">@item.FollowupDoc</td>
+                                                            <td style="color:black;">@item.FollowupRemarks</td>
+                                                        </tr>
+                                                    }
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <button class="btn btn-primary" type="button" data-target="#DailyRemarkModal" data-toggle="modal" style="border-radius:10px;">Click here to Add Remarks on daily basis</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="color:burlywood">
+                    <div class="card-body">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Update</button>
+                                @*<button type="submit" class="btn btn-primary float-right">Create</button>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!--popup for Adding Daily Remarks-->
+
+
+            <div id="DailyRemarkModal" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Followup Remarks</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label style="color:black">Followup Date</label>
+                                <input id="followupDate" disabled type="text" class="form-control" style="border-radius: 10px;" value="@DateTime.Today" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Remarks</label>
+                                <textarea id="remarks" type="text" class="form-control" style="border-radius: 10px;"></textarea>
+                                <label class="control-label text-black-50" style="font-size: 13px;">Note: Do not leave unnecessary space lines.</label>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="updateFollowup" type="button" class="btn btn-primary" style="border-radius:10px;">Update</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:10px;">Close</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!---->
+
+            <!--popup for Status = done-->
+            <script>
+                $(document).ready(function () {
+                    $('#firefightingsystem').click(function () {
+                        var firefightingsystem = $('#firefightingsystem').val();
+                        $('#workdescription').val('');
+                        $('#workdescription').val(firefightingsystem);
+                    })
+                    $('#landscaping').click(function () {
+                        var landscaping = $('#landscaping').val();
+                        $('#workdescription').val('');
+                        $('#workdescription').val(landscaping);
+                    })
+                    $('#basementparkingarea').click(function () {
+                        var basementparkingarea = $('#basementparkingarea').val();
+                        $('#workdescription').val('');
+                        $('#workdescription').val(basementparkingarea);
+                    })
+                    $('#elevators').click(function () {
+                        var elevators = $('#elevators').val();
+                        $('#workdescription').val('');
+                        $('#workdescription').val(elevators);
+                    })
+                    $('#pestcontrol').click(function () {
+                        var pestcontrol = $('#pestcontrol').val();
+                        $('#workdescription').val('');
+                        $('#workdescription').val(pestcontrol);
+                    })
+
+
+
+                    var itempurchased = [];
+                    var qtypurchased = [];
+                    $('#add').click(function () {
+                        var itemdescription = $('#itemdescription').val();
+                        var qty = $('#qty').val();
+
+                        $('#itemdescription').val('');
+                        $('#qty').val('');
+
+                        $('#itempurchasedtbody').append('<tr>');
+                        $('#itempurchasedtbody').append('<td style="color:black">' + itemdescription + '</td>');
+                        $('#itempurchasedtbody').append('<td style="color:black">' + qty + '</td>');
+                        $('#itempurchasedtbody').append('</tr>');
+
+
+                        //var item = [ itemdescription, qty ];
+                        //itempurchased.push(item);
+                        itempurchased.push(itemdescription);
+                        qtypurchased.push(qty);
+                        $('#hiddenItempurchasedlist').val(itempurchased);
+                        $('#hiddenQtypurchasedlist').val(qtypurchased);
+                        /*$('#hiddenItempurchasedlist').val(JSON.stringify(itempurchased));*/
+                        //var html1 = '';
+                        //var html2 = '';
+                        //itempurchased.push(itemdescription);
+                        //for (var t = 0; t < itempurchased.length; t++) {
+                        //    html1 += '<input id = "hiddenItempurchasedlist_' + t + '" type = "hidden" name = "itemarray[]" value ="' + itemdescription[t] + '">';
+                        //    html2 += '<input id = "hiddenQtypurchasedlist_' + t + '" type = "hidden" name = "qtyarray[]" value ="' + qty[t] + '">';
+                        //    //$('#hiddenvals').append('<input id = "hiddenItempurchasedlist_' + t + '" type = "hidden" name = "hiddenItempurchasedlist[]" value ="' + JSON.stringify(itempurchased[t]) + '">');
+                        //}
+                        //$('#hiddenitems').html(html1);
+                        //$('#hiddenqtys').html(html2);
+
+
+                        @*var floorplanSettings = @Html.Raw(Json.Encode(Model.itempurchasedList));*@
+
+
+                        //$('#hiddenQtypurchasedlist').append(qty);
+                        //$('#hiddenItempurchasedlist').append(itemdescription);
+
+
+                    })
+
+                    $('#remove').click(function () {
+                        $('#itempurchasedtbody').remove();
+                        $('#hiddenItempurchasedlist').remove();
+                        itempurchased.remove();
+                        qtypurchased.remove();
+                        //$('#hiddenQtypurchasedlist').remove();
+                    })
+
+                    $('#update').click(function () {
+                        var hiddenItempurchasedlist = $('#hiddenItempurchasedlist').val();
+                        var hiddenQtypurchasedlist = $('#hiddenQtypurchasedlist').val();
+                        var MissueId = $('#MissueId').val();
+                        var rowCount = $('#itempurchasedtbody tr').length;
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("SaveItemPurchased", "PA")",
+                            data: { itemsPurchased: hiddenItempurchasedlist, qtyPurchased: hiddenQtypurchasedlist ,missueId: MissueId, rows: rowCount},
+                            success: function (response) {
+                                if (response == 1) {
+                                    console.log("Purchased Items Added");
+                                }
+                            }
+                        })
+                    })
+                })
+            </script>
+
+            <div id="StatusDoneModal" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Completion Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+
+
+                            <div class="form-group">
+                                <label>Item Description</label>
+                                <input id="itemdescription" type="text" class="form-control" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label>Qty</label>
+                                <input id="qty" type="text" class="form-control" style="border-radius: 10px;" />
+                            </div>
+
+                            <div class="form-group">
+                                <table>
+                                    <tr>
+                                        <td><button id="add" class="btn btn-primary" style="border-radius:10px">Add</button></td>
+                                        <td><button id="remove" class="btn btn-primary" style="border-radius:10px">Remove</button></td>
+                                    </tr>
+                                </table>
+                                
+                            </div>
+                            @*<div class="form-group">
+                                
+                            </div>*@
+                            @*<div id="hiddenitems"></div>
+                            <div id="hiddenqtys"></div>*@
+
+                            @*<input id="hiddenItempurchasedlist" type="hidden" asp-for="itemarray" />
+                            <input id="hiddenQtypurchasedlist" type="hidden" asp-for="qtyarray" />*@
+
+                            <input id="hiddenItempurchasedlist" type="hidden" />
+                            <input id="hiddenQtypurchasedlist" type="hidden" />
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success">
+                                    <tr>
+
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Item Description</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Qty</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itempurchasedtbody" class="bg-white">
+                                </tbody>
+                            </table>
+
+                            <div class="modal-footer">
+                                <button type="button" id="update" class="btn btn-primary" style="border-radius:10px;">Update</button>
+                                <button type="button"  class="btn btn-secondary" data-dismiss="modal" style="border-radius:10px;">Close</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!---->
+        </div>
+    @*</div>*@

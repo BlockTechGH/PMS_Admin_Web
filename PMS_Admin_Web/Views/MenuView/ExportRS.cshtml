@@ -1,0 +1,999 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+
+@model PMS_Admin_Web.Models.Property.ExportRSModel
+
+@{
+    ViewData["Title"] = "ExportRS";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+
+        $('#btnupdatevacant').hide();
+        $('#btnUVRSF').hide();
+        $('#btnupdatechanges').prop('disabled', true);
+        $('#divreportoption').hide();
+
+        /*var pryEmpId;*/
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var pryEmpId = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteUser", "User")",
+                    data: { Id: pryEmpId },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#btnviewchanges').click(function () {
+            $('#btnupdatechanges').prop('disabled', true);
+            var bname = $('#bname').val();
+            var statementmonth = $('#statementmonth').val();
+            var response1Count;
+            var response2Count;
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select Statement Month');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, statementmonth: statementmonth},
+                url: "@Url.Action("BtnViewChanges1ExportRS", "MenuView")",
+                success: function (response) {
+                    if (response > 0) {
+                        alert('The Rent Statement is already exported for selected date,click Report option and go to VIEW FROM RENT STATEMENT option if you want to view from RENT STATEMENT');
+                    }
+                    $('#viewchangesModal').modal({ backdrop: "static" });
+                    $.ajax({
+                        type: "POST",
+                        data: { bname: bname, statementmonth: statementmonth },
+                        url: "@Url.Action("BtnViewChange2ExportRS", "MenuView")",
+                        success: function (response1) {
+                            $('#tbodymastergrid').html('');
+                            response1Count = response1.length;
+                            $.each(response1, function (k, v) {
+                                $('#tbodymastergrid').append(`<tr>
+                                                                <td style="color:black;">${v.aptno}</td>
+                                                                <td style="color:black;">${v.cname}</td>
+                                                                <td style="color:black;">${v.cnat}</td>
+                                                                <td style="color:black;">${v.crent}</td>
+                                                                <td style="color:black;">${v.payable}</td>
+                                                                <td style="color:black;">${v.cbtype}</td>
+                                                                <td style="color:black;">${v.bath}</td>
+                                                                <td style="color:black;">${v.leasestart}</td>
+                                                                <td style="color:black;">${v.leaseend}</td>
+                                                                <td style="color:black;">${v.lctype}</td>
+                                                                <td class="propref" style="color:black;">${v.propertyref}</td>
+                                                              </tr>`);
+                            })
+                        }
+                    })
+
+                    $.ajax({
+                        type: "POST",
+                        data: { bname: bname, statementmonth: statementmonth },
+                        url: "@Url.Action("BtnViewChange3ExportRS", "MenuView")",
+                        success: function (response2) {
+                            $('#tbodytlcgrid').html('');
+                            response2Count = response2.length;
+                            $.each(response2, function (k, v) {
+                                $('#tbodytlcgrid').append(`<tr id="tlc${v.pref}">
+                                                            <td style="color:black;">${v.aptno}</td>
+                                                            <td style="color:black;">${v.tenantname}</td>
+                                                            <td style="color:black;">${v.nationality}</td>
+                                                            <td style="color:black;">${v.lCrent}</td>
+                                                            <td style="color:black;">${v.payable}</td>
+                                                            <td style="color:black;">${v.btype}</td>
+                                                            <td style="color:black;">${v.bath}</td>
+                                                            <td style="color:black;">${v.pmode}</td>
+                                                            <td style="color:black;">${v.ftype}</td>
+                                                            <td style="color:black;">${v.enqtype}</td>
+                                                            <td style="color:black;">${v.leasestart}</td>
+                                                            <td style="color:black;">${v.leaseend}</td>
+                                                            <td style="color:black;">${v.movedate}</td>
+                                                            <td class="pref" style="color:black;">${v.pref}</td>
+                                                          </tr>`);
+                            })
+                        }
+                    })
+                    $('#btnupdatechanges').prop('disabled', false);
+                    if (response1Count == 0 && response2Count == 0) {
+                        $('#btnupdatevacant').show();
+                        $('#btnUVRSF').show();
+                    }
+                    else {
+                        $('#btnupdatevacant').hide();
+                        $('#btnUVRSF').hide();
+                    }
+                }
+            })
+
+        })
+
+        $('#btnhide').click(function () {
+            $('#viewchangesModal').modal('hide');
+        })
+
+        $('#btnupdatechanges').click(function () {
+            var detailgridtrs = document.getElementsByClassName('propertyref');
+            var mastergridtrs = document.getElementsByClassName('propref');
+            var tlcgridtrs = document.getElementsByClassName('pref');
+
+            for (item1 of mastergridtrs) {
+                for (item2 of detailgridtrs) {
+                    if (item2.innerText == item1.innerText) {
+                        var Row = document.getElementById(item2.innerText);
+                        var Cells = Row.getElementsByTagName("td");
+                        Cells[2].innerText = "RESERVED";
+                        Cells[3].innerText = "";
+                        Cells[4].innerText = "0.000";
+                        Cells[5].innerText = "0.000";
+                        Cells[8].innerText = "";
+                        Cells[9].innerText = "";
+                        Cells[10].innerText = "";
+                        Cells[11].innerText = "";
+                        Cells[12].innerText = "";
+                    }
+                }
+            }
+
+            for (item3 of tlcgridtrs) {
+                var tlcRow = document.getElementById('tlc' + item3.innerText);
+                var tlcCells = tlcRow.getElementsByTagName("td");
+                for (item4 of detailgridtrs) {
+                    var detailRow = document.getElementById(item4.innerText);
+                    var detailCells = detailRow.getElementsByTagName("td");
+                    if (item4.innerText == item3.innerText) {
+                        detailCells[2].innerText = tlcCells[1].innerText;
+                        detailCells[3].innerText = tlcCells[2].innerText;
+                        detailCells[4].innerText = tlcCells[3].innerText;
+                        detailCells[5].innerText = tlcCells[4].innerText;
+                        detailCells[6].innerText = tlcCells[5].innerText;
+                        detailCells[7].innerText = tlcCells[6].innerText;
+                        detailCells[8].innerText = tlcCells[7].innerText;
+                        detailCells[9].innerText = tlcCells[8].innerText;
+                        detailCells[10].innerText = tlcCells[9].innerText;
+                        detailCells[11].innerText = tlcCells[10].innerText;
+                        detailCells[12].innerText = tlcCells[11].innerText;
+                    }
+                }
+            }
+
+            $('#btnupdatevacant').show();
+            $('#btnUVRSF').show();
+        });
+
+        $('#btnupdatevacant').click(function () {
+            var detailgridclassname = document.getElementsByClassName('tenantname');
+            var detailgridclassstatus = document.getElementsByClassName('status');
+            var detailgridtrs = document.getElementsByClassName('propertyref');
+            var detailgridclass = document.getElementsByClassName('detailgridclass');
+            var dglength = detailgridclass.length;
+            for (let i = 0; i < dglength; i++) {
+                var detailRow = document.getElementById(detailgridtrs[i].innerText);
+                var detailCells = detailRow.getElementsByTagName("td");
+                if (detailgridclassname[i].innerText.length == 0 && detailgridclassstatus[i].innerText == "Vacant") {
+                    detailCells[2].innerText = "VACANT";
+                    detailCells[3].innerText = "";
+                    detailCells[4].innerText = "0.000";
+                    detailCells[5].innerText = "0.000";
+                    detailCells[6].innerText = "";
+                    detailCells[7].innerText = "";
+                    detailCells[8].innerText = "";
+                    detailCells[9].innerText = "";
+                    detailCells[10].innerText = "";
+                    detailCells[11].innerText = "";
+                    detailCells[12].innerText = "";
+                }
+            }
+        })
+
+        $('#btnUVRSF').click(function () {
+            var bname = $('#bname').val();
+            var detailgridclasspref = document.getElementsByClassName('propertyref');
+            var detailgridclassname = document.getElementsByClassName('tenantname');
+            var detailgridclassstatus = document.getElementsByClassName('status');
+            var detailgridclass = document.getElementsByClassName('detailgridclass');
+            var dglength = detailgridclass.length;
+            for (let i = 0; i < dglength; i++) {
+                var detailRow = document.getElementById(detailgridclasspref[i].innerText);
+                var detailCells = detailRow.getElementsByTagName("td");
+                if (detailgridclassname[i].innerText.length == 0 && detailgridclassstatus[i].innerText == "Vacant") {
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("BtnUVRSFExportRS", "MenuView")",
+                        data: { bname: bname, pref: detailgridclasspref[i].innerText },
+                        success: function (showflatresp) {
+                            if (showflatresp == "YES") {
+                                detailCells[2].innerText = "VACANT-SHOW FLAT";
+                            }
+                            else {
+                                detailCells[2].innerText = "VACANT";
+                            }
+                        }
+                    })
+
+                    detailCells[3].innerText = "";
+                    detailCells[4].innerText = "0.000";
+                    detailCells[5].innerText = "0.000";
+                    detailCells[6].innerText = "";
+                    detailCells[7].innerText = "";
+                    detailCells[8].innerText = "";
+                    detailCells[9].innerText = "";
+                    detailCells[10].innerText = "";
+                    detailCells[11].innerText = "";
+                    detailCells[12].innerText = "";
+                }
+
+                if (detailgridclassname[i].innerText.length == 0 && detailgridclassstatus[i].innerText == "Reserved") {
+                    detailCells[2].innerText = "RESERVED";
+                    detailCells[3].innerText = "";
+                    detailCells[4].innerText = "0.000";
+                    detailCells[5].innerText = "0.000";
+                    detailCells[6].innerText = "";
+                    detailCells[7].innerText = "";
+                    detailCells[8].innerText = "";
+                    detailCells[9].innerText = "";
+                    detailCells[10].innerText = "";
+                    detailCells[11].innerText = "";
+                    detailCells[12].innerText = "";
+                }
+            }
+        })
+
+        $('#btncheckall').click(function () {
+            //pending
+        })
+
+        $('#btnviewtotalrent').click(function () {
+            var detailgridclassmrent = document.getElementsByClassName('mrent');
+            var detailgridclassprent = document.getElementsByClassName('prent');
+            var detailgridclass = document.getElementsByClassName('detailgridclass');
+            var dglength = detailgridclass.length;
+            var mrent = 0;
+            var prent = 0;
+            for (let i = 0; i < dglength; i++) {
+                mrent = mrent + Number(detailgridclassmrent[i].innerText);
+                prent = prent + Number(detailgridclassprent[i].innerText);
+            }
+
+            $('#monthlyrenttotal').val(mrent);
+            $('#actualrenttotal').val(prent);
+        })
+
+        $('#btnreportoptions').click(function () {
+            $('#divreportoption').show();
+        })
+
+        $('#btnclose').click(function () {
+            $('#divreportoption').hide();
+        })
+
+        $('#btnremove').click(function () {
+            $('#tbodydetailgrid tr').has('input[name="selectedids"]:checked').remove()
+        });
+
+        $('#btnexport').click(function () {
+            var bname = $('#bname').val();
+            var statementmonth = $('#statementmonth').val();
+            var detailgridclassaptno = document.getElementsByClassName('aptno');
+            var detailgridclassname = document.getElementsByClassName('tenantname');
+            var detailgridclassnationality = document.getElementsByClassName('nationality');
+            var detailgridclassmrent = document.getElementsByClassName('mrent');
+            var detailgridclassprent = document.getElementsByClassName('prent');
+            var detailgridclassbed = document.getElementsByClassName('bed');
+            var detailgridclassbath = document.getElementsByClassName('bath');
+            var detailgridclassmode = document.getElementsByClassName('mode');
+            var detailgridclassfur = document.getElementsByClassName('fur');
+            var detailgridclasscorpind = document.getElementsByClassName('corpind');
+            var detailgridclassleasestart = document.getElementsByClassName('leasestart');
+            var detailgridclassleaseend = document.getElementsByClassName('leaseend');
+            var detailgridclasspropertyref = document.getElementsByClassName('propertyref');
+            var detailgridclass = document.getElementsByClassName('detailgridclass');
+            var dglength = detailgridclass.length;
+            var aptno = [], name = [], nationality = [], mrent = [], prent = [], bed = [], bath = [], mode = [], fur = [], corpind = [], leasestart = [], leaseend = [], propertyref = [];
+
+            for (let i = 0; i < dglength; i++) {
+                aptno.push(detailgridclassaptno[i].innerText);
+                name.push(detailgridclassname[i].innerText);
+                nationality.push(detailgridclassnationality[i].innerText);
+                mrent.push(detailgridclassmrent[i].innerText);
+                prent.push(detailgridclassprent[i].innerText);
+                bed.push(detailgridclassbed[i].innerText);
+                bath.push(detailgridclassbath[i].innerText);
+                mode.push(detailgridclassmode[i].innerText);
+                fur.push(detailgridclassfur[i].innerText);
+                corpind.push(detailgridclasscorpind[i].innerText);
+                leasestart.push(detailgridclassleasestart[i].innerText);
+                leaseend.push(detailgridclassleaseend[i].innerText);
+                propertyref.push(detailgridclasspropertyref[i].innerText);
+            }
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Month');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, statementmonth: statementmonth},
+                url: "@Url.Action("BtnExport1ExportRS", "MenuView")",
+                success: function (recordcountresp) {
+                    if (recordcountresp > 0) {
+                        var confirmMessageBox = confirm('There is already Rent statement exported for this particular month. Do you wish to continue with new Export ?');
+                        if (confirmMessageBox) {
+                            for (let i = 0; i < dglength; i++) {
+                                if (detailgridclassname[i].innerText.length == 0) {
+                                    alert('You cannot export, Do Update Vacant and Reservation');
+                                    return false;
+                                }
+                            }
+                            $.ajax({
+                                type: "POST",
+                                data: { bname: bname, statementmonth: statementmonth, dglength: dglength, detailgridclassaptno: aptno, detailgridclassname: name, detailgridclassnationality: nationality, detailgridclassmrent: mrent, detailgridclassprent: prent, detailgridclassbed: bed, detailgridclassbath: bath, detailgridclassmode: mode, detailgridclassfur: fur, detailgridclasscorpind: corpind, detailgridclassleasestart: leasestart, detailgridclassleaseend: leaseend, detailgridclasspropertyref: propertyref},
+                                url: "@Url.Action("BtnExport2ExportRS", "MenuView")",
+                                success: function (response) {
+                                    alert(response);
+                                }
+                            })
+                        }
+                    }
+                    else {
+                        $.ajax({
+                            type: "POST",
+                            data: { bname: bname, statementmonth: statementmonth, dglength: dglength, detailgridclassaptno: aptno, detailgridclassname: name, detailgridclassnationality: nationality, detailgridclassmrent: mrent, detailgridclassprent: prent, detailgridclassbed: bed, detailgridclassbath: bath, detailgridclassmode: mode, detailgridclassfur: fur, detailgridclasscorpind: corpind, detailgridclassleasestart: leasestart, detailgridclassleaseend: leaseend, detailgridclasspropertyref: propertyref },
+                            url: "@Url.Action("BtnExport3ExportRS", "MenuView")",
+                            success: function (response) {
+                                alert(response);
+                            }
+                        })
+                    }
+                }
+            })
+        })
+
+        $('#btnviewfromrentstatement').click(function () {
+            var bname = $('#bname').val();
+            var statementmonth = $('#statementmonth').val();
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Month');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, statementmonth: statementmonth},
+                url: "@Url.Action("BtnViewFromRentStatementExportRS", "MenuView")",
+                success: function (response) {
+                    $('#tbodydetailgrid').html('');
+                    $.each(response, function (k, v) {
+                        var leasestart = v.leasestart.split("T");
+                        var leaseend = v.leaseend.split("T");
+
+                        $('#tbodydetailgrid').append(`<tr id="${v.pref}" class="detailgridclass">
+                                                        <td style="color:black;"><input type="checkbox" value="${v.pref}" name="selectedids" /></td>
+                                                        <td class="aptno" style="color:black;">${v.aptno}</td>
+                                                        <td class="tenantname" style="color:black;">${v.tname}</td>
+                                                        <td class="nationality" style="color:black;">${v.nat}</td>
+                                                        <td class="mrent" style="color:black;">${v.rent}</td>
+                                                        <td class="prent" style="color:black;">${v.actualrent}</td>
+                                                        <td class="bed" style="color:black;">${v.bed}</td>
+                                                        <td class="bath" style="color:black;">${v.bath}</td>
+                                                        <td class="mode" style="color:black;">${v.mpay}</td>
+                                                        <td class="fur" style="color:black;">${v.ftype}</td>
+                                                        <td class="corpind" style="color:black;">${v.corpinv}</td>
+                                                        <td class="leasestart" style="color:black;">${leasestart[0]}</td>
+                                                        <td class="leaseend" style="color:black;">${leaseend[0]}</td>
+                                                        <td class="propertyref" style="color:black;">${v.pref}</td>
+                                                        <td class="status" style="color:black;">${v.status}</td>
+                                                        <td style="color:black;">${v.slease}</td>
+                                                      </tr>`)
+                    })
+
+                    var detailgridclassmrent = document.getElementsByClassName('mrent');
+                    var detailgridclassprent = document.getElementsByClassName('prent');
+                    var detailgridclass = document.getElementsByClassName('detailgridclass');
+                    var dglength = detailgridclass.length;
+                    var mrent = 0;
+                    var prent = 0;
+                    for (let i = 0; i < dglength; i++) {
+                        mrent = mrent + Number(detailgridclassmrent[i].innerText);
+                        prent = prent + Number(detailgridclassprent[i].innerText);
+                    }
+
+                    $('#monthlyrenttotal').val(mrent);
+                    $('#actualrenttotal').val(prent);
+                }
+            })
+        })
+
+        $('#btnverifywithaccounts').click(function () {
+            var bname = $('#bname').val();
+            var statementmonth = $('#statementmonth').val();
+            var detailgridclass = document.getElementsByClassName('detailgridclass');
+            var dglength = detailgridclass.length;
+            var pref = [], mrent = [], prent = [];
+
+            var detailgridclasspropertyref = document.getElementsByClassName('propertyref');
+            var detailgridclassmrent = document.getElementsByClassName('mrent');
+            var detailgridclassprent = document.getElementsByClassName('prent');
+
+            for (let i = 0; i < dglength; i++) {
+                pref.push(detailgridclasspropertyref[i].innerText);
+                mrent.push(detailgridclassmrent[i].innerText);
+                prent.push(detailgridclassprent[i].innerText);
+            }
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Month');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, statementmonth: statementmonth, dglength: dglength, detailgridclasspropertyref: pref, detailgridclassprent: prent, detailgridclassmrent: mrent },
+                url: "@Url.Action("BtnVerifyWithAccountsExportRS", "MenuView")",
+                success: function (response) {
+                    console.log(response);
+
+                    for (let i = 0; i < dglength; i++) {
+                        var detailRow = document.getElementById(detailgridclasspropertyref[i].innerText);
+                        //var detailCells = detailRow.getElementsByTagName("td");
+                        if (response.recordcount[i] > 0) {
+                            if (response.collectedacc[i] == response.collectedrs[i]) {
+                                //css coloring white for row
+                                detailRow.style.backgroundColor = "white";
+                            }
+                            else {
+                                //css coloring red for row
+                                detailRow.style.backgroundColor = "red";
+                            }
+
+                            if (response.mrentacc[i] == response.mrentrs[i]) {
+                                //css coloring white for row
+                                detailRow.style.backgroundColor = "white";
+                            }
+                            else {
+                                //css coloring red for row
+                                detailRow.style.backgroundColor = "red";
+                            }
+                        }
+                        else {
+                            //css coloring orange for row
+                            detailRow.style.backgroundColor = "orange";
+                        }
+                    }
+                    alert('Payable Rent Verified Successfully!Orange highlight means record not fond in accounts,Red means not matching with accounts');
+                    alert('Monthly Rent Verified Successfully!Orange highlight means record not fond in accounts,Red means not matching with accounts');
+                }
+            })
+        })
+
+        $('#btnrentfixaccounts').click(function () {
+            var bname = $('#bname').val();
+            var statementmonth = $('#statementmonth').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Month');
+                return false;
+            }
+
+            var detailgridclass = document.getElementsByClassName('detailgridclass');
+            var dglength = detailgridclass.length;
+
+            var detailgridclasspropertyref = document.getElementsByClassName('propertyref');
+            var detailgridclassprent = document.getElementsByClassName('prent');
+            var pref = [], prent = [];
+
+            for (let i = 0; i < dglength; i++) {
+                pref.push(detailgridclasspropertyref[i].innerText);
+                prent.push(detailgridclassprent[i].innerText);
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, statementmonth: statementmonth, dglength: dglength, detailgridclasspropertyref: pref, detailgridclassprent: prent},
+                url: "@Url.Action("BtnRentFixAccountsExportRS", "MenuView")",
+                success: function (response) {
+                    //console.log(response);
+                    for (let i = 0; i < dglength; i++) {
+                        var detailRow = document.getElementById(detailgridclasspropertyref[i].innerText);
+                        var detailCells = detailRow.getElementsByTagName("td");
+                        if (response.collectedacc[i] != response.collectedrs[i]) {
+                            if (response.collectedacc[i] > 0) {
+                                detailCells[5].innerText = response.detailgridprent[i];
+                                detailRow.style.backgroundColor = "yellow";
+                            }
+                        }
+                    }
+                    $('#actualrenttotal').val(response.payrlbl);
+                    alert('Verified Successfully!');
+                }
+            })
+        })
+
+        $('#btncheckrentchangeapproval').click(function () {
+            var bname = $('#bname').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname },
+                url: "@Url.Action("BtnCheckRentChangeApprovalExportRS", "MenuView")",
+                success: function (response) {
+                    $('#checkrentchangeapprovalModal').modal({ backdrop: "static" });
+                    //console.log(response);
+                    $('#tbodyrentchangeapproval').html('');
+                    $.each(response, function (k, v) {
+                        var effectfrom = v.effectfrom.split("T");
+                        var approvednotice = v.approvednotice;
+                        if (v.approvednotice == null || v.approvednotice == "") {
+                            approvednotice="Not Uploaded";
+                        }
+                        $('#tbodyrentchangeapproval').append(`<tr>
+                                                                <td hidden>${v.id}</td>
+                                                                <td style="color:black;">${v.aptno}</td>
+                                                                <td style="color:black;">${effectfrom[0]}</td>
+                                                                <td style="color:black;">${v.newrent}</td>
+                                                                <td style="color:black;">${approvednotice}</td>
+                                                                <td style="text-align: center;"><a href="${v.approvednotice}">View</a></td>
+                                                              </tr>`);
+                    })
+                }
+            })
+        })
+
+        $('#btnshowremarks').click(function () {
+            var bname = $('#bname').val();
+            var statementmonth = $('#statementmonth').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Month');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, statementmonth: statementmonth},
+                url: "@Url.Action("BtnShowRemarksExportRS", "MenuView")",
+                success: function (response) {
+                    $('#remarkModal').modal({ backdrop: "static" });
+                    $('#remark').val(response);
+                }
+            })
+        })
+
+        $('#btnclearremark').click(function () {
+            $('#remark').val('');
+        })
+
+        $('#btnsaveremark').click(function () {
+            var remark = $('#remark').val();
+            var bname = $('#bname').val();
+            var statementmonth = $('#statementmonth').val();
+
+            if (statementmonth == null || statementmonth == "") {
+                alert('Select the Month');
+                return false;
+            }
+
+            var confirmMessageBox = confirm('Are you sure you want to save this notes for particular month ?');
+            if (confirmMessageBox) {
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, statementmonth: statementmonth, remark: remark},
+                    url: "@Url.Action("BtnSaveRemarkExportRS", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        $('#remarkModal').modal('hide');
+                    }
+                })
+            }
+        })
+
+        $('#btnsublease').click(function () {
+            window.location.href = "@Url.Action("SubleaseList", "Accounts")";
+        })
+
+
+
+        //end of the docuement ready function
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form>
+                    <div class="col-lg-12">
+                        <input type="hidden" id="bname" asp-for="bname" />
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Rent Statement</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="form-group" style="width: 170px;">
+                                                    <label class="control-label text-black-50">Statement Month</label>
+                                                    <input id="statementmonth" class="form-control" type="date" style="border-radius: 10px;" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -45px; ">
+                                                <button id="btnviewchanges" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">View Changes</button>
+                                            </div>
+                                            @*<div class="col-lg-3" style="margin-left: -155px;">
+                                                <button id="btnhide" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">Hide</button>
+                                            </div>*@
+                                            <div class="col-lg-3" style="margin-left: -90px;">
+                                                <button id="btnupdatechanges" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">Update the Changes</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-left: -330px;">
+                                        <div class="row" style="width: 780px ">
+                                            <div class="col-lg-3">
+                                                <button id="btnupdatevacant" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; ">Update Vacant</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -50px;">
+                                                <button id="btnUVRSF" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; width: 300px; ">Update Vacant\Reservation\Show Flat</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: 120px;">
+                                                <button id="btncheckall" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; ">Check All</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -90px;">
+                                                <button id="btnviewtotalrent" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; ">View Total Rent</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-left: 260px; ">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <button id="btnreportoptions" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; width: 140px;">Report Options</button>
+                                            </div>
+                                            <div class="col-lg-3">
+
+                                            </div>
+                                            <div class="col-lg-3">
+
+                                            </div>
+                                            <div class="col-lg-3">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Last Update</label>
+                                            <input id="lastupdate" asp-for="MAXLBL" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Actual Rent Total</label>
+                                            <input id="actualrenttotal" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Monthly Rent Total</label>
+                                            <input id="monthlyrenttotal" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="divreportoption" class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <button id="btnremove" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">Remove</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -130px; ">
+                                                <button id="btnexport" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">Export</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -140px;">
+                                                <button id="btnviewfromrentstatement" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">View from Rent Statement</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -18px;">
+                                                <button id="btnstatementfromaccounts" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">Statement from Accounts</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-left: -307px;">
+                                        <div class="row" style="width: 780px ">
+                                            <div class="col-lg-3">
+                                                <button id="btnverifywithaccounts" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; ">Verify with Accounts</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -17px; ">
+                                                <button id="btnrentfixaccounts" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; width: 160px; ">Rent Fix (Accounts)</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -21px; ">
+                                                <button id="btncheckrentchangeapproval" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; ">Check Rent Change Approval</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -18px;">
+                                                <button id="btnshowremarks" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; ">Show Remarks</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-left: 220px; ">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <button id="btnsublease" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; width: 110px;">Sublease</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: 13px;">
+                                                <button id="btnviewtotalwosublease" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; width: 160px;">View Total without Sublease</button>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: 60px;">
+                                                <button id="btnclose" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px; width: 100px;">Close</button>
+                                            </div>
+                                            <div class="col-lg-3">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div style="overflow-y: auto;">
+                            <table id="detailgridtable" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success" style="width:100%">
+                                    <tr>
+                                        <th></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 65px;">Apt No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 365px;">Tenant Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 235px;">Nationality</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">LC-Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Payable</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 55px;">Bed</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 55px;">Bath</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 155px;">Mode of Payment</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px; ">Fur Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 175px;">Corporate/Individual</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 95px;">Lease Start</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 95px;">Lease End</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 102px;">Property Ref</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 70px;">Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Sublease</label></th>
+                                        @*<th></th>*@
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodydetailgrid">
+                                    @foreach (var item in Model.detailgrid)
+                                    {
+                                        <tr id="@item.propertyref" class="detailgridclass">
+                                            <td style="color:black;"><input type="checkbox" value="@item.propertyref" name="selectedids" /></td>
+                                            <td class="aptno" style="color:black;">@item.aptno</td>
+                                            <td class="tenantname" style="color:black;">@item.cname</td>
+                                            <td class="nationality" style="color:black;">@item.cnat</td>
+                                            <td class="mrent" style="color:black;">@item.crent</td>
+                                            <td class="prent" style="color:black;">@item.payablerent</td>
+                                            <td class="bed" style="color:black;">@item.cbtype</td>
+                                            <td class="bath" style="color:black;">@item.bath</td>
+                                            <td class="mode" style="color:black;">@item.mode</td>
+                                            <td class="fur" style="color:black;">@item.cftype</td>
+                                            <td class="corpind" style="color:black;">@item.enqtype</td>
+                                            <td class="leasestart" style="color:black;">@item.lstart</td>
+                                            <td class="leaseend" style="color:black;">@item.lend</td>
+                                            <td class="propertyref" style="color:black;">@item.propertyref</td>
+                                            <td class="status" style="color:black;">@item.status</td>
+                                            <td style="color:black;">@item.slease</td>
+                                            @*<td>
+                                        <a class="remove">Remove</a>
+                                    </td>*@
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                </form>
+
+                <!--popup for view changes-->
+                <div id="viewchangesModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 1700px; margin-left: -430px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">View Changes</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div style="overflow-y:auto">
+                                                        <table id="tablemastergrid" class="table-bordered" style=" width: 100%;">
+                                                            <thead class="bg-success">
+                                                                <tr>
+                                                                    <th style="width: 65px; color: black;">Apt No</th>
+                                                                    <th style="width: 185px; color: black;">Tenant Name</th>
+                                                                    <th style="width: 100px; color: black;">Nationality</th>
+                                                                    <th style="width: 75px; color: black;">LC-Rent</th>
+                                                                    <th style="width: 75px; color: black;">Payable</th>
+                                                                    <th style="width: 50px; color: black;">Bed</th>
+                                                                    <th style="width: 50px; color: black;">Bath</th>
+                                                                    <th style="width: 105px; color: black;">Lease Start</th>
+                                                                    <th style="width: 105px; color: black;">Lease End</th>
+                                                                    <th style="width: 125px; color: black;">New LC/Renewal</th>
+                                                                    <th style="width: 100px; color: black;">Pref</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="tbodymastergrid">
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div style="overflow-y:auto">
+                                                        <table id="tabletlcgrid" class="table-bordered" style=" width: 100%;">
+                                                            <thead class="bg-success">
+                                                                <tr>
+                                                                    <th style="width: 100px; color: black;">Apt No</th>
+                                                                    <th style="width: 600px; color: black;">Tenant Name</th>
+                                                                    <th style="width: 120px; color: black; ">Nationality</th>
+                                                                    <th style="width: 100px; color: black;">LC-Rent</th>
+                                                                    <th style="width: 100px; color: black;">Payable</th>
+                                                                    <th style="width: 100px; color: black;">Bed</th>
+                                                                    <th style="width: 50px; color: black;">Bath</th>
+                                                                    <th style="width: 290px; color: black;">Mode of Payment</th>
+                                                                    <th style="width: 70px; color: black;">Status</th>
+                                                                    <th style="width: 185px; color: black;">Individual/Corporate</th>
+                                                                    <th style="width: 215px; color: black;">Lease Start</th>
+                                                                    <th style="width: 230px; color: black;">Lease End</th>
+                                                                    <th style="width: 160px; color: black;">Moveout</th>
+                                                                    <th style="width: 130px; color: black;">Pref</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="tbodytlcgrid">
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="btnhide" type="button" class="btn btn-primary" style="border-radius:10px;">Hide</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--popup for rent change approval-->
+                <div id="checkrentchangeapprovalModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 1190px; margin-left: -195px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Rent Change Approval</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <div style="overflow-y:auto">
+                                                <table id="tablemastergrid" class="table-bordered" style=" width: 100%;">
+                                                    <thead class="bg-success">
+                                                        <tr>
+                                                            <th hidden></th>
+                                                            <th style="width: 65px; color: black;">Apt No</th>
+                                                            <th style="width: 185px; color: black;">Effective Date</th>
+                                                            <th style="width: 65px; color: black;">New Rent</th>
+                                                            <th style="width: 75px; color: black;">Doc Path</th>
+                                                            <th style="width: 110px; color: black;">Approval Document</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tbodyrentchangeapproval">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @*<button id="btnhide" type="button" class="btn btn-primary" style="border-radius:10px;">Hide</button>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--popup for remark-->
+                <div id="remarkModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 575px; margin-left: 85px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Remark</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <textarea id="remark" class="form-control" type="text" style="border-radius: 10px; width: 500px; height: 100px; "></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="btnsaveremark" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                                        <button id="btnclearremark" type="button" class="btn btn-primary" style="border-radius:10px;">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

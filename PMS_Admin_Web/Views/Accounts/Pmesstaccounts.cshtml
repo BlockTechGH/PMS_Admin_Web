@@ -1,0 +1,507 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+
+@model PMS_Admin_Web.Models.Accounts.PmesstaccountsModel
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "Pmesstaccounts";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    function loadaptno() {
+        var bldngname = $('#bldngname').val();
+        $.ajax({
+            type: "POST",
+            data: { propertyname: bldngname},
+            url: "@Url.Action("LoadAptNumber", "Common")",
+            success: function (response) {
+                $('#aptno').append(`<option value="" hidden>--Select--</option>`);
+                $.each(response, function (k,v) {
+                    $('#aptno').append(`<option value="${v}">${v}</option>`);
+                })
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+        loadaptno();
+        $('#btnreplace').prop('disabled', true);
+
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var id = $(this).attr('id');
+                var accpme = $('#accpme').val();
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("DeletePmesstaccounts", "Accounts")",
+                    data: { selectedid: id, accpme: accpme },
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#btnclear').click(function () {
+            $('#greftxt').val('');
+        })
+
+        $('#btnadd').click(function () {
+            var invoicedate = $('#invoicedate').val();
+            var amountkd = $('#amountkd').val();
+            var itemworkdescription = $('#itemworkdescription').val();
+            var category = $('#category :selected').val();
+            var invoiceno = $('#invoiceno').val();
+            var aptno = $('#aptno :selected').val();
+            var chkmultipleapartment = $('#chkmultipleapartment').prop('checked');
+            var bldngname = $('#bldngname').val();
+            var greftxt = $('#greftxt').val();
+            var accpme = $('#accpme').val();
+
+            if (invoicedate == null || invoicedate == "") {
+                alert('Mentioned the Invoice date');
+                return false;
+            }
+
+            if (amountkd == null || amountkd == "") {
+                alert('Amount is required');
+                return false;
+            }
+
+            if (category == null || category == "") {
+                alert('Enter the Category');
+                return false;
+            }
+
+            if (invoiceno == null || invoiceno == "") {
+                alert('Enter the invoice NO');
+                return false;
+            }
+
+            if (itemworkdescription == null || itemworkdescription == "") {
+                alert('Enter the Items');
+                return false;
+            }
+
+            if (aptno == null || aptno == "") {
+                alert('Enter the Apt NO');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BtnAddPmesstaccounts", "Accounts")",
+                data: { invoicedate: invoicedate, amountkd: amountkd, category: category, invoiceno: invoiceno, itemworkdescription: itemworkdescription, aptno: aptno, chkmultipleapartment: chkmultipleapartment, bldngname: bldngname, greftxt: greftxt, accpme: accpme},
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            })
+        })
+
+        $('.edit').click(function () {
+            //$('#selectedid').val('');
+            var selectedid = $(this).attr('data-id');
+            var item = $(this).attr('data-item');
+            var invdate = $(this).attr('data-invoicedate').split(" ");
+            var d = invdate[0].split("-");
+            var invoicedate = d[2] + '-' + d[1] + '-' + d[0];
+            var amount = $(this).attr('data-amount');
+            var invoiceno = $(this).attr('data-invoiceno');
+            var aptno = $(this).attr('data-aptno');
+            $('#btnreplace').prop('disabled', false);
+            $('#btnadd').prop('disabled', true);
+            /*$('#aptno').html('');*/
+
+            $('#selectedid').val(selectedid);
+            $('#invoicedate').val(invoicedate);
+            $('#itemworkdescription').val(item);
+            if (aptno == "Whole Property") {
+                $('#aptno').append(`<option hidden value="${aptno}">${aptno}</option>`);
+            }
+            else if (aptno.includes(",")) {
+                $('#greftxt').val(aptno);
+            }
+            else {
+                $('#aptno').append(`<option value="${aptno}">${aptno}</option>`);
+            }
+            $('#invoiceno').val(invoiceno);
+            $('#amountkd').val(amount);
+        })
+
+        $('#btnreplace').click(function () {
+            var selectedid = $('#selectedid').val();
+            var invoicedate = $('#invoicedate').val();
+            var amountkd = $('#amountkd').val();
+            var itemworkdescription = $('#itemworkdescription').val();
+            var invoiceno = $('#invoiceno').val();
+            var aptno = $('#aptno :selected').val();
+            var accpme = $('#accpme').val();
+
+            if (invoicedate == null || invoicedate == "") {
+                alert('Mentioned the Invoice date');
+                return false;
+            }
+
+            if (amountkd == null || amountkd == "") {
+                alert('Amount is required');
+                return false;
+            }
+
+            if (invoiceno == null || invoiceno == "") {
+                alert('Enter the invoice NO');
+                return false;
+            }
+
+            if (itemworkdescription == null || itemworkdescription == "") {
+                alert('Enter the Items');
+                return false;
+            }
+
+            if (aptno == null || aptno == "") {
+                alert('Enter the Apt NO');
+                return false;
+            }
+            var confirmMessageBox = confirm('Are you sure You want to replace ?');
+            if (confirmMessageBox) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("BtnReplacePmesstaccounts", "Accounts")",
+                    data: { selectedid: selectedid, invoicedate: invoicedate, amountkd: amountkd, invoiceno: invoiceno, itemworkdescription: itemworkdescription, aptno: aptno, accpme: accpme},
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+            else {
+                alert('Denied');
+                window.location.reload();
+            }
+        })
+
+        $('#btnupdatestatus').click(function () {
+            var selectedids = [];
+            $("input[name=selectedids]:checked").each(function (i) {
+                selectedids[i] = $(this).val();
+                /*console.log(selectedids[i]);*/
+            });
+
+            var status = $('#status :selected').val();
+            if (status == null || status == "") {
+                alert('Select status');
+                return false;
+            }
+            if (selectedids == null || selectedids == "") {
+                alert('Select PME');
+                return false;
+            }
+
+            $.ajax({
+                data: { selectedids: selectedids, status: status},
+                type: "POST",
+                url: "@Url.Action("UpdateStatusPmesstaccounts", "Accounts")",
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            })
+        })
+
+        $('#btnopen').click(function () {
+            var confirmMessageBox = confirm('Are you sure you want to Open the pme ?');
+            if (confirmMessageBox) {
+                var accpme = $('#accpme').val();
+                var bldngname = $('#bldngname').val();
+                $.ajax({
+                    data: { accpme: accpme, bldngname: bldngname},
+                    type: "POST",
+                    url: "@Url.Action("BtnOpenPmesstaccounts", "Accounts")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        var gref;
+        $('#aptno').change(function () {
+            var chkmultipleapartment = $('#chkmultipleapartment').prop('checked');
+            var greftxt = $('#greftxt').val();
+            var aptno = $('#aptno :selected').val();
+            if (chkmultipleapartment) {
+                if (greftxt == null || greftxt == "") {
+                    gref = aptno;
+                    $('#greftxt').val(gref);
+                }
+                else {
+                    gref = gref + aptno;
+                    $('#greftxt').val(gref);
+                }
+            }
+        })
+
+        //end of the document ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    @*<input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                        <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />*@
+                    <form method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>@Model.accpme</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            @*<br />*@
+                            <div class="row">
+                                @*<div class="col-lg-3"></div>*@
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Category</label>
+                                                <input id="category" class="form-control" type="text" style="border-radius: 10px;" />
+                                                @*<select id="category" class="form-control" style="border-radius: 10px;"></select>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <input id="chkmultipleapartment" type="checkbox" />
+                                                    <label class="control-label text-black-50">Multiple Apartment</label>
+                                                </div>
+                                                <input id="greftxt" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button id="btnclear" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -18px; margin-top: 31px; ">Clear</button>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <a id="btnallproperty" asp-action="pmesALLPROPERTY" asp-controller="Accounts" asp-route-pmesaccmode="FROMST" asp-route-pmemonth="@Model.pmemonth" asp-route-pmeyear="@Model.pmeyear" class="btn btn-primary" style="border-radius: 10px; margin-left: -18px; margin-top: 31px; cursor:pointer; color:white;">All Property</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Status</label>
+                                                <select id="status" class="form-control" style="border-radius: 10px;">
+                                                    <option hidden value="">--Select--</option>
+                                                    <option value="PME-1">PME-1</option>
+                                                    <option value="PME-2">PME-2</option>
+                                                    <option value="PME-3">PME-3</option>
+                                                    <option value="PME-4">PME-4</option>
+                                                    <option value="PME-5">PME-5</option>
+                                                    <option value="PME-6">PME-6</option>
+                                                    <option value="PME-7">PME-7</option>
+                                                    @*<option value="PME-4">PME-4</option>*@
+                                                    <option value="PME-8">PME-8</option>
+                                                    <option value="PME-9">PME-9</option>
+                                                    <option value="PME-10">PME-10</option>
+                                                    <option value="PME-11">PME-11</option>
+                                                    <option value="PME-12">PME-12</option>
+                                                    <option value="PME-13">PME-13</option>
+                                                    <option value="PME-14">PME-14</option>
+                                                    <option value="PME-15">PME-15</option>
+                                                    <option value="PME-16">PME-16</option>
+                                                    <option value="PME-17">PME-17</option>
+                                                    <option value="PME-18">PME-18</option>
+                                                    <option value="JV-1">JV-1</option>
+                                                    <option value="JV-2">JV-2</option>
+                                                    <option value="JV-3">JV-3</option>
+                                                    <option value="JV-4">JV-4</option>
+                                                    <option value="JV-5">JV-5</option>
+                                                    <option value="JV-6">JV-6</option>
+                                                    <option value="JV-7">JV-7</option>
+                                                    <option value="JV-8">JV-8</option>
+                                                    <option value="JV-9">JV-9</option>
+                                                    <option value="JV-10">JV-10</option>
+                                                    <option value="JV-11">JV-11</option>
+                                                    <option value="JV-12">JV-12</option>
+                                                    <option value="CLEANING MATERIAL">CLEANING MATERIAL</option>
+                                                    <option value="BULB STAT">BULB STAT</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <button id="btnupdatestatus" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -18px; margin-top: 31px; ">Update Status</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <input id="selectedid" type="hidden" />
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Invoice Date</label>
+                                                <input id="invoicedate" class="form-control" type="date" style="border-radius: 10px;" />@*value="@DateTime.Today.ToString("yyyy-MM-dd")"*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Item/Work Description</label>
+                                                <input id="itemworkdescription" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Apt No</label>
+                                                <select id="aptno" class="form-control" style="border-radius: 10px;"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Invoice No</label>
+                                                <input id="invoiceno" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Amount(KD)</label>
+                                                <input id="amountkd" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button id="btnadd" type="button" class="btn btn-primary" style="border-radius: 10px; ">Add</button>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button id="btnreplace" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: -150px; ">Replace</button>
+                                            <button id="btnprint" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 22px; ">Print</button>
+                                            <button id="btnopen" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 32px; ">Open</button>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Total Amount</label>
+                                                <input id="totalamount" asp-for="PMETOT" disabled class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <input type="hidden" id="bldngname" asp-for="bldngname" />
+                            <input type="hidden" id="accpme" asp-for="accpme" />
+                            <input type="hidden" id="pmemonth" asp-for="pmemonth" />
+                            <input type="hidden" id="pmeyear" asp-for="pmeyear" />
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 215px;">Items/Work Description</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Apt No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Invoice No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 102px;">Amount(KD)</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 160px;">Status</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 160px;">ST Name</label></th>
+                                            <th class="table-bordered" colspan="2"><label style="color: black; font-size: 17px; width: 100px;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                        @foreach (var item in Model.PMEGRID)
+                                        {
+                                            <tr>
+                                                <td hidden>@item.Id</td>
+                                                <td style="color:black;"><input type="checkbox" value="@item.Id" name="selectedids" /></td>
+                                                <td style="color:black;">@Convert.ToDateTime(item.Invdate).ToShortDateString()</td>
+                                                <td style="color:black;">@item.Description</td>
+                                                <td style="color:black;">@item.Aptno</td>
+                                                <td style="color:black;">@item.Invno</td>
+                                                <td style="color:black;">@item.Totamt</td>
+                                                <td style="color:black;">@item.Accstatus</td>
+                                                <td style="color:black;">@item.Stname</td>
+                                                <td style="text-align: center;">
+                                                    <a class="edit" href="javascript:void(0)" data-id="@item.Id" data-invoicedate="@item.Invdate" data-item="@item.Description" data-amount="@item.Totamt" data-invoiceno="@item.Invno" data-aptno="@item.Aptno"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+                    <!--popup for FULLDG-->
+                    <div id="FULLDGModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+
+                            <div class="card" style="width: 1355px; margin-left: -265px; ">
+                                <div class="card-body">
+                                    <form>
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                @*<h5 class="modal-title">Show Clients from Sublease</h5>*@
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div style="overflow-y:auto">
+                                                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                        <thead class="bg-success">
+                                                            <tr>
+                                                                <th hidden></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 395px;">Month</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 65px;">Year</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Amount</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 300px;">Row No</label></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tbodyFULLDG" class="bg-white">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                @*<button id="importall" type="button" class="btn btn-primary" style="border-radius:10px;">Import All in Accounts Master</button>*@
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

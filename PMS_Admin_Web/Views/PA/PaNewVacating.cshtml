@@ -1,0 +1,322 @@
+﻿@model PMS_Admin_Web.Models.MovingInOut.NewVacatingModel
+
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "New Vacating";
+}
+
+<br />
+
+    @*<div class="row">*@
+        <div class="col-lg-12">
+            @if (ViewBag.Message != null)
+            {
+                <script type="text/javascript">
+                    window.onload = function () {
+                            alert("@ViewBag.Message");
+                    };
+                </script>
+
+            }
+            <div class="card" style="color:burlywood">
+                <div class="card-header" style="background-color: darksalmon;">
+                    <h5 class="text-center" style="color:black"><strong>New Vacating</strong></h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @*<div class="col-lg-3"></div>*@
+                        <div class="col-lg-12">
+                            <form asp-action="NewVacating" asp-controller="MovingInOut">
+                                @Html.HiddenFor(model => model.moveout.Id)
+                                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#paymentDetailsFromAccounts').hide();
+                                        var pname ="@Context.Session.GetString("CurrentUserDepartment")";
+                                        $.ajax({
+                                            type: "GET",
+                                            url: "@Url.Action("LoadProperties", "MovingInOut")",
+                                            //data: { propertysource: psource },
+                                            dataType: "json",
+                                            success: function (response) {
+                                                //alert(response)
+                                                $('#propertyname').html('');
+                                                $('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                                                $('#aptno').html('');
+                                                $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                                                $('#refno').val('');
+                                                $.each(response, function (k, v) {
+                                                    if (pname == v) {
+                                                        $('#propertyname').append('<option selected value="' + v + '" > ' + v + '</option>');
+
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            url: "@Url.Action("LoadApartmentNo", "MovingInOut")",
+                                                            data: { propertyname: pname },
+                                                            dataType: "json",
+                                                            success: function (response) {
+                                                                //alert(response)
+                                                                $('#aptno').html('');
+                                                                $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                                                                $('#refno').val('');
+                                                                $.each(response, function (k, v) {
+                                                                    $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                                                                });
+                                                            }
+                                                        })
+                                                    }
+                                                    else {
+                                                        $('#propertyname').append('<option value="' + v + '" > ' + v + '</option>');
+                                                    }
+                                                });
+                                            }
+                                        })
+
+                                        $("#propertyname").change(function () {
+                                            var pname = $('#propertyname :selected').val();
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "@Url.Action("LoadApartmentNo", "MovingInOut")",
+                                                data: { propertyname: pname },
+                                                dataType: "json",
+                                                success: function (response) {
+                                                    //alert(response)
+                                                    $('#aptno').html('');
+                                                    $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                                                    $('#refno').val('');
+                                                    $.each(response, function (k, v) {
+                                                        $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                                                    });
+                                                }
+                                            })
+                                        });
+
+                                        $("#aptno").change(function () {
+                                            var pname = $('#propertyname :selected').val();
+                                            var ano = $('#aptno :selected').val();
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "@Url.Action("LoadRefNo", "MovingInOut")",
+                                                data: { propertyname: pname, aptno: ano },
+                                                dataType: "json",
+                                                success: function (response) {
+                                                    //alert(response.propertyRef)
+
+                                                    $('#refno').val(response.propertyRef);
+                                                    $('#cname').val(response.cname);
+                                                    $('#leasestart').val(response.leasestart1);
+                                                    $('#leaseend').val(response.leaseend1);
+                                                }
+                                            })
+
+                                        });
+                                    })
+                                </script>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Property Name</label>
+                                            <select disabled id="propertyname" asp-for="moveout.Pname" class="form-control" style="border-radius: 10px;">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Apt No</label>
+                                            <select id="aptno" class="form-control" style="border-radius: 10px;" asp-for="moveout.Aptno">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Reference Number</label>
+                                            <input id="refno" readonly asp-for="moveout.Pref" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Move Out Date</label>
+                                            <input id="moveoutdate" type="date" asp-for="moveoutDate" class="form-control" style="border-radius:10px" />
+                                            <button type="button" class="btn btn-primary" id="checkRentPaid" style="border-radius: 10px; margin-top: 5px;">Check Rent Paid</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Tenant Name</label>
+                                            <input disabled id="cname" asp-for="moveout.Tenantname" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-top: 32px;">
+                                        <div class="form-group">
+                                            <input id="leasestart" asp-for="rleasestart" readonly type="date" class="form-control" style="border-radius:10px" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-top: 32px;">
+                                        <div class="form-group">
+                                            <input id="leaseend" asp-for="rleaseend" readonly type="date" class="form-control" style="border-radius:10px" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <div class="row" style="margin-left:0px;">
+                                                <label class="control-label text-black-50">Vacating Notice</label>
+                                            </div>
+                                            <div class="row" style="margin-left:0px;">
+                                                <input disabled asp-for="moveout.Vn" type="file" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Reason for Vacating</label>
+
+                                            <textarea asp-for="moveoutRemark" class="form-control" style="border-radius: 10px;"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    $('#checkRentPaid').click(function () {
+                                            var propertyname = $('#propertyname').val();
+                                            var aptno = $('#aptno').val();
+                                            var moveoutdate = $('#moveoutdate').val();
+                                            if (propertyname.length < 1) {
+                                                alert('Property Name is required');
+                                            }
+                                            else if (aptno.length < 1) {
+                                                alert('Enter the Apartment No');
+                                            }
+                                            else if (moveoutdate.length < 1) {
+                                                alert('Moveout date is required to check the rent paid details');
+                                            }
+                                            if (propertyname.length > 1 && aptno.length > 1 && moveoutdate.length > 1) {
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "@Url.Action("CheckRentPaid", "MovingInOut")",
+                                                    data: { propertyName: propertyname, aptNo: aptno, moveOutDate: moveoutdate},
+                                                    dataType: "json",
+                                                    success: function (response) {
+                                                        //alert(response.propertyRef)
+                                                        if (response.message != null) {
+                                                            alert(response.message);
+                                                        }
+                                                        else {
+                                                            $('#paymentDetailsFromAccounts').show();
+
+                                                            $('#rvno').val(response.propertyRef);
+                                                            $('#totalamount').val(response.cname);
+                                                            $('#rentmonth').val(response.leasestart);
+                                                            $('#paymentdate').val(response.leaseend);
+                                                            $('#lmrpaymentRemark').val(response.leaseend);
+                                                        }
+                                                    }
+                                                })
+                                            }
+                                        })
+
+                                    @*$(document).ready(function () {
+
+
+                                        $('#checkRentPaid').click(function () {
+                                            var propertyname = $('#propertyname').val();
+                                            var aptno = $('#aptno').val();
+                                            var moveoutdate = $('#moveoutdate').val();
+                                            if (propertyname.length < 1) {
+                                                alert('Property Name is required');
+                                            }
+                                            if (aptno.length < 1) {
+                                                alert('Enter the Apartment No');
+                                            }
+                                            if (moveoutdate.length < 1) {
+                                                alert('Moveout date is required to check the rent paid details');
+                                            }
+                                            else {
+                                                $.ajax({
+                                                type: "POST",
+                                                url: "@Url.Action("CheckRentPaid", "MovingInOut")",
+                                                data: { propertyName: propertyname, aptNo: aptno, moveOutDate: moveoutdate},
+                                                dataType: "json",
+                                                success: function (response) {
+                                                    //alert(response.propertyRef)
+                                                    if (response != null) {
+                                                        $('#paymentDetailsFromAccounts').show();
+
+                                                        $('#rvno').val(response.propertyRef);
+                                                        $('#totalamount').val(response.cname);
+                                                        $('#rentmonth').val(response.leasestart);
+                                                        $('#paymentdate').val(response.leaseend);
+                                                        $('#lmrpaymentRemark').val(response.leaseend);
+                                                    }
+                                                    else {
+                                                        alert('No records Found');
+                                                    }
+                                                }
+                                            })
+                                            }
+                                        })
+                                    })*@
+                                </script>
+                                <div id="paymentDetailsFromAccounts" class="row">
+                                    <label><strong>Last Month Rent payment details from accounts</strong></label>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">RV No</label>
+                                            <input id="rvno" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Total Amount</label>
+                                            <input id="totalamount" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Rent Month</label>
+                                            <input id="rentmonth" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Payment Date</label>
+                                            <input id="paymentdate" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+
+                                            <textarea id="lmrpaymentRemark" class="form-control" style="border-radius: 10px;"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3">
+                                    <button type="button" asp-action="NewVacating" asp-controller="MovingInOut" class="btn btn-primary">Create</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @*</div>*@
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

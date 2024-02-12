@@ -1,0 +1,88 @@
+﻿@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (Context.Session.GetString("CurrentUserDepartment") != "Administration" && Context.Session.GetString("CurrentUserRole") != "Administrator")
+{
+    <script>
+        alert('Access denied');
+        history.back();
+    </script>
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <br />
+                <br />
+                <form>
+                    @*<div class="card-body">*@
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #61892F" asp-action="ListUser" asp-controller="User">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-users" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Users</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #61892F" asp-action="ListProperties" asp-controller="Property">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-home" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Properties</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #61892F">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-gears" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Others</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #61892F">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-clock-o" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Attendance</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    @*</div>*@
+                </form>
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

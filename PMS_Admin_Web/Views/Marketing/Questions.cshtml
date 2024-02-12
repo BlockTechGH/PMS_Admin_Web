@@ -1,0 +1,1202 @@
+﻿@model PMS_Admin_Web.Models.Marketing.QuestionsModel
+
+@{
+    ViewData["Title"] = "Questionnaire";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+<script>
+    function loadquestionform() {
+        var inqno = $('#inqno').val();
+        /*alert(inqno);*/
+        $.ajax({
+            type: "POST",
+            data: { inqno: inqno},
+            url: "@Url.Action("LoadQuestions", "Marketing")",
+            success: function (response) {
+                if (response != 0) {
+                    $('#btnupdate').show();
+                    $('#btncreate').hide();
+
+                    $('#fname').val(response.fname);
+                    $('#lname').val(response.lname);
+                    $('#number').val(response.number);
+                    $('#currentloc').val(response.currentloc);
+                    $('#whenapt').val(response.whenapt);
+                    $('#company').val(response.company);
+                    $('#findwhere').val(response.findwhere);
+                    $('#inkwt').val(response.inkwt);
+                    $('#ploc').val(response.ploc);
+                    $('#TIMETXT').val(response.kvisit);
+                    $('#KIDSTXT').val(response.school);
+                    $('#SCHOOLTXT').val(response.closeschool);
+                    $('#facilities').val(response.facilities);
+                    $('#distance').val(response.distance);
+                    $('#dimen').val(response.dimen);
+                    $('#notice').val(response.notice);
+
+                    if ($.trim(response.bed) == "1 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 1);
+                    }
+                    else if ($.trim(response.bed) == "2 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 2);
+                    }
+                    else if ($.trim(response.bed) == "3 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 3);
+                    }
+                    else if ($.trim(response.bed) == "4 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 4);
+                    }
+                    else if ($.trim(response.bed) == "5 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 5);
+                    }
+                    else if ($.trim(response.bed) == "6 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 6);
+                    }
+                    else if ($.trim(response.bed) == "7 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 7);
+                    }
+                    else if ($.trim(response.bed) == "8 Bedroom") {
+                        $("select#bed").prop('selectedIndex', 8);
+                    }
+                    else {
+                        $("select#bed").prop('selectedIndex', 9);//Studio
+                    }
+
+                    if ($.trim(response.type) == "SF") {
+                        $("select#type").prop('selectedIndex', 1);
+                    }
+                    else if ($.trim(response.type) == "FF") {
+                        $("select#type").prop('selectedIndex', 2);
+                    }
+                    else if ($.trim(response.type) == "UF") {
+                        $("select#type").prop('selectedIndex', 3);
+                    }
+                    else if ($.trim(response.type) == "SF/FF/UF") {
+                        $("select#type").prop('selectedIndex', 4);
+                    }
+
+                    if ($.trim(response.contract) == "YES") {
+                        $('#undercontractyes').attr('checked', true);
+                        $('#LONGTXT').val(response.howlong);
+                        $('#LONGTXT').attr("disabled", false);
+                    }
+                    else {
+                        $('#undercontractno').attr('checked', true);
+                    }
+
+                    if ($.trim(response.maid) == "YES") {
+                        $('#maidyes').attr('checked', true);
+                    }
+                    else {
+                        $('#maidno').attr('checked', true);
+                    }
+
+                    if ($.trim(response.newbuild) == "YES") {
+                        $('#newbuildyes').attr('checked', true);
+                    }
+                    else {
+                        $('#newbuildno').attr('checked', true);
+                    }
+
+                    if ($.trim(response.pet) == "YES") {
+                        $('#petyes').attr('checked', true);
+                        $('#KINDTXT').val(response.kind);
+                        $('#KINDTXT').attr("disabled", false);
+                    }
+                    else {
+                        $('#petno').attr('checked', true);
+                    }
+
+                    if ($.trim(response.otheragent) == "YES") {
+                        $("select#otheragent").prop('selectedIndex', 1);
+                    }
+                    else {
+                        $("select#otheragent").prop('selectedIndex', 2);
+                    }
+
+                    if ($.trim(response.seen) == "YES") {
+                        $('#aptseenyes').attr('checked', true);
+                        $('#FEEDBACKTXT').val(response.feedbacks);
+                        $('#FEEDBACKTXT').attr("disabled", false);
+                    }
+                    else {
+                        $('#aptseenno').attr('checked', true);
+                    }
+
+                    if ($.trim(response.maritial) == "YES") {
+                        $('#marriedyes').attr('checked', true);
+                        $('#REQTXT').attr("disabled", false);
+                        $('#wife').attr("disabled", false);
+                    }
+                    else {
+                        $('#marriedno').attr('checked', true);
+                    }
+
+                    if ($.trim(response.wife) == "YES") {
+                        $("select#wife").prop('selectedIndex', 1);
+                        $('#REQTXT').val(response.wifereq);
+                    }
+                    else {
+                        $("select#wife").prop('selectedIndex', 2);
+                    }
+
+                    if (response.find == "Advertising Portal") {
+                        $("select#find").prop('selectedIndex', 1);
+                    }
+                    else if (response.find == "Referral") {
+                        $("select#find").prop('selectedIndex', 2);
+                    }
+                    else if (response.find == "Social Media") {
+                        $("select#find").prop('selectedIndex', 3);
+                    }
+                    else if (response.find == "Other") {
+                        $("select#find").prop('selectedIndex', 4);
+                    }
+
+                    if ($.trim(response.idea) == "YES") {
+                        $("select#idea").prop('selectedIndex', 1);
+                    }
+                    else {
+                        $("select#idea").prop('selectedIndex', 2);
+                    }
+
+                    if ($.trim(response.kids) == "YES") {
+                        $("select#kids").prop('selectedIndex', 1);
+                    }
+                    else {
+                        $("select#kids").prop('selectedIndex', 2);
+                    }
+
+                    if ($.trim(response.final) == "Individual") {
+                        $("select#final").prop('selectedIndex', 1);
+                    }
+                    else {
+                        $("select#final").prop('selectedIndex', 2);
+                    }
+                }
+                else {
+                    /*return false;*/
+                    $('#btnupdate').hide();
+                    $('#btncreate').show();
+                }
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        $('#btnupdate').hide();
+        loadquestionform();
+
+        $('#LONGTXT').attr("disabled", true);
+        $('#KINDTXT').attr("disabled", true);
+        $('#FEEDBACKTXT').attr("disabled", true);
+        $('#wife').attr("disabled", true);
+        //$('#wifestayyes').attr("disabled", true);
+        //$('#wifestayno').attr("disabled", true);
+        $('#REQTXT').attr("disabled", true);
+
+        @*$("#propertysource").change(function () {
+            var psource = $('#propertysource :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadProperties", "LC")",
+                data: { propertysource: psource },
+                dataType: "json",
+                success: function (response) {
+                    //alert(response)
+                    $('#propertyname').html('');
+                    $('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                    $('#aptno').html('');
+                    $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                    $('#refno').val('');
+                    $.each(response, function (k, v) {
+                        $('#propertyname').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+                }
+            })
+        });*@
+
+        $('#undercontractyes').change(function () {
+            var undercontractyes = $('input[id="undercontractyes"]:checked').val();
+            if (undercontractyes == "YES") {
+                $('#LONGTXT').attr("disabled", false);
+            }
+        })
+        $('#undercontractno').change(function () {
+            var undercontractno = $('input[id="undercontractno"]:checked').val();
+            if (undercontractno == "NO") {
+                $('#LONGTXT').val('');
+                $('#LONGTXT').attr("disabled", true);
+            }
+        })
+
+        $('#petyes').change(function () {
+            var petyes = $('input[id="petyes"]:checked').val();
+            if (petyes == "YES") {
+                $('#KINDTXT').attr("disabled", false);
+            }
+        })
+        $('#petno').change(function () {
+            var petno = $('input[id="petno"]:checked').val();
+            if (petno == "NO") {
+                $('#KINDTXT').val('');
+                $('#KINDTXT').attr("disabled", true);
+            }
+        })
+
+        $('#aptseenyes').change(function () {
+            var aptseenyes = $('input[id="aptseenyes"]:checked').val();
+            if (aptseenyes == "YES") {
+                $('#FEEDBACKTXT').attr("disabled", false);
+            }
+        })
+        $('#aptseenno').change(function () {
+            var aptseenno = $('input[id="aptseenno"]:checked').val();
+            if (aptseenno == "NO") {
+                $('#FEEDBACKTXT').attr("disabled", true);
+            }
+        })
+
+        $('#marriedyes').change(function () {
+            var marriedyes = $('input[id="marriedyes"]:checked').val();
+            if (marriedyes == "YES") {
+                $('#wife').attr("disabled", false);
+                //$('#wifestayyes').attr("disabled", false);
+                //$('#wifestayno').attr("disabled", false);
+                $('#REQTXT').attr("disabled", false);
+            }
+        })
+        $('#marriedno').change(function () {
+            var marriedno = $('input[id="marriedno"]:checked').val();
+            if (marriedno == "NO") {
+                $('#wife').attr("disabled", true);
+                //$('#wifestayyes').attr("disabled", true);
+                //$('#wifestayno').attr("disabled", true);
+                $('#REQTXT').attr("disabled", true);
+            }
+        })
+
+        $('#kidsyesno').change(function () {
+            var kidsyesno = $('#kidsyesno :selected').val();
+            if (kidsyesno == "YES") {
+                $('#TIMETXT').attr("disabled", false);
+                $('#KIDSTXT').attr("disabled", false);
+                $('#SCHOOLTXT').attr("disabled", false);
+            }
+            else {
+                $('#TIMETXT').attr("disabled", true);
+                $('#KIDSTXT').attr("disabled", true);
+                $('#SCHOOLTXT').attr("disabled", true);
+            }
+        })
+
+        $('#btncreate').click(function () {
+            var fname = $('#fname').val();
+            var lname = $('#lname').val();
+            var number = $('#number').val();
+            var currentloc = $('#currentloc').val();
+            var whenapt = $('#whenapt').val();
+            var company = $('#company').val();
+            var chkundercontract = $('input[name="undercontract"]:checked').val();
+            //var undercontractyes = $('input[id="undercontractyes"]:checked').val();
+            //var undercontractno = $('input[id="undercontractno"]:checked').val();
+            var undercontract, married, maid, newb, pet;
+            var LONGTXT = $('#LONGTXT').val();
+            var bed = $('#bed :selected').val();
+            var type = $('#type :selected').val();
+            var chkmarried = $('input[name="married"]:checked').val();
+            //var marriedyes = $('input[id="marriedyes"]:checked').val();
+            //var marriedno = $('input[id="marriedno"]:checked').val();
+            var wife = $('#wife :selected').val();
+            var REQTXT = $('#REQTXT').val();
+            var inkwt = $('#inkwt').val();
+            var idea = $('#idea :selected').val();
+            var ploc = $('#ploc').val();
+            var kids = $('#kids :selected').val();
+            var TIMETXT = $('#TIMETXT').val();
+            var KIDSTXT = $('#KIDSTXT').val();
+            var SCHOOLTXT = $('#SCHOOLTXT').val();
+            var chkmaid = $('input[name="maid"]:checked').val();
+            //var maidyes = $('input[id="maidyes"]:checked').val();
+            //var maidno = $('input[id="maidno"]:checked').val();
+            var chknewbuilding = $('input[name="newbuilding"]:checked').val();
+            //var newbuildyes = $('input[id="newbuildyes"]:checked').val();
+            //var newbuildno = $('input[id="newbuildno"]:checked').val();
+            var chkpet = $('input[name="pet"]:checked').val();
+            //var petyes = $('input[id="petyes"]:checked').val();
+            //var petno = $('input[id="petno"]:checked').val();
+            var KINDTXT = $('KINDTXT').val();
+            var otheragent = $('#otheragent :selected').val();
+            var chkseenapts = $('input[name="seenapts"]:checked').val();
+            //var aptseenyes = $('input[id="aptseenyes"]:checked').val();
+            //var aptseenno = $('input[id="aptseenno"]:checked').val();
+            var FEEDBACKTXT = $('#FEEDBACKTXT').val();
+            var facilities = $('#facilities').val();
+            var distance = $('#distance :selected').val();
+            var dimen = $('#dimen').val();
+            var notice = $('#notice').val();
+            var final = $('#final :selected').val();
+            var find = $('#find :selected').val();
+            var findwhere = $('#findwhere').val();
+            var inqno = $('#inqno').val();
+
+            if (fname == "" || fname == undefined) {
+                alert('First name is required');
+                return false;
+            }
+            if (lname == "" || lname == undefined) {
+                alert('Last name is required');
+                return false;
+            }
+            if (number == "" || number == undefined) {
+                alert('Enter the Contact Number');
+                return false;
+            }
+            if (currentloc == "" || currentloc == undefined) {
+                alert('Enter the Current location');
+                return false;
+            }
+            if (whenapt == "" || whenapt == undefined) {
+                alert('Enter the answer for:When the Apartment is needed?');
+                return false;
+            }
+            if (company == "" || company == undefined) {
+                alert('State where the client is working');
+                return false;
+            }
+            if (chkundercontract == undefined) {
+                alert('State the status of the work contract');
+                return false;
+            }
+            //if (undercontractyes == undefined && undercontractno == undefined) {
+            //    alert('State the status of the work contract');
+            //    return false;
+            //}
+            if (chkundercontract == "YES") {
+                undercontract = "YES";
+                if (LONGTXT == "" || LONGTXT == undefined) {
+                    alert('Client is under contract in company, mention how long?');
+                    return false;
+                }
+            }
+            if (chkundercontract == "NO") {
+                undercontract = "NO";
+            }
+            if (bed == "" || bed == undefined) {
+                alert('Select the Bed room requirement');
+                return false;
+            }
+            if (type == "" || type == undefined) {
+                alert('Select the Furnishing Type');
+                return false;
+            }
+            if (chkmarried == undefined) {
+                alert('Mention client is married or not');
+                return false;
+            }
+            if (chkmarried == "YES") {
+                married = "YES";
+                if (wife == "" || wife == undefined) {
+                    alert('Clients wife stay in Kuwait or NO');
+                    return false;
+                }
+            }
+            if (chkmarried == "NO") {
+                married = "NO";
+            }
+            if (wife == "YES") {
+                if (REQTXT == undefined || REQTXT == "") {
+                    alert("Mention the Wife's requirements");
+                        return false;
+                }
+            }
+            if (inkwt == undefined || inkwt == "") {
+                alert("How long the client been in kuwait");
+                return false;
+            }
+            if (idea == undefined || idea == "") {
+                alert("specify the Idea of places");
+                return false;
+            }
+            if (ploc == undefined || ploc == "") {
+                alert('Specify the preferred locatons of client');
+                return false;
+            }
+            if (kids == "YES") {
+                if (TIMETXT == undefined || TIMETXT == "") {
+                    alert("Specify the preferred school name");
+                    return false;
+                }
+                if (KIDSTXT == undefined || KIDSTXT == "") {
+                    alert("kids are staying with clients?");
+                    return false;
+                }
+                if (SCHOOLTXT == undefined || SCHOOLTXT == "") {
+                    alert("Are they looking for an apartment close to school?");
+                    return false;
+                }
+            }
+            if (chkmaid == undefined) {
+                alert("Specify does the client have Living maid or no");
+                return false;
+            }
+            if (chkmaid == "YES") {
+                maid = "YES";
+            }
+            if (chkmaid == "NO") {
+                maid = "NO";
+            }
+            if (chknewbuilding == undefined) {
+                alert("Specify whether the client is looking for new building");
+                return false;
+            }
+            if (chknewbuilding == "YES") {
+                newb = "YES";
+            }
+            if (chknewbuilding == "NO") {
+                newb = "NO";
+            }
+            if (chkpet == undefined) {
+                alert("Specify whether the Client have pets with them or no");
+                return false;
+            }
+            if (chkpet == "YES") {
+                pet = "YES";
+                if (KINDTXT == undefined || KINDTXT == "") {
+                    alert("Specify the type of pets the client have");
+                    return false;
+                }
+            }
+            if (chkpet == "NO") {
+                pet = "NO";
+            }
+            if (otheragent == undefined || otheragent == "") {
+                alert('Specify whether the client contacted other agents');
+                return false;
+            }
+            if (otheragent == "YES") {
+                if (chkseenapts == undefined) {
+                    alert("Mention the clients have seen some apartments or no");
+                    return false;
+                }
+            }
+            if (chkseenapts == "YES") {
+                if (FEEDBACKTXT == undefined || FEEDBACKTXT == "") {
+                    alert("Specify the feedbacks about the apartments visited");
+                    return false;
+                }
+            }
+            if (facilities == "" || facilities == undefined) {
+                alert("Specify the facilities requiring");
+                return false;
+            }
+            if (distance == undefined || distance == "") {
+                alert('Specify where the client would like to stay?');
+                return false;
+            }
+            if (dimen == undefined || dimen == "") {
+                alert("Specify is there any idea of the dimension of the apartment");
+                return false;
+            }
+            if (notice == "" || notice == undefined) {
+                alert('How long the notice period is given for the client in the current apartment');
+                return false;
+            }
+            if (final == undefined || final == "") {
+                alert('Specify the contract will be client name or company name?');
+                return false;
+            }
+            if (find == undefined || find == "") {
+                alert('Specify where did they find us');
+                return false;
+            }
+            if (findwhere == undefined || findwhere == "") {
+                alert('Specify where did they find us');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { inqno: inqno, fname: fname, lname: lname, number: number, currentloc: currentloc, whenapt: whenapt, company: company, undercontract: undercontract, LONGTXT: LONGTXT, bed: bed, type: type, married: married, wife: wife, REQTXT: REQTXT, inkwt: inkwt, idea: idea, ploc: ploc, kids: kids, TIMETXT: TIMETXT, KIDSTXT: KIDSTXT, SCHOOLTXT: SCHOOLTXT, maid: maid, newb: newb, pet: pet, KINDTXT: KINDTXT, otheragent: otheragent, chkseenapts: chkseenapts, FEEDBACKTXT: FEEDBACKTXT, facilities: facilities, distance: distance, dimen: dimen, notice: notice, final: final, find: find, findwhere: findwhere},
+                url: "@Url.Action("SaveQuestions", "Marketing")",
+                success: function (response) {
+                    if (response == "Unknown Error") {
+                        console.log(response);
+                    }
+                    else {
+                        alert(response);
+                    }
+                }
+            })
+        })
+
+        $('#btnupdate').click(function () {
+            var fname = $('#fname').val();
+            var lname = $('#lname').val();
+            var number = $('#number').val();
+            var currentloc = $('#currentloc').val();
+            var whenapt = $('#whenapt').val();
+            var company = $('#company').val();
+            var chkundercontract = $('input[name="undercontract"]:checked').val();
+            //var undercontractyes = $('input[id="undercontractyes"]:checked').val();
+            //var undercontractno = $('input[id="undercontractno"]:checked').val();
+            var undercontract, married, maid, newb, pet;
+            var LONGTXT = $('#LONGTXT').val();
+            var bed = $('#bed :selected').val();
+            var type = $('#type :selected').val();
+            var chkmarried = $('input[name="married"]:checked').val();
+            //var marriedyes = $('input[id="marriedyes"]:checked').val();
+            //var marriedno = $('input[id="marriedno"]:checked').val();
+            var wife = $('#wife :selected').val();
+            var REQTXT = $('#REQTXT').val();
+            var inkwt = $('#inkwt').val();
+            var idea = $('#idea :selected').val();
+            var ploc = $('#ploc').val();
+            var kids = $('#kids :selected').val();
+            var TIMETXT = $('#TIMETXT').val();
+            var KIDSTXT = $('#KIDSTXT').val();
+            var SCHOOLTXT = $('#SCHOOLTXT').val();
+            var chkmaid = $('input[name="maid"]:checked').val();
+            //var maidyes = $('input[id="maidyes"]:checked').val();
+            //var maidno = $('input[id="maidno"]:checked').val();
+            var chknewbuilding = $('input[name="newbuilding"]:checked').val();
+            //var newbuildyes = $('input[id="newbuildyes"]:checked').val();
+            //var newbuildno = $('input[id="newbuildno"]:checked').val();
+            var chkpet = $('input[name="pet"]:checked').val();
+            //var petyes = $('input[id="petyes"]:checked').val();
+            //var petno = $('input[id="petno"]:checked').val();
+            var KINDTXT = $('KINDTXT').val();
+            var otheragent = $('#otheragent :selected').val();
+            var chkseenapts = $('input[name="seenapts"]:checked').val();
+            //var aptseenyes = $('input[id="aptseenyes"]:checked').val();
+            //var aptseenno = $('input[id="aptseenno"]:checked').val();
+            var FEEDBACKTXT = $('#FEEDBACKTXT').val();
+            var facilities = $('#facilities').val();
+            var distance = $('#distance :selected').val();
+            var dimen = $('#dimen').val();
+            var notice = $('#notice').val();
+            var final = $('#final :selected').val();
+            var find = $('#find :selected').val();
+            var findwhere = $('#findwhere').val();
+            var inqno = $('#inqno').val();
+
+            if (fname == "" || fname == undefined) {
+                alert('First name is required');
+                return false;
+            }
+            if (lname == "" || lname == undefined) {
+                alert('Last name is required');
+                return false;
+            }
+            if (number == "" || number == undefined) {
+                alert('Enter the Contact Number');
+                return false;
+            }
+            if (currentloc == "" || currentloc == undefined) {
+                alert('Enter the Current location');
+                return false;
+            }
+            if (whenapt == "" || whenapt == undefined) {
+                alert('Enter the answer for:When the Apartment is needed?');
+                return false;
+            }
+            if (company == "" || company == undefined) {
+                alert('State where the client is working');
+                return false;
+            }
+            if (chkundercontract == undefined) {
+                alert('State the status of the work contract');
+                return false;
+            }
+            //if (undercontractyes == undefined && undercontractno == undefined) {
+            //    alert('State the status of the work contract');
+            //    return false;
+            //}
+            if (chkundercontract == "YES") {
+                undercontract = "YES";
+                if (LONGTXT == "" || LONGTXT == undefined) {
+                    alert('Client is under contract in company, mention how long?');
+                    return false;
+                }
+            }
+            if (chkundercontract == "NO") {
+                undercontract = "NO";
+            }
+            if (bed == "" || bed == undefined) {
+                alert('Select the Bed room requirement');
+                return false;
+            }
+            if (type == "" || type == undefined) {
+                alert('Select the Furnishing Type');
+                return false;
+            }
+            if (chkmarried == undefined) {
+                alert('Mention client is married or not');
+                return false;
+            }
+            if (chkmarried == "YES") {
+                married = "YES";
+                if (wife == "" || wife == undefined) {
+                    alert('Clients wife stay in Kuwait or NO');
+                    return false;
+                }
+            }
+            if (chkmarried == "NO") {
+                married = "NO";
+            }
+            if (wife == "YES") {
+                if (REQTXT == undefined || REQTXT == "") {
+                    alert("Mention the Wife's requirements");
+                        return false;
+                }
+            }
+            if (inkwt == undefined || inkwt == "") {
+                alert("How long the client been in kuwait");
+                return false;
+            }
+            if (idea == undefined || idea == "") {
+                alert("specify the Idea of places");
+                return false;
+            }
+            if (ploc == undefined || ploc == "") {
+                alert('Specify the preferred locatons of client');
+                return false;
+            }
+            if (kids == "YES") {
+                if (TIMETXT == undefined || TIMETXT == "") {
+                    alert("Specify the preferred school name");
+                    return false;
+                }
+                if (KIDSTXT == undefined || KIDSTXT == "") {
+                    alert("kids are staying with clients?");
+                    return false;
+                }
+                if (SCHOOLTXT == undefined || SCHOOLTXT == "") {
+                    alert("Are they looking for an apartment close to school?");
+                    return false;
+                }
+            }
+            if (chkmaid == undefined) {
+                alert("Specify does the client have Living maid or no");
+                return false;
+            }
+            if (chkmaid == "YES") {
+                maid = "YES";
+            }
+            if (chkmaid == "NO") {
+                maid = "NO";
+            }
+            if (chknewbuilding == undefined) {
+                alert("Specify whether the client is looking for new building");
+                return false;
+            }
+            if (chknewbuilding == "YES") {
+                newb = "YES";
+            }
+            if (chknewbuilding == "NO") {
+                newb = "NO";
+            }
+            if (chkpet == undefined) {
+                alert("Specify whether the Client have pets with them or no");
+                return false;
+            }
+            if (chkpet == "YES") {
+                pet = "YES";
+                if (KINDTXT == undefined || KINDTXT == "") {
+                    alert("Specify the type of pets the client have");
+                    return false;
+                }
+            }
+            if (chkpet == "NO") {
+                pet = "NO";
+            }
+            if (otheragent == undefined || otheragent == "") {
+                alert('Specify whether the client contacted other agents');
+                return false;
+            }
+            if (otheragent == "YES") {
+                if (chkseenapts == undefined) {
+                    alert("Mention the clients have seen some apartments or no");
+                    return false;
+                }
+            }
+            if (chkseenapts == "YES") {
+                if (FEEDBACKTXT == undefined || FEEDBACKTXT == "") {
+                    alert("Specify the feedbacks about the apartments visited");
+                    return false;
+                }
+            }
+            if (facilities == "" || facilities == undefined) {
+                alert("Specify the facilities requiring");
+                return false;
+            }
+            if (distance == undefined || distance == "") {
+                alert('Specify where the client would like to stay?');
+                return false;
+            }
+            if (dimen == undefined || dimen == "") {
+                alert("Specify is there any idea of the dimension of the apartment");
+                return false;
+            }
+            if (notice == "" || notice == undefined) {
+                alert('How long the notice period is given for the client in the current apartment');
+                return false;
+            }
+            if (final == undefined || final == "") {
+                alert('Specify the contract will be client name or company name?');
+                return false;
+            }
+            if (find == undefined || find == "") {
+                alert('Specify where did they find us');
+                return false;
+            }
+            if (findwhere == undefined || findwhere == "") {
+                alert('Specify where did they find us');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { inqno: inqno, fname: fname, lname: lname, number: number, currentloc: currentloc, whenapt: whenapt, company: company, undercontract: undercontract, LONGTXT: LONGTXT, bed: bed, type: type, married: married, wife: wife, REQTXT: REQTXT, inkwt: inkwt, idea: idea, ploc: ploc, kids: kids, TIMETXT: TIMETXT, KIDSTXT: KIDSTXT, SCHOOLTXT: SCHOOLTXT, maid: maid, newb: newb, pet: pet, KINDTXT: KINDTXT, otheragent: otheragent, chkseenapts: chkseenapts, FEEDBACKTXT: FEEDBACKTXT, facilities: facilities, distance: distance, dimen: dimen, notice: notice, final: final, find: find, findwhere: findwhere},
+                url: "@Url.Action("UpdateQuestions", "Marketing")",
+                success: function (response) {
+                    if (response == "Unknown Error") {
+                        console.log(response);
+                    }
+                    else {
+                        alert(response);
+                    }
+                }
+            })
+        })
+
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form>
+
+        <input hidden id="inqno" asp-for="inqno" />
+
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Client's Qualifying Questionnaire</strong></h5>
+            </div>
+            <div class="card-body">
+                <br />
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Can I have your good Name?</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="fname" class="form-control" type="text" style="border-radius: 10px;" placeholder="First" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="lname" class="form-control" type="text" style="border-radius: 10px;" placeholder="Last" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Do you have any local contact number to easily reach you?</label>
+                                <input id="number" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Where are you currently staying?</label>
+                                <input id="currentloc" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">When do you need the apartment?</label>
+                                <input id="whenapt" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">How many bedrooms are you looking for?</label>
+                                <select id="bed" class="form-control" style="border-radius: 10px;">
+                                    <option hidden value="">--Select--</option>
+                                    <option value="1 Bedroom">1 Bedroom</option>
+                                    <option value="2 Bedroom">2 Bedroom</option>
+                                    <option value="3 Bedroom">3 Bedroom</option>
+                                    <option value="4 Bedroom">4 Bedroom</option>
+                                    <option value="5 Bedroom">5 Bedroom</option>
+                                    <option value="6 Bedroom">6 Bedroom</option>
+                                    <option value="7 Bedroom">7 Bedroom</option>
+                                    <option value="8 Bedroom">8 Bedroom</option>
+                                    <option value="Studio">Studio</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Are you looking for unfurnished or fully furnished?</label>
+                                <select id="type" class="form-control" style="border-radius: 10px;">
+                                    <option hidden value="">--Select--</option>
+                                    <option value="SF">SF</option>
+                                    <option value="FF">FF</option>
+                                    <option value="UF">UF</option>
+                                    <option value="SF/FF/UF">SF/FF/UF</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Which company in Kuwait you will work for?</label>
+                                <input id="company" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Are you under contract in your Company? How long will it be?</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <input id="undercontractyes" type="radio" value="YES" name="undercontract" />
+                                                    <label class="control-label text-black-50">Yes</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6" style="margin-left: -95px;">
+                                                <div class="form-group">
+                                                    <input id="undercontractno" type="radio" value="NO" name="undercontract" />
+                                                    <label class="control-label text-black-50">No</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="margin-left: -140px;">
+                                        <div class="form-group">
+                                            <input id="LONGTXT" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Do you have living house maid?</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="maidyes" type="radio" value="YES" name="maid" />
+                                            <label class="control-label text-black-50">Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="margin-left: -95px;">
+                                        <div class="form-group">
+                                            <input id="maidno" type="radio" value="NO" name="maid" />
+                                            <label class="control-label text-black-50">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Do you require a new building?</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="newbuildyes" type="radio" value="YES" name="newbuilding" />
+                                            <label class="control-label text-black-50">Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="margin-left: -95px;">
+                                        <div class="form-group">
+                                            <input id="newbuildno" type="radio" value="NO" name="newbuilding" />
+                                            <label class="control-label text-black-50">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Do you have pet?</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="petyes" type="radio" value="YES" name="pet" />
+                                            <label class="control-label text-black-50">Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="margin-left: -95px;">
+                                        <div class="form-group">
+                                            <input id="petno" type="radio" value="NO" name="pet" />
+                                            <label class="control-label text-black-50">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">If Yes What Kind?</label>
+                                <input id="KINDTXT" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Have you contacted other agent to find the place for you?</label>
+                                <select id="otheragent" class="form-control" style="border-radius: 10px;">
+                                    <option hidden value="">--Select--</option>
+                                    <option value="YES">Yes</option>
+                                    <option value="NO">No</option>
+                                </select>
+                                @*<div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <input id="otheragentyes" type="radio" value="YES" name="contactotheragent" />
+                                <label class="control-label text-black-50">Yes</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" style="margin-left: -95px;">
+                            <div class="form-group">
+                                <input id="otheragentno" type="radio" value="NO" name="contactotheragent" />
+                                <label class="control-label text-black-50">No</label>
+                            </div>
+                        </div>
+                    </div>*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Have you seen some apartments?</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="aptseenyes" type="radio" value="YES" name="seenapts" />
+                                            <label class="control-label text-black-50">Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="margin-left: -95px;">
+                                        <div class="form-group">
+                                            <input id="aptseenno" type="radio" value="NO" name="seenapts" />
+                                            <label class="control-label text-black-50">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Feedbacks and name of those properties?</label>
+                                <textarea id="FEEDBACKTXT" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Are you married?</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="marriedyes" type="radio" value="YES" name="married" />
+                                            <label class="control-label text-black-50">Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="margin-left: -95px;">
+                                        <div class="form-group">
+                                            <input id="marriedno" type="radio" value="NO" name="married" />
+                                            <label class="control-label text-black-50">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Does wife stay in kuwait?</label>
+                                <select id="wife" class="form-control" style="border-radius: 10px;">
+                                    <option hidden value="">--Select--</option>
+                                    <option value="YES">Yes</option>
+                                    <option value="NO">No</option>
+                                </select>
+                                @*<div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <input id="wifestayyes" type="radio" value="YES" name="wife" />
+                                <label class="control-label text-black-50">Yes</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-6" style="margin-left: -95px;">
+                            <div class="form-group">
+                                <input id="wifestayno" type="radio" value="NO" name="wife" />
+                                <label class="control-label text-black-50">No</label>
+                            </div>
+                        </div>
+                    </div>*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Wife's requirements</label>
+                                <input id="REQTXT" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">How did you find us?</label>
+                                <select id="find" class="form-control" style="border-radius: 10px;">
+                                    <option value="">--Select--</option>
+                                    <option value="Advertising Portal">Advertising Portal</option>
+                                    <option value="Referral">Referral</option>
+                                    <option value="Social Media">Social Media</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <input id="findwhere" class="form-control" type="text" style="border-radius: 10px; margin-top: 31px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">How long have you been in Kuwait?</label>
+                                <input id="inkwt" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Since you are in kuwait, do you any idea of the places?</label>
+                                <select id="idea" class="form-control" style="border-radius: 10px;">
+                                    <option value="">--Select--</option>
+                                    <option value="YES">Yes</option>
+                                    <option value="NO">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">What are your preferred locations?</label>
+                                <input id="ploc" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Do you have Kids?</label>
+                                <select id="kids" class="form-control" style="border-radius: 10px;">
+                                    <option value="">--Select--</option>
+                                    <option value="YES">Yes</option>
+                                    <option value="NO">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Are they staying with you or do they visit from time to time?</label>
+                                <textarea id="TIMETXT" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Which school are you planning to send your kids?</label>
+                                <textarea id="KIDSTXT" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Are you looking for an apartment close to school?</label>
+                                <textarea id="SCHOOLTXT" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">What are the facilities you require in the building/apartment?</label>
+                                <input id="facilities" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Do you preferred to live in a walking distance to commercial centers or your preferred to have a quite neighborhood?</label>
+                                @*<input id="distance" class="form-control" type="text" style="border-radius: 10px;" />*@
+                                <select id="distance" class="form-control" type="text" style="border-radius: 10px;">
+                                    <option hidden value="">--Select--</option>
+                                    <option value="Walking distance to commercial centers">Walking distance to commercial centers</option>
+                                    <option value="Quite neighborhood">Quite neighborhood</option>
+                                    <option value="others">Others</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Do you have any required dimension of the apartment?How many total Sq. M. you are requiring?</label>
+                                <input id="dimen" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">How long is your notice period to leave your current apartment?</label>
+                                <input id="notice" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">If we finalized something the contract will be under your name or your company name?</label>
+                                <select id="final" class="form-control" type="text" style="border-radius: 10px;">
+                                    <option hidden value="">--Select--</option>
+                                    <option value="Individual">Individual</option>
+                                    <option value="Company name">Company name</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <button id="btnupdate" type="button" class="btn btn-primary float-right" style="border-radius:10px">Update</button>
+                        <button id="btncreate" type="button" class="btn btn-primary float-right" style="border-radius:10px">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    
+</div>
+@*</div>*@
+
+
+@{
+
+}

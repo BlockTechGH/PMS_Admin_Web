@@ -1,0 +1,118 @@
+﻿@model List<PMS_Admin_Web.Models.Property.ListPropertyAptModel>
+
+@{
+    ViewData["Title"] = "Apartment List";
+}
+
+@using PMS_Admin_Web.Repository;
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+            window.location.href = "@Url.Action("PaProperties", "PA")";
+        };
+    </script>
+}
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form asp-action="ListPropertyApt" asp-controller="Property" method="post">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3"><h5 style="color:black"><strong>Apartment List</strong></h5></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                        </div>
+
+                        <br />
+
+                        <div style="overflow-x:auto; overflow-y:auto">
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success">
+                                    <tr>
+                                        <th hidden></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Floor</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Apt No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">LOI/Lease No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 310px;">Tenant Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">LC Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Payable</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Apt Type</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 40px;">Bed</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease Start</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease End</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Vacating Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Move Out On</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Reserved For</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">View History</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Quick Fix</label></th>
+                                        <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center; width: 80px;">Actions</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody" class="bg-white">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td hidden>@item.Id</td>
+                                            <td style="color:black;">@item.Floors</td>
+                                            <td style="color:black;">@item.AptNo</td>
+                                            <td style="color:black;">@item.Status</td>
+                                            <td style="color:black;">@item.Cleaseno</td>
+                                            @if (item.Cname != null)
+                                            {
+                                                <td style="color:black;">@CommonRepository.Truncate(item.Cname, 40)</td>
+                                            }
+                                            else
+                                            {
+                                                <td style="color:black;">-</td>
+                                            }
+                                            <td style="color:black;">@item.Crent</td>
+                                            <td style="color:black;">@item.payablerent</td>
+                                            <td style="color:black;">@item.Cftype</td>
+                                            <td style="color:black;">@item.Cbtype</td>
+                                            @if (item.Leasestart != null)
+                                            {
+                                                <td style="color:black;">@Convert.ToDateTime(item.Leasestart).ToString("dd-MMM-yyyy")</td>
+                                            }
+                                            else
+                                            {
+                                                <td>-</td>
+                                            }
+                                            @if (item.Leaseend != null)
+                                            {
+                                                <td style="color:black;">@Convert.ToDateTime(item.Leaseend).ToString("dd-MMM-yyyy")</td>
+                                            }
+                                            else
+                                            {
+                                                <td>-</td>
+                                            }
+
+                                            <td style="color:black;">@item.Vacatingstatus</td>
+                                            <td style="color:black;">@item.Moveout</td>
+                                            <td style="color:black;">@item.Reservedfor</td>
+                                            <td style="color:black;"><a href="">View</a></td>
+                                            <td style="color:black;"><a href="">Fix</a></td>
+                                            <td style="text-align: center;">
+                                                <a asp-controller="Property" asp-action="EditProperty" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

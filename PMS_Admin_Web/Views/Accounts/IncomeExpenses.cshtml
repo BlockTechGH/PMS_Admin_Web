@@ -1,0 +1,303 @@
+﻿
+
+@{
+    ViewData["Title"] = "Income/Expenses";
+}
+
+@*@if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+        </script>
+    }
+    @if (ViewBag.Message1 != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message1");
+            };
+        </script>
+    }*@
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+
+
+    function loadpropertyname() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadPropertyName","Common")",
+            success: function (response) {
+                $('#pname').append(`<option hidden value="">--Select--</option>`);
+                $.each(response, function (k, v) {
+                    $('#pname').append(`<option value="${v}">${v}</option>`);
+                })
+            }
+        })
+    }
+
+
+    $(document).ready(function () {
+        loadpropertyname();
+
+        $('#btnok').click(function () {
+            var month = $('#month').val();
+            var pname = $('#pname :selected').val();
+
+            if (month == null || month == "") {
+                alert('Select Date');
+                return false;
+            }
+
+            if (pname == null || pname == "") {
+                alert('Select Property');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("IncomeExpensesBtnOk", "Accounts")",
+                data: { month: month, pname: pname },
+                success: function (response) {
+                    $('#totalrentamount').val(response.monrent);
+                    $('#totalrentincome').val(response.monrent);
+                    $('#pmanagementfee').val(response.pmf);
+                    $('#maintenanceexpenses').val(response.monexp);
+                    $('#contractbasedexpenses').val(response.totperiodexp);
+
+                    var totepenses = Number(response.pmf) + Number(response.monexp) + Number(response.totperiodexp);
+                    $('#totalexpenses').val(totepenses);
+
+                    if (response.categorygrid != null) {
+                        $.each(response.categorygrid, function (k, v) {
+                            $('#tbody').append(`<tr>
+                                                <td style="color:black;">${v.cat}</td>
+                                                <td style="color:black;">${v.amt}</td>
+                                            </tr>`);
+                        })
+                    }
+                }
+            })
+        })
+
+        $('#btncalculatereturn').click(function () {
+            $('#calculatereturnModal').modal({ backdrop: "static" });
+        })
+    });
+</script>
+
+
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form>
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Income / Expenses</strong></h5>
+            </div>
+            <div class="card-body">
+                <br />
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Month</label>
+                                <input id="month" class="form-control" type="date" style="border-radius: 10px;" />
+                                <div class="form-group">
+                                    <input id="chkmultiplemonth" type="checkbox" />
+                                    <label class="control-label text-black-50">Multiple Month</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Property Name</label>
+                                <select id="pname" class="form-control" style="border-radius: 10px;">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <button id="btnok" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top:31px;">Ok</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="row">
+
+                        <br />
+                        <div class="col-lg-6">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Total Rent Amount in KWD</label>
+                                    <input disabled id="totalrentamount" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Total Occupancy (%)</label>
+                                    <input disabled id="totaloccupancy" class="form-control" type="text" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Property Management Fee</label>
+                                    <input disabled id="pmanagementfee" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Maintenance Expenses</label>
+                                    <input disabled id="maintenanceexpenses" type="text" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Contract Based Expenses</label>
+                                    <input disabled id="contractbasedexpenses" class="form-control" type="text" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Other Expenses</label>
+                                    <input disabled id="otherexpenses" class="form-control" type="text" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Total Rent Income</label>
+                                    <input disabled id="totalrentincome" class="form-control" type="text" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Total Expenses</label>
+                                    <input disabled id="totalexpenses" class="form-control" type="text" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Total Expenses (%)</label>
+                                    <input disabled id="totalexpensespercentage" class="form-control" type="text" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Total Income in KWD</label>
+                                    <input disabled id="totalincome" class="form-control" type="text" style="border-radius: 10px;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <br />
+                            <button id="btncalculatereturn" type="button" class="btn btn-primary" style="border-radius:10px;">Calculate Return on Investment</button>
+                            <br />
+                            <br />
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width: 500px;">
+                                <thead class="bg-success">
+                                    <tr>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Category</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Amount</label></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody" class="bg-white">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="card" style="color:burlywood">
+                <div class="card-body">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <button type="button" id="btncreate" class="btn btn-primary float-right" style="border-radius:10px;">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+    </form>
+    <!--popup for calculate return-->
+    <div id="calculatereturnModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="card" style="width: 1000px; margin-left: -115px; ">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                @*<h5 class="modal-title">Show Clients from Sublease</h5>*@
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Down Payment</label>
+                                                <input id="downpayment" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Closing Cost</label>
+                                                <input id="closingcost" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Repair Budget</label>
+                                                <input id="repairbudget" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Miscellaneous</label>
+                                                <input id="miscellaneous" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Annual Cashflow</label>
+                                                <input id="annualcashflow" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Return on Investment</label>
+                                                <input id="returnoninvestment" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Total Investment</label>
+                                                <input id="totalinvestment" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button id="calculate" type="button" class="btn btn-primary" style="border-radius:10px; margin-top:31px;">Calculate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="print" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+</div>
+@*</div>*@

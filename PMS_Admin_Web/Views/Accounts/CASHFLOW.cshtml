@@ -1,0 +1,246 @@
+﻿@model PMS_Admin_Web.Models.Accounts.TemporaryReceiptCreationModel
+
+@{
+    ViewData["Title"] = "Cashflow";
+}
+
+@*@if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+        </script>
+    }
+    @if (ViewBag.Message1 != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message1");
+            };
+        </script>
+    }*@
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<script>
+    function loadingpropertyname() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadPropertyName","Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#propertyname').append(`<option value="${v}">${v}</option>`);
+                })
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        loadingpropertyname();
+
+        $('#btnok').click(function () {
+            var propertyname = $('#propertyname :selected').val();
+            var date = $('#month').val();
+            $.ajax({
+                type: "POST",
+                data: { propertyname: propertyname, date: date},
+                url: "@Url.Action("BtnOkCASHFLOW", "Accounts")",
+                success: function (response) {
+                    $('#totrenttxt').val(response.totrenttxt);
+                    $('#occtxt').val(response.occtxt);
+                    $('#pmftxt').val(response.pmftxt);
+                    $('#mexptxt').val(response.mexptxt);
+                    $('#cbexptxt').val(response.cbexptxt);
+                    $('#othrexptxt').val(response.othrexptxt);
+                    $('#totalrenttxt').val(response.totalrenttxt);
+                    $('#totalexptxt').val(response.totalexptxt);
+                    $('#totexppertxt').val(response.totexppertxt);
+                    $('#gtotaltxt').val(response.gtotaltxt);
+
+                    //console.log(response);
+                    $.each(response.categorygrid, function (k, v) {
+                        $('#categorygridtbody').append(`<tr>
+                                                            <td style="color:black;">${v.cat}</td>
+                                                            <td style="color:black;">${v.amt}</td>
+                                                        </tr>`);
+                    })
+
+
+                }
+            })
+        })
+    });
+</script>
+
+
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form>
+        
+        <div class="row">
+            <div class="col-lg-3" style="margin-left: 15px;">
+                <div class="row">
+                    <div class="form-group">
+                        <label class="control-label text-black-50">Month</label>
+                        <input id="month" class="form-control" type="date" style="border-radius: 10px;" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                    </div>
+                    <div class="form-group" style="margin-top: 40px; margin-left: 15px; ">
+                        <input id="chkmultiplemonth" type="checkbox" />
+                        <label class="control-label text-black-50">Multiple month</label>
+                    </div>
+                </div>
+                    
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label class="control-label text-black-50">Property Name</label>
+                    <select id="propertyname" class="form-control" style="border-radius: 10px;">
+                        <option value="" hidden>--Select--</option>
+                    </select>
+                    @*<input type="hidden" id="propertyname_hidden" asp-for="paymentvoucher.Pname" />*@
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="row" style="margin-top: 31px;">
+                    <button id="btnok" type="button" class="btn btn-primary" style="border-radius:10px;">OK</button>
+                    <button class="btn btn-primary" style="border-radius: 10px; margin-left: 15px;">Close</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="color:burlywood">
+
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">Total Rent Amount in KWD</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input id="totrenttxt" class="form-control" type="text" style="border-radius: 10px; margin-left: 217px; width: 428px; " placeholder="0.000" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">Total Occupany (%)</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input id="occtxt" class="form-control" type="text" style="border-radius: 10px; margin-left: 217px; width: 428px; " placeholder="%" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">Property Management Fees</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input id="pmftxt" class="form-control" type="text" style="border-radius: 10px; margin-left: 217px; width: 428px; " placeholder="0.000" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">Maintenance Expenses</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input id="mexptxt" class="form-control" type="text" style="border-radius: 10px; margin-left: 217px; width: 428px; " placeholder="0.000" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">Contract Based Expenses</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input id="cbexptxt" class="form-control" type="text" style="border-radius: 10px; margin-left: 217px; width: 428px; " placeholder="0.000" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label class="control-label text-black-50">Other Expenses</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input id="othrexptxt" class="form-control" type="text" style="border-radius: 10px; margin-left: 217px; width: 428px; " placeholder="0.000" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <table class="table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categorygridtbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body" style="background-color: sienna;">
+                <div class="col-lg-12">
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label class="control-label text-black-50">Total Rent Income</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input id="totalrenttxt" class="form-control" type="text" style="border-radius: 10px;" placeholder="0.000" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label class="control-label text-black-50">Total Expenses</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input id="totalexptxt" class="form-control" type="text" style="border-radius: 10px;" placeholder="0.000" />
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label class="control-label text-black-50">Total Expenses (%)</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input id="totexppertxt" class="form-control" type="text" style="border-radius: 10px;" placeholder="%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body" style="background-color: tan;">
+                <div class="col-lg-12">
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label class="control-label text-black-50">Total Income in KWD</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input id="gtotaltxt" class="form-control" type="text" style="border-radius: 10px;" placeholder="0.000"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <button type="button" id="btncreate" class="btn btn-primary float-right" style="border-radius:10px;">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    </form>
+
+</div>

@@ -1,0 +1,1437 @@
+﻿@model PMS_Admin_Web.Models.Users.CreateUserModel
+@using Microsoft.AspNetCore.Http;
+
+@{
+    //if (Model.Id == 0)
+    ViewData["Title"] = "Other Activities";
+    //else
+    //    ViewData["Title"] = "Update User";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+            window.history.back();
+        };
+    </script>
+}
+
+@*@if (ViewBag.Message == "Access denied")
+{
+    <script>
+        history.back();
+    </script>
+}*@
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    var sourcemode;
+
+    function loadusername() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadUserNameMarketing", "Common")",
+            success: function (response) {
+                $('#pmUsername').append('<option hidden>--Select--</option>');
+                $.each(response, function (k, v) {
+                    $('#pmUsername').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    function loadpassword() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadPasswordAccess", "Common")",
+            success: function (response) {
+                $('#password').val(response);
+            }
+        })
+    }
+
+    function loadDriverDetails() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadDriverDetails", "Marketing")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#tbodyDriver').append('<tr><td hidden>' + v.id + '</td> <td>' + v.driverName + '</td> <td>' + v.mob + '</td> <td>' + v.phone + '</td> <td>' + v.address + '</td> <td style="text-align: center;"><a href="javascript:void(0)" onclick="editDriver(' + v.id + ')"><i class="fa fa-pencil" aria-hidden="true"></i></a></td> </tr>');
+                });
+            }
+        })
+    }
+
+    function editDriver(id) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadDriverDetail", "Marketing")",
+            data: { id: id },
+            success: function (response) {
+                $('#driverId').val(response.id);
+                $('#ppDrivername').val(response.driverName);
+                $('#ppAddress').val(response.address);
+                $('#ppMobile').val(response.mob);
+                $('#ppPhone').val(response.phone);
+                $('#btnupdatedriver').show();
+                $('#btncreatedriver').hide();
+            }
+        })
+    }
+
+    function loadLeDetails() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadLeDetails", "Marketing")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#tbodyLe').append('<tr><td hidden>' + v.id + '</td> <td>' + v.lename + '</td> <td>' + v.lemob + '</td> <td>' + v.lemail + '</td> <td style="text-align: center;"><a href="javascript:void(0)" onclick="editLe(' + v.id + ')"><i class="fa fa-pencil" aria-hidden="true"></i></a></td> </tr>');
+                });
+            }
+        })
+    }
+
+    function editLe(id) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadLeDetail", "Marketing")",
+            data: { id: id },
+            success: function (response) {
+                $('#leId').val(response.id);
+                $('#leName').val(response.lename);
+                $('#leTitle').val(response.nametitle);
+                $('#leAddress').val(response.address);
+                $('#leMobile').val(response.lemob);
+                $('#lePhone').val(response.phone);
+                $('#leEmail').val(response.lemail);
+                $('#btnupdatele').show();
+                $('#btncreatele').hide();
+            }
+        })
+    }
+
+    function loadcgls() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadCgls", "Common")",
+            success: function (response) {
+                $('#cgl').append('<option hidden>--Select--</option>');
+                $.each(response, function (k, v) {
+                    $('#cgl').append('<option value="' + v + '">' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    function loadpgls() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadPgls", "Common")",
+            success: function (response) {
+                $('#pgl').append('<option hidden>--Select--</option>');
+                $.each(response, function (k, v) {
+                    $('#pgl').append('<option value="' + v + '">' + v +'</option>');
+                });
+            }
+        })
+    }
+
+    function loadsource(sourcemode) {
+        $.ajax({
+            type: "POST",
+            data: { sourcemode: sourcemode},
+            url: "@Url.Action("LoadSources", "Marketing")",
+            success: function (response) {
+                var no = 1;
+                if (sourcemode == "others") {
+                    $('#modaltitleSource').val("Other Source");
+                }
+                else {
+                    $('#modaltitleSource').val("Source");
+                }
+                $.each(response, function (k, v) {
+                    $('#tbodySource').append(`<tr><td> ${no} </td> <td> ${v} </td> <td style="text-align: center;"><button type="button" onclick="deletesource('${v}')"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></button></td> </tr>`);
+                    no++;
+                });
+                /* $("#viewsourceModal").modal({ backdrop: "static" });*/
+            }
+        })
+    }
+
+    function deletesource(source) {
+        var confirmMessageBox = confirm('Are you sure you wish to delete this record?');
+        if (confirmMessageBox) {
+            $.ajax({
+            type: "POST",
+            url: "@Url.Action("DeleteSource", "Marketing")",
+            data: { source: source, sourcemode: sourcemode },
+            success: function (response) {
+                alert(response);
+                $('#tbodySource').html('');
+                loadsource(sourcemode);
+            }
+        })
+        }
+        else {
+            alert('Action Cancelled');
+        }
+
+    }
+
+    function loadnationality() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadNationality", "Common")",
+            success: function (response) {
+                var no = 1;
+                $.each(response, function (k, v) {
+                    $('#tbodyNationality').append(`<tr><td> ${no} </td> <td> ${v} </td> <td style="text-align: center;"><button type="button" onclick="deletenationality('${v}')"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></button></td> </tr>`);
+                    no++;
+                });
+                /*$("#viewnationalityModal").modal({ backdrop: "static" });*/
+            }
+        })
+    }
+
+    function deletenationality(nation) {
+        var confirmMessageBox = confirm('Are you sure you wish to delete this record?');
+        if (confirmMessageBox) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteNationality", "Marketing")",
+                data: { nation: nation },
+                success: function (response) {
+                    alert(response);
+                    $('#tbodyNationality').html('');
+                    loadnationality();
+                }
+            })
+        }
+        else {
+            alert('Action Cancelled');
+        }
+    }
+
+    function loadarea() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadAreaName", "Common")",
+            success: function (response) {
+                var no = 1;
+              
+                $.each(response, function (k, v) {
+                    $('#tbodyArea').append(`<tr><td> ${no} </td> <td> ${v} </td> <td style="text-align: center;"><button type="button" onclick="deletearea('${v}')"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></button></td> </tr>`);
+                    no++;
+                });
+                /*$("#viewareaModal").modal({ backdrop: "static" });*/
+            }
+        })
+    }
+
+    function deletearea(area) {
+        var confirmMessageBox = confirm('Are you sure you wish to delete this record?');
+        if (confirmMessageBox) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteArea", "Marketing")",
+                data: { area: area },
+                success: function (response) {
+                    alert(response);
+                    $('#tbodyArea').html('');
+                    loadarea();
+                }
+            })
+        }
+        else {
+            alert('Action Cancelled');
+        }
+    }
+
+    $(document).ready(function () {
+        loadusername();
+        loadDriverDetails();
+        loadLeDetails();
+        $('#btnupdatedriver').hide();
+        $('#btnupdatele').hide();
+        loadpassword();
+        loadcgls();
+        loadpgls();
+        $('#apppwdlbl').hide();
+        $('#apppwdtxt').hide();
+        $('#change').hide();
+        /*var pwdgranted;*/
+        var modalname;
+
+        $('#saveSource').click(function () {
+            var source = $('#source').val();
+            if (source == null) {
+                alert('Source is Required');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveSource", "Marketing")",
+                data: { source: source },
+                success: function (response) {
+                    alert(response);
+                    if (response == "Source is Created") {
+                        $('#source').val('');
+                    }
+                }
+            })
+        })
+
+        $('#saveOtherSource').click(function () {
+            var othersource = $('#othersource').val();
+            if (othersource == null) {
+                alert('OtherSource is Required');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveOtherSource", "Marketing")",
+                data: { othersource: othersource },
+                success: function (response) {
+                    alert(response);
+                    if (response == "OtherSource is Created") {
+                        $('#othersource').val('');
+                    }
+                }
+            })
+        })
+
+        $('#saveNationality').click(function () {
+            var nationality = $('#nationality').val();
+            if (nationality == null) {
+                alert('Enter the Nationality');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveNationality", "Marketing")",
+                data: { nationality: nationality },
+                success: function (response) {
+                    alert(response);
+                    if (response == "Nationality is Created") {
+                        $('#nationality').val('');
+                    }
+                }
+            })
+        })
+
+        $('#saveArea').click(function () {
+            var area = $('#area').val();
+            if (nationality == null) {
+                alert('Enter the Area');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveArea", "Marketing")",
+                data: { area: area },
+                success: function (response) {
+                    alert(response);
+                    if (response == "Area is Created") {
+                        $('#area').val('');
+                    }
+                }
+            })
+        })
+
+        $('#change').click(function () {
+            var apppwdtxt = $('#apppwdtxt').val();
+            if (apppwdtxt == null) {
+                alert('App Password is Blank,Enter the Password');
+                return false;
+            }
+            if (apppwdtxt.length > 15) {
+                alert('App Password cannot be more than 15 digits or letters');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ChangePassword", "Marketing")",
+                data: { apppwdtxt: apppwdtxt },
+                success: function (response) {
+                    alert(response);
+                    if (response == "Your Apppassword is changed") {
+                        $('#apppwdtxt').val('');
+                    }
+                }
+            })
+        })
+
+        $('#btncreateuser').click(function () {
+            var ppUsername = $('#ppUsername').val();
+            var ppPassword = $('#ppPassword').val();
+            var ppRole = $('#ppRole :selected').val();
+
+            if (ppUsername == null) {
+                alert('User Name is Required');
+                return false;
+            }
+            if (ppPassword == null) {
+                alert('Password is Required');
+                return false;
+            }
+            if (ppRole == null) {
+                alert('Enter the Role and Privilege');
+                return false;
+            }
+            if (ppRole == "BDO") {
+                ppUsername = "BDO";
+                alert('If the Role is BDO, by default the name is also BDO');
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateUser", "Marketing")",
+                data: { ppUsername: ppUsername, ppPassword: ppPassword, ppRole: ppRole },
+                success: function (response) {
+                    alert(response);
+                    if (response == "User is created successfully") {
+                        $('#ppUsername').val('');
+                        $('#ppPassword').val('');
+                        $('#ppRole').prop('selectedIndex', 0);
+
+                    }
+                }
+            })
+        })
+
+        $('#pmUsername').change(function () {
+            var pmUsername = $('#pmUsername :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadUserDetails", "Marketing")",
+                data: { pmUsername: pmUsername},
+                success: function (response) {
+                    /*alert(response);*/
+                    $('#pmPassword').val(response.password);
+                    $('#pmRole').val(response.role);
+                }
+            })
+        })
+
+        $('#btnupdateuser').click(function () {
+            var pmUsername = $('#pmUsername :selected').val();
+            var pmPassword = $('#pmPassword').val();
+            var pmRole = $('#pmRole :selected').val();
+
+            if (pmUsername == null) {
+                alert('User Name is Required');
+                return false;
+            }
+            if (pmPassword == null) {
+                alert('Password is Required');
+                return false;
+            }
+            if (pmRole == null) {
+                alert('Enter the Role and Privilege');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateUser", "Marketing")",
+                data: { pmUsername: pmUsername, pmPassword: pmPassword, pmRole: pmRole },
+                success: function (response) {
+                    alert(response);
+                    if (response == "User is modified successfully") {
+                        /*$('#pmUsername').val('');*/
+                        $('#pmUsername').prop('selectedIndex', 0);
+                        $('#pmPassword').val('');
+                        $('#pmRole').prop('selectedIndex', 0);
+
+                    }
+                }
+            })
+        })
+
+        $('#btndeleteuser').click(function () {
+            var pmUsername = $('#pmUsername :selected').val();
+
+            var confirmMessageBox = confirm('Are you sure you want Remove this User?');
+            if (confirmMessageBox) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("DeleteUser", "Marketing")",
+                    data: { pmUsername: pmUsername },
+                    success: function (response) {
+                        alert(response);
+                        if (response == "User is deleted") {
+                            $('#pmUsername').html('');
+                            loadusername();
+                            /*$('#pmUsername').prop('selectedIndex', 0);*/
+                            $('#pmPassword').val('');
+                            $('#pmRole').prop('selectedIndex', 0);
+
+                        }
+                    }
+                })
+            }
+        })
+
+        $('#userprivilege').click(function () {
+            alert('Under Process');
+        })
+
+        $('#logsecurity').click(function () {
+            alert('Under Process');
+        })
+
+        $('#drivermanagement').click(function () {
+            var permission = $('#permission').val();
+            var userle = $('#userle').val();
+            if (permission == "Administrator" && userle == "Admin") {
+                $("#adddriverModal").modal({ backdrop: "static" });
+            }
+            else {
+                $("#passwordaccessModal").modal({ backdrop: "static" });
+                //if (pwdgranted == "true") {
+                //    $("#adddriverModal").modal({ backdrop: "static" });
+                //}
+                modalname = "drivermanagement";
+            }
+        })
+
+        $('#lemanagement').click(function () {
+            var permission = $('#permission').val();
+            var userle = $('#userle').val();
+            if (permission == "Administrator" && userle == "Admin") {
+                $("#addleModal").modal({ backdrop: "static" });
+            }
+            else {
+                $("#passwordaccessModal").modal({ backdrop: "static" });
+                //if (pwdgranted == "true") {
+                //    $("#adddriverModal").modal({ backdrop: "static" });
+                //}
+                modalname = "lemanagement";
+            }
+        })
+
+        $('#btnok').click(function () {
+            var ppKey = $('#ppKey').val();
+            var password = $('#password').val();
+            if (ppKey == null) {
+                alert('Key is required');
+                return false;
+            }
+            if (ppKey == password) {
+                /*pwdgranted = "true";*/
+                $("#passwordaccessModal").modal("hide");
+                if (modalname == "drivermanagement") {
+                    $("#adddriverModal").modal({ backdrop: "static" });
+                }
+                if (modalname == "lemanagement") {
+                    $("#adddriverModal").modal({ backdrop: "static" });
+                }
+            }
+            else {
+                alert('Incorrect key');
+                return false;
+            }
+        })
+
+        $('#btncreatedriver').click(function () {
+            var ppDrivername = $('#ppDrivername').val();
+            var ppAddress = $('#ppAddress').val();
+            var ppMobile = $('#ppMobile').val();
+            var ppPhone = $('#ppPhone').val();
+
+            if (ppDrivername == null) {
+                alert('Name is Required');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveDriver", "Marketing")",
+                data: { ppDrivername: ppDrivername, ppAddress: ppAddress, ppMobile: ppMobile, ppPhone: ppPhone },
+                success: function (response) {
+                    alert(response);
+                    if (response == "New Driver is Created") {
+                        $('#ppDrivername').val('');
+                        $('#ppAddress').val('');
+                        $('#ppMobile').val('');
+                        $('#ppPhone').val('');
+                        $('#tbodyDriver').html('');
+                        loadDriverDetails();
+                    }
+                }
+            })
+        })
+
+        $('#btnupdatedriver').click(function () {
+            var driverId = $('#driverId').val();
+            var ppDrivername = $('#ppDrivername').val();
+            var ppAddress = $('#ppAddress').val();
+            var ppMobile = $('#ppMobile').val();
+            var ppPhone = $('#ppPhone').val();
+
+            if (ppDrivername == null) {
+                alert('Name is Required');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateDriver", "Marketing")",
+                data: { driverId: driverId,ppDrivername: ppDrivername, ppAddress: ppAddress, ppMobile: ppMobile, ppPhone: ppPhone },
+                success: function (response) {
+                    alert(response);
+                    if (response == "Driver Details are Updated") {
+                        $('#driverId').val('');
+                        $('#ppDrivername').val('');
+                        $('#ppAddress').val('');
+                        $('#ppMobile').val('');
+                        $('#ppPhone').val('');
+                        $('#tbodyDriver').html('');
+                        loadDriverDetails();
+                    }
+                }
+            })
+        })
+
+        $('#btncreatele').click(function () {
+            var leName = $('#leName').val();
+            var leTitle = $('#leTitle').val();
+            var leAddress = $('#leAddress').val();
+            var leMobile = $('#leMobile').val();
+            var lePhone = $('#lePhone').val();
+            var leEmail = $('#leEmail').val();
+
+            if (leName == null) {
+                alert('Name is Required');
+                return false;
+            }
+            if (leTitle == null) {
+                alert('Enter The Name Title');
+                return false;
+            }
+            if (leMobile == null) {
+                alert('Mobile No is Required');
+                return false;
+            }
+            if (leEmail == null) {
+                alert('Enter the MailId');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveLe", "Marketing")",
+                data: { leName: leName, leTitle: leTitle, leAddress: leAddress, leMobile: leMobile, lePhone: lePhone, leEmail: leEmail },
+                success: function (response) {
+                    alert(response);
+                    if (response == "Leasing Executive is Created") {
+                        $('#leName').val('');
+                        $('#leTitle').val('');
+                        $('#leAddress').val('');
+                        $('#leMobile').val('');
+                        $('#lePhone').val('');
+                        $('#leEmail').val('');
+                        $('#tbodyLe').html('');
+                        loadLeDetails();
+                    }
+                }
+            })
+        })
+
+        $('#btnupdatele').click(function () {
+            var leId = $('#leId').val();
+            var leName = $('#leName').val();
+            var leTitle = $('#leTitle').val();
+            var leAddress = $('#leAddress').val();
+            var leMobile = $('#leMobile').val();
+            var lePhone = $('#lePhone').val();
+            var leEmail = $('#leEmail').val();
+
+            if (leName == null) {
+                alert('Name is Required');
+                return false;
+            }
+            if (leTitle == null) {
+                alert('Enter The Name Title');
+                return false;
+            }
+            if (leMobile == null) {
+                alert('Mobile No is Required');
+                return false;
+            }
+            if (leEmail == null) {
+                alert('Enter the MailId');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateLe", "Marketing")",
+                data: { leId: leId, leName: leName, leTitle: leTitle, leAddress: leAddress, leMobile: leMobile, lePhone: lePhone, leEmail: leEmail },
+                success: function (response) {
+                    alert(response);
+                    if (response == "LE Details are Updated") {
+                        $('#leId').val('')
+                        $('#leName').val('');
+                        $('#leTitle').val('');
+                        $('#leAddress').val('');
+                        $('#leMobile').val('');
+                        $('#lePhone').val('');
+                        $('#leEmail').val('');
+                        $('#tbodyLe').html('');
+                        loadLeDetails();
+                    }
+                }
+            })
+        })
+
+        $('#cgl').change(function () {
+            var cgl = $('#cgl :selected').val();
+            if (cgl != null) {
+                $('#newcgl').val(cgl);
+            }
+        })
+
+        $('#pgl').change(function () {
+            var pgl = $('#pgl :selected').val();
+            if (pgl != null) {
+                $('#newpgl').val(pgl);
+            }
+        })
+
+        $('#btnchangecgl').click(function () {
+            var cgl = $('#cgl :selected').val();
+            var newcgl = $('#newcgl').val();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ChangeCgl", "Marketing")",
+                data: { cgl: cgl, newcgl: newcgl },
+                success: function (response) {
+                    alert(response);
+                    if (response == "CGL NO is changed successfully") {
+                        $('#cgl').prop('selectedIndex', 0);
+                        $('#newcgl').val('');
+                        loadcgls();
+                    }
+                }
+            })
+        })
+
+        $('#btnchangepgl').click(function () {
+            var pgl = $('#pgl :selected').val();
+            var newpgl = $('#newpgl').val();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ChangePgl", "Marketing")",
+                data: { pgl: pgl, newpgl: newpgl },
+                success: function (response) {
+                    alert(response);
+                    if (response == "PGL NO is changed successfully") {
+                        $('#pgl').prop('selectedIndex', 0);
+                        $('#newpgl').val('');
+                        loadpgls();
+                    }
+                }
+            })
+        })
+
+        $('#passwordaccess').click(function () {
+            var userle = $('#userle').val();
+            var permission = $('#permission').val();
+
+            if (userle == "Admin" && permission == "Administrator") {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("AppPassword", "Common")",
+                    success: function (response) {
+                        $('#apppwdlbl').show();
+                        $('#apppwdtxt').show();
+                        $('#change').show();
+                        $('#apppwdtxt').val(response);
+                    }
+                })
+            }
+            else {
+                alert('Access denied');
+            }
+        })
+
+
+        $('#viewSource').click(function () {
+            sourcemode = "p";
+            $.ajax({
+                type: "POST",
+                data: { sourcemode: sourcemode},
+                url: "@Url.Action("LoadSources", "Marketing")",
+                success: function (response) {
+                    var no = 1;
+                    $('#tbodySource').html('');
+                    $('#modaltitleSource').html("Source");
+                    $.each(response, function (k, v) {
+                        $('#tbodySource').append(`<tr><td> ${no} </td> <td> ${v} </td> <td style="text-align: center;"><button type="button" onclick="deletesource('${v}')"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></button></td> </tr>`);
+                        no++;
+                    });
+                    $("#viewsourceModal").modal({ backdrop: "static" });
+                }
+            })
+        })
+
+        $('#viewOthersource').click(function () {
+            sourcemode = "others";
+            $.ajax({
+                type: "POST",
+                data: { sourcemode: sourcemode},
+                url: "@Url.Action("LoadSources", "Marketing")",
+                success: function (response) {
+                    var no = 1;
+                    $('#tbodySource').html('');
+                    $('#modaltitleSource').html("Other Source");
+                    $.each(response, function (k, v) {
+                        $('#tbodySource').append(`<tr><td> ${no} </td> <td> ${v} </td> <td style="text-align: center;"><button type="button" onclick="deletesource('${v}')"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></button></td> </tr>`);
+                        no++;
+                    });
+                    $("#viewsourceModal").modal({ backdrop: "static" });
+                }
+            })
+        })
+
+
+        $('#viewNationality').click(function () {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("LoadNationality", "Common")",
+                success: function (response) {
+                    var no = 1;
+                    $('#tbodyNationality').html('');
+                    $.each(response, function (k, v) {
+                        $('#tbodyNationality').append(`<tr><td> ${no} </td> <td> ${v} </td> <td style="text-align: center;"><button type="button" onclick="deletenationality('${v}')"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></button></td> </tr>`);
+                        no++;
+                    });
+                    $("#viewnationalityModal").modal({ backdrop: "static" });
+                }
+            })
+        })
+
+        $('#viewArea').click(function () {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("LoadAreaName", "Common")",
+                success: function (response) {
+                    var no = 1;
+                    $('#tbodyArea').html('');
+                    $.each(response, function (k, v) {
+                        $('#tbodyArea').append(`<tr><td> ${no} </td> <td> ${v} </td> <td style="text-align: center;"><button type="button" onclick="deletearea('${v}')"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></button></td> </tr>`);
+                        no++;
+                    });
+                    $("#viewareaModal").modal({ backdrop: "static" });
+                }
+            })
+        })
+
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+    <input type="hidden" id="userle" value="@Context.Session.GetString("CurrentUsername")" />
+    <input type="hidden" id="permission" value="@Context.Session.GetString("CurrentUserRole")" />
+    <input type="hidden" id="password" />
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3">
+            @*<button type="button" class="btn btn-primary" data-target="#createPAModal" data-toggle="modal" style="border-radius:10px; float:right;">Create PA <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>*@
+        </div>
+    </div>
+    <br />
+    <form class="form-horizontal" asp-controller="Marketing" asp-action="Other">
+        <div class="card" style="color:burlywood">
+            @*<div class="card-header" style="background-color: darksalmon;">
+                    <h5 class="text-center" style="color:black"><strong>Create User</strong></h5>
+                </div>*@
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card" style="height: 438px;">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Source</label>
+                                            <input id="source" class="form-control" type="text" style="border-radius:10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3"><button id="saveSource" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 34px;">Save</button></div>
+                                    <div class="col-lg-3"><button type="button" id="viewSource" class="btn btn-primary" style="border-radius: 10px; margin-top: 33px;">View</button></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Other Source</label>
+                                            <input id="othersource" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3"><button id="saveOtherSource" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 34px;">Save</button></div>
+                                    <div class="col-lg-3"><button type="button" id="viewOthersource" class="btn btn-primary" style="border-radius: 10px; margin-top: 33px;">View</button></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Nationality</label>
+                                            <input id="nationality" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3"><button id="saveNationality" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 34px;">Save</button></div>
+                                    <div class="col-lg-3"><button type="button" id="viewNationality" class="btn btn-primary" style="border-radius: 10px; margin-top: 33px;">View</button></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Area</label>
+                                            <input id="area" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3"><button id="saveArea" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 34px;">Save</button></div>
+                                    <div class="col-lg-3"><button type="button" id="viewArea" class="btn btn-primary" style="border-radius: 10px; margin-top: 33px;">View</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button type="button" data-target="#usermanagementModal" data-backdrop="static" data-keyboard="false" data-toggle="modal" class="btn btn-primary" style="border-radius: 10px;">User Management</button>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button type="button" id="drivermanagement" data-toggle="modal" class="btn btn-primary" style="border-radius: 10px;">Driver Management</button>
+                                        @*<button type="button" data-target="#adddriverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal" class="btn btn-primary" style="border-radius: 10px;">Driver Management</button>*@
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button type="button" id="lemanagement" data-toggle="modal" class="btn btn-primary" style="border-radius: 10px;">LE Management</button>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button type="button" data-target="#enquirynomanagementModal" data-backdrop="static" data-keyboard="false" data-toggle="modal" class="btn btn-primary" style="border-radius: 10px;">Enquiry No Management</button>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button type="button" id="passwordaccess" class="btn btn-primary" style="border-radius: 10px;">Password Access</button>
+                                    </div>
+                                </div>
+                                <br />
+                                <div id="" class="row">
+                                    <div class="col-lg-6">
+                                        <div id="apppwdDiv" class="form-group">
+                                            <label id="apppwdlbl" class="control-label text-black-50">Your Current Application Password is</label>
+                                            <input id="apppwdtxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button type="button" id="change" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;">Change</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @*<div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+
+                    </div>
+                </div>
+            </div>*@
+    </form>
+</div>
+@*</div>*@
+
+
+<!--popup for view source-->
+<div id="viewsourceModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px; width: 1005px; margin-left: -250px; ">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 id="modaltitleSource" class="modal-title"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success" style="width:100%">
+                                        <tr>
+                                            @*<th hidden></th>*@
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 200px;">No</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 165px;">Source</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodySource">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @*<div class="modal-footer">
+
+                            </div>*@
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for view nationality-->
+<div id="viewnationalityModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px; width: 1005px; margin-left: -250px; ">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Nationality</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success" style="width:100%">
+                                        <tr>
+                                            @*<th hidden></th>*@
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 200px;">No</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 165px;">Nationality</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyNationality">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @*<div class="modal-footer">
+
+                            </div>*@
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for view area-->
+<div id="viewareaModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px; width: 1005px; margin-left: -250px; ">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Area</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success" style="width:100%">
+                                        <tr>
+                                            @*<th hidden></th>*@
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 200px;">No</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 165px;">Area</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyArea">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @*<div class="modal-footer">
+
+                            </div>*@
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for user management-->
+<div id="usermanagementModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px;">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Users Management</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <button type="button" id="adduser" data-target="#adduserModal" data-backdrop="static" data-keyboard="false" data-toggle="modal" class="btn btn-primary" style="border-radius: 10px;">Add User</button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="manageuser" data-target="#manageuserModal" data-backdrop="static" data-keyboard="false" data-toggle="modal" class="btn btn-primary" style="border-radius: 10px;">Manage User</button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="userprivilege" class="btn btn-primary" style="border-radius: 10px;">User Privilege</button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="logsecurity" class="btn btn-primary" style="border-radius: 10px;">Log Security</button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            @*<button type="button" id="submitbtn" class="btn btn-primary">Submit</button>*@
+                            <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for add user-->
+<div id="adduserModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px;">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Create User and Assign Privilege</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Username</label>
+                                <input id="ppUsername" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Password</label>
+                                <input id="ppPassword" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Role and Privilege</label>
+                                <select id="ppRole" class="form-control" type="text" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                    <option value="Administrator">Administrator</option>
+                                    <option value="User">User</option>
+                                    <option value="BDO">BDO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btncreateuser" class="btn btn-primary" style="border-radius: 10px;">Create</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;">Close</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for manage user-->
+<div id="manageuserModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px;">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Manage User and their Privilege</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Username</label>
+                                <select id="pmUsername" class="form-control" type="text" style="border-radius: 10px;">
+                                    @*<option hidden>--Select--</option>*@
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Password</label>
+                                <input id="pmPassword" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Role and Privilege</label>
+                                <select id="pmRole" class="form-control" type="text" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                    <option value="Administrator">Administrator</option>
+                                    <option value="User">User</option>
+                                    <option value="BDO">BDO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btnupdateuser" class="btn btn-primary" style="border-radius: 10px;">Update</button>
+                            <button type="button" id="btndeleteuser" class="btn btn-primary" style="border-radius: 10px;">Delete</button>
+                            <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for add driver-->
+<div id="adddriverModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px; width: 1005px; margin-left: -250px; ">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Available Drivers and Driver Creations</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="driverId" />
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Driver's Name</label>
+                                <input id="ppDrivername" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Address</label>
+                                <textarea id="ppAddress" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Mobile</label>
+                                <input id="ppMobile" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Phone</label>
+                                <input id="ppPhone" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="btncreatedriver" class="btn btn-primary" style="border-radius: 10px;">Create</button>
+                                <button type="button" id="btnupdatedriver" class="btn btn-primary" style="border-radius: 10px;">Update</button>
+                                @*<button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;">Close</button>*@
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div>
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success" style="width:100%">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 200px;">Driver Name</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 165px;">Mobile</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 220px;">Phone</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 230px;">Address</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyDriver">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for add le-->
+<div id="addleModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px; width: 775px; margin-left: -170px; ">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Available Executives and Executive Creation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="leId" />
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Name Title</label>
+                                <select id="leTitle" class="form-control" type="text" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                    <option value="Mr.">Mr.</option>
+                                    <option value="Ms.">Ms.</option>
+                                    <option value="Mrs.">Mrs.</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Leasing Executive Name</label>
+                                <input id="leName" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Address</label>
+                                <textarea id="leAddress" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Mobile</label>
+                                <input id="leMobile" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Phone</label>
+                                <input id="lePhone" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Email</label>
+                                <input id="leEmail" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="btncreatele" class="btn btn-primary" style="border-radius: 10px;">Create</button>
+                                <button type="button" id="btnupdatele" class="btn btn-primary" style="border-radius: 10px;">Update</button>
+                                @*<button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;">Close</button>*@
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div>
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success" style="width:100%">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 200px;">LE Name</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 165px;">Mobile</label></th>
+                                            <th class="table-bordered text-center"><label style="color: black; font-size: 17px; width: 220px;">Email</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyLe">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for enquiry no management-->
+<div id="enquirynomanagementModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px;">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Enquiry No Management</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label><strong>Change CGL Reference No</strong></label>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Select CGL</label>
+                                <select id="cgl" class="form-control" type="text" style="border-radius: 10px;"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">New CGL</label>
+                                <input id="newcgl" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="btnchangecgl" class="btn btn-primary" style="border-radius: 10px;">Change CGL</button>
+                            </div>
+                            <br />
+                            <label><strong>Change PGL Reference No</strong></label>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Select PGL</label>
+                                <select id="pgl" class="form-control" type="text" style="border-radius: 10px;"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label text-black-50">New PGL</label>
+                                <input id="newpgl" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="btnchangepgl" class="btn btn-primary" style="border-radius: 10px;">Change PGL</button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            @*<button type="button" id="submitbtn" class="btn btn-primary">Submit</button>*@
+                            <button type="button" class="btn btn-secondary" style="border-radius: 10px;" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+<!--popup for password access-->
+<div id="passwordaccessModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="card" style="border-radius: 10px;">
+            <div class="card-body">
+                <form>
+                    <div class="modal-content" style="border-radius: 10px;">
+                        @*<div class="modal-header">
+                                <h5 class="modal-title">Create User and Assign Privilege</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>*@
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Enter Key</label>
+                                <input id="ppKey" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btnok" class="btn btn-primary" style="border-radius: 10px;">Ok</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 10px;">Close</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!---->
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

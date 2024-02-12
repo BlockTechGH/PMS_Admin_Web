@@ -1,0 +1,521 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+@*@using X.PagedList.Mvc.Core
+    @model X.PagedList.IPagedList<PMS_Admin_Web.Models.Lcinfo>*@
+@model PMS_Admin_Web.Models.LC.ListLCModel
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "LC List";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    function deletelc(id)
+    {
+        var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+        if (confirmMessageBox) {
+            pryEmpId = id;
+            //alert(pryEmpId);
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("DeleteLC", "LC")",
+                data: { Id: pryEmpId },
+
+                success: function (response) {
+                    alert(response);
+                    location.reload();
+                },
+                error: function (err) {
+                    alert(err);
+                    location.reload();
+                }
+            });
+        }
+    }
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+        var pryEmpId;
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                pryEmpId = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteLC", "LC")",
+                    data: { Id: pryEmpId },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#btnSearch').click(function () {
+            var txtSearchLC = $('#txtSearchLC').val();
+            var sessionDepartment = $('#sessionDepartment').val();
+            var clientname;
+            var ownremarks;
+            var remarks;
+            if (txtSearchLC != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("SearchLC", "LC")",
+                    data: { lcnoKeyword: txtSearchLC },
+                    success: function (response) {
+                        $('#tbody').html('');
+                        $.each(response, function (k, v) {
+                            //alert([v.tenname].length)
+                            if (v.tenname.length > 50) {
+                                clientname = $.trim(v.tenname).substring(0, 40).split(" ").slice(0, -1).join(" ") + "...";
+                            }
+                            else {
+                                clientname = v.tenname;
+                            }
+
+                            if (v.ownremarks == '' || v.ownremarks == null) {
+                                ownremarks = "-";
+                            }
+                            else {
+                                if (v.ownremarks.length > 30) {
+                                    ownremarks = $.trim(v.ownremarks).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                                }
+                                else {
+                                    ownremarks = v.ownremarks;
+                                }
+                            }
+
+                            if (v.remarks == '' || v.remarks == null) {
+                                remarks = "-";
+                            }
+                            else {
+                                if (v.remarks.length > 30) {
+                                    remarks = $.trim(v.remarks).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                                }
+                                else {
+                                    remarks = v.remarks;
+                                }
+                            }
+
+                            var lstart = v.leasestart.split('T')[0];
+                            var ls = lstart.split('-');
+                            var leasestart = ls[2] + '-' + ls[1] + '-' + ls[0];
+                            var lend = v.leaseend.split('T')[0];
+                            var le = lend.split('-');
+                            var leaseend = le[2] + '-' + le[1] + '-' + le[0];
+
+                            $('#tbody').append('<tr>');
+                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.lcNo + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.pname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.aptno + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + clientname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.nationality + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + leasestart + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + leaseend + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.deposit + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.rent + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.resf + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.lcmadeon + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.loiNo + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + ownremarks + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.source + '</td>');
+                            //$('#tbody').append('<td style="color:black;">' + '-' + '</td>');
+                            //$('#tbody').append('<td style="color:black;">' + '-' + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + remarks + '</td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("ViewLC", "LC")?id=' + v.id + '">View</a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("CreateLC", "LC")?Id=' + v.id + '">Cancel</a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditLC", "LC")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a onclick="deletelc(' + v.id + ')" href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('</tr>');
+                            /*$('.pagination').css('display', 'none');*/
+                        });
+                    }
+                })
+            }
+            else {
+                $('#tbody').html('');
+                /*$('#tbody').append('<tr>');*/
+                $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                /*$('#tbody').append('</tr>');*/
+            }
+        });
+
+
+        $('#sortby1').change(function () {
+            var sortby1 = $('#sortby1 :selected').val();
+            var clientname;
+            var ownremarks;
+            var remarks;
+            if (sortby1 != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Sort1LC", "LC")",
+                    data: { sortKeyword: sortby1 },
+                    success: function (response) {
+                        $('#tbody').html('');
+                        /*alert(response.length)*/
+                        $.each(response, function (k, v) {
+
+                            if (v.tenname.length > 50) {
+                                clientname = $.trim(v.tenname).substring(0, 40).split(" ").slice(0, -1).join(" ") + "...";
+                            }
+                            else {
+                                clientname = v.tenname;
+                            }
+
+                            if (v.ownremarks == '' || v.ownremarks == null) {
+                                ownremarks = "-";
+                            }
+                            else {
+                                if (v.ownremarks.length > 30) {
+                                    ownremarks = $.trim(v.ownremarks).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                                }
+                                else {
+                                    ownremarks = v.ownremarks;
+                                }
+                            }
+
+                            if (v.remarks == '' || v.remarks == null) {
+                                remarks = "-";
+                            }
+                            else {
+                                if (v.remarks.length > 30) {
+                                    remarks = $.trim(v.remarks).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                                }
+                                else {
+                                    remarks = v.remarks;
+                                }
+                            }
+
+                            var lstart = v.leasestart.split('T')[0];
+                            var ls = lstart.split('-');
+                            var leasestart = ls[2] + '-' + ls[1] + '-' + ls[0];
+                            var lend = v.leaseend.split('T')[0];
+                            var le = lend.split('-');
+                            var leaseend = le[2] + '-' + le[1] + '-' + le[0];
+
+                            $('#tbody').append('<tr>');
+                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.lcNo + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.pname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.aptno + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + clientname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.nationality + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + leasestart + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + leaseend + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.deposit + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.rent + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.resf + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.lcmadeon + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.loiNo + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + ownremarks + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.source + '</td>');
+                            //$('#tbody').append('<td style="color:black;">' + '-' + '</td>');
+                            //$('#tbody').append('<td style="color:black;">' + '-' + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + remarks + '</td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("ViewLC", "LC")?id=' + v.id + '">View</a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("CreateLC", "LC")?Id=' + v.id + '">Cancel</a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditLC", "LC")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('</tr>');
+                            /*$('.pagination').css('display', 'none');*/
+                        });
+                    }
+                })
+            }
+            else {
+                $('#tbody').html('');
+                /*$('#tbody').append('<tr>');*/
+                $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                /*$('#tbody').append('</tr>');*/
+            }
+        });
+
+        $('#sortby2').change(function () {
+            var sortby2 = $('#sortby2 :selected').val();
+            var clientname;
+            var ownremarks;
+            var remarks;
+            if (sortby2 != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("Sort2LC", "LC")",
+                    data: { sortKeyword: sortby2 },
+                    success: function (response) {
+                        $('#tbody').html('');
+                        $.each(response, function (k, v) {
+                            //alert([v.tenname].length)
+                            if (v.tenname.length > 50) {
+                                clientname = $.trim(v.tenname).substring(0, 40).split(" ").slice(0, -1).join(" ") + "...";
+                            }
+                            else {
+                                clientname = v.tenname;
+                            }
+
+                            if (v.ownremarks == '' || v.ownremarks == null) {
+                                ownremarks = "-";
+                            }
+                            else {
+                                if (v.ownremarks.length > 30) {
+                                    ownremarks = $.trim(v.ownremarks).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                                }
+                                else {
+                                    ownremarks = v.ownremarks;
+                                }
+                            }
+
+                            if (v.remarks == '' || v.remarks == null) {
+                                remarks = "-";
+                            }
+                            else {
+                                if (v.remarks.length > 30) {
+                                    remarks = $.trim(v.remarks).substring(0, 30).split(" ").slice(0, -1).join(" ") + "...";
+                                }
+                                else {
+                                    remarks = v.remarks;
+                                }
+                            }
+
+                            var lstart = v.leasestart.split('T')[0];
+                            var ls = lstart.split('-');
+                            var leasestart = ls[2] + '-' + ls[1] + '-' + ls[0];
+                            var lend = v.leaseend.split('T')[0];
+                            var le = lend.split('-');
+                            var leaseend = le[2] + '-' + le[1] + '-' + le[0];
+
+                            $('#tbody').append('<tr>');
+                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.lcNo + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.pname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.aptno + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + clientname + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.nationality + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + leasestart + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + leaseend + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.deposit + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.rent + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.resf + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.lcmadeon + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.loiNo + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + ownremarks + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + v.source + '</td>');
+                            //$('#tbody').append('<td style="color:black;">' + '-' + '</td>');
+                            //$('#tbody').append('<td style="color:black;">' + '-' + '</td>');
+                            $('#tbody').append('<td style="color:black;">' + remarks + '</td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("ViewLC", "LC")?id=' + v.id + '">View</a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("CreateLC", "LC")?Id=' + v.id + '">Cancel</a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditLC", "LC")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                            $('#tbody').append('</tr>');
+                            /*$('.pagination').css('display', 'none');*/
+                        });
+                    }
+                })
+            }
+            else {
+                $('#tbody').html('');
+                /*$('#tbody').append('<tr>');*/
+                $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                /*$('#tbody').append('</tr>');*/
+            }
+        });
+        //end of the docuement ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    @*<input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                        <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />*@
+                    <form asp-action="ListProperties" asp-controller="Property" method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>LCs</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3 float-right">
+                                    
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label>Sort By</label>
+                                                    <select id="sortby1" class="form-control" style="border-radius: 10px; width: 120px;">
+                                                        <option hidden>--Select--</option>
+                                                        <option value="New LC">New LC</option>
+                                                        <option value="Renewal LC">Renewal LC</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <select id="sortby2" class="form-control" style="border-radius: 10px; width: 120px; margin-top: 17px;">
+                                                    <option hidden>--Select--</option>
+                                                    <option value="Not Renewable">Not Renewable</option>
+                                                    <option value="Renewable">Renewable</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="form-group" style="margin-left: 110px;">
+                                                    <label class="control-label text-black-50">Search LC No</label>
+                                                    <input id="txtSearchLC" class="form-control" type="text" style="border-radius: 10px;" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button id="btnSearch" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 17px;">Search</button>
+                                            </td>
+                                            <td>
+                                                <button asp-action="NewLC" class="btn btn-primary" style="border-radius: 10px; margin-top: 17px; margin-left: 1050px; ">New LC <i class="fa fa-plus-square-o" style="font-size:20px"></i></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <br />
+
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden><label style="width: 80px;">Sl No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px">LC No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 200px">Property Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px">Apt No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 400px;">Tenants Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px">Nationality</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 190px">LC Start Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 190px">LC End Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px">Deposit</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px">Rent</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px">RESF</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 190px">LC Made Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px">LOI Number</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 230px;">Remarks</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 160px;">Source</label></th>
+                                            @*<th class="table-bordered"><label style="color: black; font-size: 17px; width: 290px;">Date for Original LC sent to Tenant</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 315px;">Date for Original RV's sent to Tenant</label></th>*@
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 410px;">Status</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 125px;">LC Document</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Cancel/Active</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                        @foreach (var item in Model.lcinfos)
+                                        {
+                                            <tr>
+                                                <td hidden>@item.Id</td>
+                                                <td style="color:black;">@item.LcNo</td>
+                                                <td style="color:black;">@item.Pname</td>
+                                                <td style="color:black;">@item.Aptno</td>
+                                                <td style="color:black;">@CommonRepository.Truncate(item.Tenname, 50)</td>
+                                                <td style="color:black;">@item.Nationality</td>
+                                                <td style="color:black;">@Convert.ToDateTime(item.Leasestart).ToShortDateString()</td>
+                                                <td style="color:black;">@Convert.ToDateTime(item.Leaseend).ToShortDateString()</td>
+                                                <td style="color:black;">@item.Deposit</td>
+                                                <td style="color:black;">@item.Rent</td>
+                                                <td style="color:black;">@item.Resf</td>
+                                                <td style="color:black;">@item.Lcmadeon</td>
+                                                <td style="color:black;">@item.LoiNo</td>
+
+
+                                                @if (item.Ownremarks != null)
+                                                {
+                                                    <td style="color:black;">@CommonRepository.Truncate(item.Ownremarks, 30)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="color:black;">-</td>
+                                                }
+
+                                                <td style="color:black;">@item.Source</td>
+                                                @*<td style="color:black;">@Convert.ToDateTime(item.Orginallcsent).ToShortDateString()</td>
+                                                <td style="color:black;">@Convert.ToDateTime(item.Rvsent).ToShortDateString()</td>*@
+
+                                                @if (item.Remarks != null)
+                                                {
+                                                    <td style="color:black;">@CommonRepository.Truncate(item.Remarks, 50)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="color:black;">-</td>
+                                                }
+
+                                                <td style="text-align: center;">
+                                                    <a href="@Url.Action("ViewLC", "LC",new { id = item.Id })">View</a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a asp-route-id="@item.Id">Cancel</a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a asp-controller="LC" asp-action="EditLC" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                </td>
+
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+
+
+                        <!--<div id="container">
+                            <p></p>
+                            <p></p>
+                            <div class="pagination">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        Html.PagedListPager(Model, page => Url.Action("ListLC", new { page, pageSize = Model.PageSize }))
+                                    </div>
+                                </div>
+                            </div>-->
+                        @*<div class="row">
+                                <div class="col-lg-12" style="padding: 10px;padding-top: 50px;margin-left: 215px;">
+                                    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Products
+                                </div>
+                            </div>*@
+                        <!--</div>-->
+
+
+
+                    </form>
+                    @*<script type="text/javascript">
+                            function PagerClick(index) {
+                                document.getElementById("hfCurrentPageIndex").value = index;
+                                document.forms[0].submit();
+                            }
+                        </script>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

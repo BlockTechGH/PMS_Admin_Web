@@ -1,0 +1,476 @@
+﻿@{
+    ViewData["Title"] = "Amal Residence";
+    Layout = "";
+}
+
+@model PMS_Admin_Web.Models.ASR.AmalResidenceASR;
+@using PMS_Admin_Web.Repository;
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <style>
+        .box {
+            width: 200px;
+            height: 77px;
+            background-color: #eaeaea;
+            border: 1px solid #999999;
+            border-radius: 5px;
+        }
+
+        @*td {
+            border: 1px solid black; /* Define the border properties */
+            /*padding: 8px;*/ /* Adjust the padding as needed */
+        }
+
+        @media print {
+          td {
+            border: 1px solid black;
+          }
+        }*@
+
+        /*table{
+            border-collapse:collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }*/
+
+        .divcell {
+            margin-top: 0px;
+        }
+        .divtable {
+            margin-top: 38px;
+        }
+    </style>
+
+</head>
+<br />
+
+<body>
+    <div>
+        <table class="table-bordered" style=" border: solid; width: 925px; height:300px">
+            <thead>
+                <tr style="text-align: center;">
+                    <th class="table-bordered" colspan="3" style="background-color: yellow; border: solid;"><label style="color: black; font-size: 17px;">AMAL RESIDENCE APARTMENTS AVAILABILITY - OCCUPANCY STATUS AS OF @Model.CurrentDate</label></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style=" text-align: center;">
+                        <div class=".divcell" style="background-color: #ae7984;">Apt #18 - @Model.Command17.Cbtype @Model.Command17.Cftype @Convert.ToDecimal(Model.Command17.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command17.name, 20)</div>
+                        <div>
+                            <table class="divtable" style="width: 100%; ">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command17.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command17.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command17.lstart</td>
+                                    <td>@Model.Command17.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command17.PR).ToString("0.000")</td>
+                                    <td>@Model.Command17.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div class=".divcell" style="background-color: #ae7984;">Apt #19 - @Model.Command18.Cbtype @Model.Command18.Cftype @Convert.ToDecimal(Model.Command18.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command18.name, 20)</div>
+                        <div>
+                            <table class="divtable" style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command18.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command18.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command18.lstart</td>
+                                    <td>@Model.Command18.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command18.PR).ToString("0.000")</td>
+                                    <td>@Model.Command18.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div><b>7</b></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #16 - @Model.Command15.Cbtype @Model.Command15.Cftype @Convert.ToDecimal(Model.Command15.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command15.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command15.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command15.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command15.lstart</td>
+                                    <td>@Model.Command15.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command15.PR).ToString("0.000")</td>
+                                    <td>@Model.Command15.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #17 - @Model.Command16.Cbtype @Model.Command16.Cftype @Convert.ToDecimal(Model.Command16.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command16.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command16.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command16.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command16.lstart</td>
+                                    <td>@Model.Command16.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command16.PR).ToString("0.000")</td>
+                                    <td>@Model.Command16.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div><b>6</b></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table-bordered" style=" border: solid; width: 925px; height: 500px">
+            <tbody>
+                <tr>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #13 - @Model.Command12.Cbtype @Model.Command12.Cftype @Convert.ToDecimal(Model.Command12.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command12.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command12.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command12.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command12.lstart</td>
+                                    <td>@Model.Command12.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command12.PR).ToString("0.000")</td>
+                                    <td>@Model.Command12.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #14 - @Model.Command13.Cbtype @Model.Command13.Cftype @Convert.ToDecimal(Model.Command13.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command13.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command13.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command13.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command13.lstart</td>
+                                    <td>@Model.Command13.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command12.PR).ToString("0.000")</td>
+                                    <td>@Model.Command13.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #15 - @Model.Command14.Cbtype @Model.Command14.Cftype @Convert.ToDecimal(Model.Command14.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command14.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command14.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command14.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command14.lstart</td>
+                                    <td>@Model.Command14.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command14.PR).ToString("0.000")</td>
+                                    <td>@Model.Command14.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="width: 15px;"><b>5</b></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #10 - @Model.Command9.Cbtype @Model.Command9.Cftype @Convert.ToDecimal(Model.Command9.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command9.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command9.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command9.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command9.lstart</td>
+                                    <td>@Model.Command9.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command9.PR).ToString("0.000")</td>
+                                    <td>@Model.Command9.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #11 - @Model.Command10.Cbtype @Model.Command10.Cftype @Convert.ToDecimal(Model.Command10.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command10.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command10.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command10.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command10.lstart</td>
+                                    <td>@Model.Command10.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command10.PR).ToString("0.000")</td>
+                                    <td>@Model.Command10.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #12 - @Model.Command11.Cbtype @Model.Command11.Cftype @Convert.ToDecimal(Model.Command11.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command11.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command11.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command11.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command11.lstart</td>
+                                    <td>@Model.Command11.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command11.PR).ToString("0.000")</td>
+                                    <td>@Model.Command11.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="width: 15px;"><b>4</b></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #7 - @Model.Command6.Cbtype @Model.Command6.Cftype @Convert.ToDecimal(Model.Command6.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command6.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command6.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command6.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command6.lstart</td>
+                                    <td>@Model.Command6.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command6.PR).ToString("0.000")</td>
+                                    <td>@Model.Command6.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #8 - @Model.Command7.Cbtype @Model.Command7.Cftype @Convert.ToDecimal(Model.Command7.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command7.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command3.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command3.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command7.lstart</td>
+                                    <td>@Model.Command7.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command7.PR).ToString("0.000")</td>
+                                    <td>@Model.Command7.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #9 - @Model.Command8.Cbtype @Model.Command8.Cftype @Convert.ToDecimal(Model.Command8.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command8.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command8.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command8.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command8.lstart</td>
+                                    <td>@Model.Command8.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command8.PR).ToString("0.000")</td>
+                                    <td>@Model.Command8.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="width: 15px;"><b>3</b></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #4 - @Model.Command3.Cbtype @Model.Command3.Cftype @Convert.ToDecimal(Model.Command3.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command3.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command3.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command3.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command3.lstart</td>
+                                    <td>@Model.Command3.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command3.PR).ToString("0.000")</td>
+                                    <td>@Model.Command3.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #5 - @Model.Command4.Cbtype @Model.Command4.Cftype @Convert.ToDecimal(Model.Command4.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command4.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command4.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command4.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command4.lstart</td>
+                                    <td>@Model.Command4.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command4.PR).ToString("0.000")</td>
+                                    <td>@Model.Command4.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #6 - @Model.Command5.Cbtype @Model.Command5.Cftype @Convert.ToDecimal(Model.Command5.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command5.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command5.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command5.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command5.lstart</td>
+                                    <td>@Model.Command5.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command5.PR).ToString("0.000")</td>
+                                    <td>@Model.Command5.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="width: 15px;"><b>2</b></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #1 - @Model.Command.Cbtype @Model.Command.Cftype @Convert.ToDecimal(Model.Command.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command.lstart</td>
+                                    <td>@Model.Command.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command.PR).ToString("0.000")</td>
+                                    <td>@Model.Command.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #2 - @Model.Command1.Cbtype @Model.Command1.Cftype @Convert.ToDecimal(Model.Command1.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command1.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command1.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command1.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command1.lstart</td>
+                                    <td>@Model.Command1.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command1.PR).ToString("0.000")</td>
+                                    <td>@Model.Command1.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="background-color: #ae7984;">Apt #3 - @Model.Command2.Cbtype @Model.Command2.Cftype @Convert.ToDecimal(Model.Command2.rent).ToString("0.000")</div>
+                        <div>@CommonRepository.Truncate(Model.Command2.name, 20)</div>
+                        <div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    @*<td>@Convert.ToDateTime(Model.Command2.Leasestart).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(Model.Command2.Leaseend).ToShortDateString()</td>*@
+                                    <td>@Model.Command2.lstart</td>
+                                    <td>@Model.Command2.LEND</td>
+                                    <td>@Convert.ToDecimal(Model.Command2.PR).ToString("0.000")</td>
+                                    <td>@Model.Command2.PM</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="border: solid; text-align: center;">
+                        <div style="width: 15px;"><b>1</b></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table-bordered" style=" border: solid; width: 925px; height: 140px;">
+            <tbody>
+                <tr style="border: solid; text-align: center;">
+                    <td style="border: solid;" rowspan="2"><div class="box" style="margin-top: -38px; float: right; "><label style="margin-top: 22px;"><b>GYM</b></label></div></td>
+                    <td style="border: solid; text-align: center; width: 250px;">
+                        <div>
+                            <div style="background-color: #ae7984;">Shop - @Convert.ToDecimal(Model.Shop.rent).ToString("0.000")</div>
+                            <div>@CommonRepository.Truncate(Model.Shop.name, 20)</div>
+                            <div>
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td>@Model.Shop.lstart</td>
+                                        <td>@Model.Shop.LEND</td>
+                                        <td>@Convert.ToDecimal(Model.Shop.PR).ToString("0.000")</td>
+                                        @*<td>PM</td>*@
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="border: solid; text-align: center;">
+                    <td style="border: solid; background-color: blue; height: 50px;"><div><b>Swimming pool</b></div></td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table-bordered" style=" border: solid; width: 925px; height: 120px; margin-top: 3px;">
+            <thead>
+                <tr style="border: solid; text-align: center;">
+                    <th style="border: solid; width: 192px;" rowspan="2"></th>
+                    <th style="border: solid;" colspan="2">Column #1: {BED}</th>
+                    <th style="border: solid;" rowspan="2">TOTAL</th>
+                </tr>
+                <tr style="border: solid; text-align: center;">
+                    <th style="border: solid; width: 185px;">Column #2: {CFTYPE}</th>
+                    <th style="border: solid;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border: solid; text-align: center;">
+                    <td style="border: solid;"><b>Row #1:{Status}</b></td>
+                    <td style="border: solid;">Command23 NO</td>
+                    <td style="border: solid;">Command23 NO1</td>
+                    <td>Command23 NoT</td>
+                </tr>
+                <tr style="border: solid; text-align: center;">
+                    <td style="border: solid;"><b>Total</b></td>
+                    <td style="border: solid;">Command23 NO</td>
+                    <td style="border: solid;">Command23 NO1</td>
+                    <td>Command23 NoT</td>
+                </tr>
+            </tbody>
+        </table>
+        <table style=" width: 925px; margin-top: 3px;">
+            <tr style="text-align: center;">
+                <td>
+                    2 & 3 Bedroom Apartments + Living & Dining Room + Open Plan Kitchen with Cabinets + Maid's Room with Bath + Laundry/Utility Room + Swimming Pool + Satellite TV + Internet + Gym + CCTV Security Camera + Shaded & Basement Parking
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td>
+                    @Model.Address
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

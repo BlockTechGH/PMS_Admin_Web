@@ -1,0 +1,256 @@
+﻿@model PMS_Admin_Web.Models.PA.AddComplaintModel
+
+@using Microsoft.AspNetCore.Http;
+
+@{
+    
+    ViewData["Title"] = "Add Complaint";
+    
+}
+
+
+    @*<div class="row">*@
+        <div class="col-lg-12">
+            @*@Html.Raw(@ViewBag.Alert)*@
+            @if (ViewBag.Message != null)
+            {
+            <script type="text/javascript">
+
+                    window.onload = function () {
+                        alert("@ViewBag.Message");
+                        window.location.href = "@Url.Action("MaintenanceIssue", "PA")";
+                    };
+                    /*location.reload();*/
+            </script>
+            }
+            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+            <script>
+                function loadAptNo() {
+                    $.ajax({
+                        type: 'GET',
+                        url: "@Url.Action("LoadAptNo", "Common")",
+                        success: function (response) {
+                            //alert(response);
+                            //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                            $.each(response, function (k, v) {
+                                $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                            });
+                        }
+                    })
+                }
+
+                function loadCategory() {
+                    $.ajax({
+                        type: 'GET',
+                        url: "@Url.Action("LoadCategory", "Common")",
+                        success: function (response) {
+                            //alert(response);
+                            //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                            $.each(response, function (k, v) {
+                                $('#category').append('<option value="' + v + '" > ' + v + '</option>');
+                            });
+                        }
+                    })
+                }
+
+                //function chooseIssuelocation() {
+                //    var issuelocation = $('#issuelocation').val();
+                //    if (issuelocation == "Apartment") {
+                //        $('#other').prop("disabled", true);
+                //        $('#aptno').prop("disabled", false);
+                //    }
+                //    else {
+                //        $('#aptno').prop("disabled", true);
+                //        $('#other').prop("disabled", false);
+                //    }
+                //}
+
+                function chooseIssuelocation() {
+                    var issuelocationOther = $('#issuelocationOther').prop('checked');
+                    if (issuelocationOther) {
+                        $('#aptno').prop('disabled', true);
+                        $('#other').prop('disabled', false);
+                    }
+                    else {
+                        $('#aptno').prop('disabled', false);
+                        $('#other').prop('disabled', true);
+                    }
+                }
+
+                $(document).ready(function () {
+                    loadAptNo();
+                    loadCategory();
+                    chooseIssuelocation();
+
+                    $('#issuelocationOther').change(function () {
+                        var issuelocationOther = $('#issuelocationOther').prop('checked');
+                        if (issuelocationOther) {
+                            $('#aptno').prop('disabled', true);
+                            $('#other').prop('disabled', false);
+                        }
+                        else {
+                            $('#aptno').prop('disabled', false);
+                            $('#other').prop('disabled', true);
+                        }
+                    })
+
+                    $('#aptno').change(function () {
+                        var aptno = $('#aptno :selected').val();
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("LoadRefNoAndAptStatus", "PA")",
+                            data: { Aptno: aptno },
+                            dataType: "json",
+                            success: function (response) {
+                                //alert(response)
+
+                                $('#pref').val(response.propertyRef);
+                                $('#aptstatus').val(response.status);
+
+                            }
+                        })
+                    })
+                })
+
+                //$('#issuelocationApt').change(function () {
+                //    chooseIssuelocation();
+                //})
+                
+
+            </script>
+            <form asp-controller="PA" asp-action="AddComplaint">
+                <div class="card" style="color:burlywood">
+                    <div class="card-header" style="background-color: darksalmon;">
+                        <h5 class="text-center" style="color:black"><strong>Add Complaint</strong></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-lg-12">
+                            <br />
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Name</label>
+                                        <input id="propertyName" asp-for="missue.Pname" class="form-control" type="text" style="border-radius: 10px;" value="@Context.Session.GetString("CurrentUserDepartment")" />
+
+                                        @*<span asp-validation-for="Pname" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apt No</label>
+                                        <select id="aptno" asp-for="missue.Aptlocation" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                        </select>
+                                        @*<span asp-validation-for="Aptlocation" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Ref</label>
+                                        <input id="pref" asp-for="missue.Pref" class="form-control" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="Aptlocation" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-6" style="margin-top: 38px;">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Apartment Issues</label>
+                                                <input id="issuelocationApt" asp-for="IssueLocation" type="radio" value="Apartment" checked>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Other Places</label>
+                                                <input id="issuelocationOther" asp-for="IssueLocation" type="radio" value="Other">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                                <div class="col-lg-3" style="margin-top: 38px;">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50"> Other Places</label>
+                                        <input id="issuelocationOther" type="checkbox" asp-for="IssueLocation" />
+                                        @*<label class="control-label text-black-50" style="font-size: 13px;">Note: Kindly check this option if you have Multiple Apartments to reserve.</label>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Other Location</label>
+                                        <input id="other" asp-for="apttxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="Property.BlockName" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Status Of Apartment</label>
+                                        <input id="aptstatus" disabled class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="Property.BldgNo" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Category</label>
+                                        <select id="category" asp-for="missue.Category" class="form-control" style="border-radius: 10px;">
+                                            <option hidden value="">--Select--</option>
+
+                                        </select>
+                                        @*<span asp-validation-for="Property.Location" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Status</label>
+                                        <input asp-for="missue.Status" class="form-control" type="text" style="border-radius: 10px;" value="Pending" />
+                                        @*<span asp-validation-for="Property.StreetName" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Priority Level</label>
+                                        <select id="level" asp-for="missue.Pl" class="form-control" style="border-radius: 10px;">
+                                            <option hidden value="">--Select--</option>
+                                            <option value="URGENT">Urgent</option>
+                                            <option value="HIGH">High</option>
+                                            <option value="MEDIUM">Medium</option>
+                                            <option value="LOW">Low</option>
+                                        </select>
+                                        @*<span asp-validation-for="Property.Bed" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Issue</label>
+                                        <textarea asp-for="missue.Issue" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                        @*<span asp-validation-for="Property.Bath" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Remarks</label>
+                                        <textarea id="units" asp-for="missue.Remarks" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                        @*<span asp-validation-for="Property.Units" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                @*<div class="card" style="color:burlywood">*@
+                    @*<div class="card-body">*@
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-right" style="border-radius:10px">Create</button>
+                                @*<button type="submit" class="btn btn-primary float-right">Create</button>*@
+                            </div>
+                        </div>
+                    @*</div>*@
+                @*</div>*@
+            </form>
+        </div>
+    @*</div>*@

@@ -1,0 +1,444 @@
+﻿@model PMS_Admin_Web.Models.MovingInOut.MovingInDetailsModel
+
+@{
+    //if (Model.Property.Id == 0)
+    ViewData["Title"] = "Moving In Details";
+    //else
+    //    ViewData["Title"] = "Update Property";
+}
+
+@if (ViewBag.Message != null)
+{
+<script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+        function generatemail() {
+            var pname = $('#pname').val();
+            var aptno = $('#aptno').val();
+            var tname = $('#tname').val();
+            var tlstart = $('#tlstart').val();
+            var tlend = $('#tlend').val();
+            var miidate = $('#miidate').val();
+            var rem = $('#rem').val();
+            var tleaseno = $('#tleaseno').val();
+            var varlid = $('#varlid').val();
+            var varref = $('#varref').val();
+            //var invrpttxt = $('#invrpttxt').val();
+            //var invlisttxt = $('#invlisttxt').val();
+            //var keystxt = $('#keystxt').val();
+            //var acktxt = $('#acktxt').val();
+            var hiddeninvrpttxt = $('#hiddeninvrpttxt').val();
+            var hiddeninvlisttxt = $('#hiddeninvlisttxt').val();
+            var hiddenkeystxt = $('#hiddenkeystxt').val();
+            var hiddenacktxt = $('#hiddenacktxt').val();
+
+            var currentdepartment = $('#currentdepartment').val();
+            //alert(hiddeninvlisttxt);
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("MovingInDetailsMailGeneration", "MovingInOut")",
+                data: { pname: pname, aptno: aptno, tname: tname, tlstart: tlstart, tlend: tlend, miidate: miidate, rem: rem, tleaseno: tleaseno, varlid: varlid, varref: varref, hiddeninvlisttxt: hiddeninvlisttxt, hiddeninvrpttxt: hiddeninvrpttxt, hiddenkeystxt: hiddenkeystxt, hiddenacktxt: hiddenacktxt},//invrpttxt: invrpttxt, invlisttxt: invlisttxt, keystxt: keystxt, acktxt: acktxt
+                success: function (response) {
+                    alert(response);
+                    //location.reload();
+                    
+                    if (currentdepartment == "" && currentdepartment == null) {
+                        window.location = "@Url.Action("MovingInInventory", "MovingInOut")";
+                    }
+                    else {
+                        window.location = "@Url.Action("PaMovingIn", "PA")";
+                    }
+                }
+            });
+        }
+        $(document).ready(function () {
+            //alert('h');
+            generatemail();
+            //$('#btnsendmail').click(function () {
+            //    generatemail();
+            //})
+
+
+        })
+</script>
+}
+
+@if (ViewBag.Message1 != null) 
+{
+    <script>
+        window.onload = function () {
+            alert("@ViewBag.Message1");
+        };
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+
+
+    <form asp-controller="MovingInOut" asp-action="MovingInDetails" enctype="multipart/form-data">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Moving In Details</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <br />
+                    @*@Html.HiddenFor(model => model.propertymaster.Id)
+                    @Html.HiddenFor(model => model.propertymaster.PropertyRef)
+                    @Html.HiddenFor(model => model.propertymaster.PropertySource)
+                    @Html.HiddenFor(model => model.propertymaster.Floors)*@
+
+                    @*@Html.HiddenFor(model => model.propertymaster.Pdate)
+                    @Html.HiddenFor(model => model.propertymaster.Doc)
+                    @Html.HiddenFor(model => model.propertymaster.Status)
+                    @Html.HiddenFor(model => model.propertymaster.Crent)
+                    @Html.HiddenFor(model => model.propertymaster.Reservedrent)
+                    @Html.HiddenFor(model => model.propertymaster.Rented)*@
+
+                    <input hidden id="PMid" asp-for="propertymaster.Id" />
+                    <input hidden id="PMpref" asp-for="propertymaster.PropertyRef" />
+                    <input hidden id="PMpsource" asp-for="propertymaster.PropertySource" />
+                    <input hidden id="PMfloors" asp-for="propertymaster.Floors" />
+
+                    <input hidden id="PMpdate" asp-for="propertymaster.Pdate" />
+                    <input hidden id="PMdoc" asp-for="propertymaster.Doc" />
+                    <input hidden id="PMstatus" asp-for="propertymaster.Status" />
+                    <input hidden id="PMcrent" asp-for="propertymaster.Crent" />
+                    <input hidden id="PMreservedrent" asp-for="propertymaster.Reservedrent" />
+                    <input hidden id="PMrented" asp-for="propertymaster.Rented" />
+
+                    <input hidden id="varlid" asp-for="varlid" />
+                    <input hidden id="varref" asp-for="varref" />
+                    @using Microsoft.AspNetCore.Http;
+                    <input hidden id="currentdepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+
+                    <label><strong>Tenant Details</strong></label>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Tenant Name</label>
+                                @if (!string.IsNullOrEmpty(Model.propertymaster.Cname))
+                                {
+                                    <input id="tname" asp-for="propertymaster.Cname" class="form-control" type="text" style="border-radius: 10px;" />
+                                }
+                                else
+                                {
+                                    <input id="tname" asp-for="propertymaster.Reservedfor" class="form-control" type="text" style="border-radius: 10px;" />
+                                }
+
+                                @*<span asp-validation-for="BldgName" class="text-danger"></span>*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Property Name</label>
+                                <input id="pname" asp-for="propertymaster.BldgName" class="form-control" type="text" style="border-radius: 10px;" />
+
+                                @*<span asp-validation-for="BldgName" class="text-danger"></span>*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Apt No</label>
+                                <input id="aptno" asp-for="propertymaster.AptNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                @*<span asp-validation-for="AptNo" class="text-danger"></span>*@
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Contact No</label>
+                                @if (!string.IsNullOrEmpty(Model.propertymaster.Cmob))
+                                {
+                                    <input asp-for="propertymaster.Cmob" class="form-control" type="text" style="border-radius: 10px;" />
+                                }
+                                else
+                                {
+                                    <input asp-for="propertymaster.Rmob" class="form-control" type="text" style="border-radius: 10px;" />
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Lease/LOI No</label>
+                                @if (!string.IsNullOrEmpty(Model.propertymaster.Cleaseno))
+                                {
+                                    <input id="tleaseno" asp-for="propertymaster.Cleaseno" class="form-control" type="text" style="border-radius: 10px;" />
+                                }
+                                else
+                                {
+                                    <input id="tleaseno" asp-for="propertymaster.Leaseno" class="form-control" type="text" style="border-radius: 10px;" />
+                                }
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Lease Start</label>
+                                <input id="tlstart" asp-for="propertymaster.Leasestart" class="form-control" type="date" style="border-radius: 10px;" />
+                                @*<span asp-validation-for="Property.Amount" class="text-danger"></span>*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Lease End</label>
+                                <input id="tlend" asp-for="propertymaster.Leaseend" class="form-control" type="date" style="border-radius: 10px;" />
+                                @*<span asp-validation-for="Property.Amount" class="text-danger"></span>*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 40px;">
+                            <div class="row">
+                                @if (!string.IsNullOrEmpty(Model.propertymaster.Cleaseno))
+                                {
+                                    @*<input id="tleaseno" asp-for="propertymaster.Cleaseno" class="form-control" type="text" style="border-radius: 10px;" />*@
+                                    <div class="col-lg-6">
+                                        <a asp-action="ViewLOI" asp-controller="MovingInOut" asp-route-leaseno="@Model.propertymaster.Cleaseno">View LOI</a>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <a asp-action="ViewLC" asp-controller="MovingInOut" asp-route-leaseno="@Model.propertymaster.Cleaseno">View LC</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @*<input id="tleaseno" asp-for="propertymaster.Leaseno" class="form-control" type="text" style="border-radius: 10px;" />*@
+                                    <div class="col-lg-6">
+                                        <a asp-action="ViewLOI" asp-controller="MovingInOut" asp-route-leaseno="@Model.propertymaster.Leaseno">View LOI</a>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <a asp-action="ViewLC" asp-controller="MovingInOut" asp-route-leaseno="@Model.propertymaster.Leaseno">View LC</a>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                    <label><strong>Moving In Inventory Documents and Information</strong></label>
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Move In Date</label>
+                                            <input id="miidate" asp-for="movingin.Movingindate" class="form-control" type="date" style="border-radius: 10px; width: 155px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Move In Inventory</label>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    @if (Model.movingin.Movingin1 != null)
+                                                    @*@if (!DBNull.Value.Equals(Model.movingin.Movingin1))*@
+                                                    {
+                                                        @if (Model.movingin.Movingin1.TrimEnd() == "Done")
+                                                        {
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Done</label>
+                                                                <input value="Done" asp-for="movingin.Movingin1" type="radio" checked />
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Done</label>
+                                                                <input value="Done" asp-for="movingin.Movingin1" type="radio" />
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">Done</label>
+                                                            <input value="Done" asp-for="movingin.Movingin1" type="radio" />
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    @if (Model.movingin.Movingin1 != null)
+                                                    @*@if (!DBNull.Value.Equals(Model.movingin.Movingin1))*@
+                                                    {
+                                                        @if (Model.movingin.Movingin1.TrimEnd() == "Not yet")
+                                                        {
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Not Done</label>
+                                                                <input value="Not yet" asp-for="movingin.Movingin1" type="radio" checked />
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Not Done</label>
+                                                                <input value="Not yet" asp-for="movingin.Movingin1" type="radio" />
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">Not Done</label>
+                                                            <input value="Not yet" asp-for="movingin.Movingin1" type="radio" />
+                                                        </div>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Move In Inventory Report</label>
+                                                    <input id="invrpttxt" name="invrpttxt" asp-for="movingin.Inventoryreport" type="file" />
+                                                    <input id="hiddeninvrpttxt" hidden asp-for="movingin.Inventoryreport" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Inventory List</label>
+                                                    <input id="invlisttxt" name="invlisttxt" asp-for="movingin.Inventorylist" type="file" />
+                                                    <input id="hiddeninvlisttxt" hidden asp-for="movingin.Inventorylist" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50" style="width: 250px;">Official Acknowledgement of Keys</label>
+                                                    <input id="keystxt" name="keystxt" asp-for="movingin.Keys" type="file" />
+                                                    <input id="hiddenkeystxt" hidden asp-for="movingin.Keys" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Access Cards</label>
+                                                    <input id="acktxt" name="acktxt" asp-for="movingin.Receipt" type="file" />
+                                                    <input id="hiddenacktxt" hidden asp-for="movingin.Receipt" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">If any other</label>
+                                                    <input id="anytxt" name="anytxt" asp-for="movingin.Other" type="file" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                @*<div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Move In Inventory Report</label>
+                                <input id="invrpttxt" name="invrpttxt" asp-for="movingin.Inventoryreport" type="file" />
+                                <input id="hiddeninvrpttxt" hidden asp-for="movingin.Inventoryreport" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 35px;">
+                            <a href="">View</a>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 20px;">
+                            <button id="btnuploadinventoryreport" asp-action="UploadInventoryReport" asp-controller="MovingInOut" class="btn btn-primary" type="button" style="border-radius:10px;">Upload</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Inventory List</label>
+                                <input id="invlisttxt" name="invlisttxt" asp-for="movingin.Inventorylist" type="file" />
+                                <input id="hiddeninvlisttxt" hidden asp-for="movingin.Inventorylist" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 35px;">
+                            <a href="">View</a>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 20px;">
+                            <button id="btnuploadinventorylist" class="btn btn-primary" type="button" style="border-radius:10px;">Upload</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50" style="width: 250px;">Official Acknowledgement of Keys</label>
+                                <input id="keystxt" name="keystxt" asp-for="movingin.Keys" type="file" />
+                                <input id="hiddenkeystxt" hidden asp-for="movingin.Keys" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 35px;">
+                            <a href="">View</a>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 20px;">
+                            <button id="btnuploadkeys" class="btn btn-primary" type="button" style="border-radius:10px;">Upload</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Access Cards</label>
+                                <input id="acktxt" name="acktxt" asp-for="movingin.Receipt" type="file" />
+                                <input id="hiddenacktxt" hidden asp-for="movingin.Receipt" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 35px;">
+                            <a href="">View</a>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 20px;">
+                            <button id="btnuploadaccesscards" class="btn btn-primary" type="button" style="border-radius:10px;">Upload</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">If any other</label>
+                                <input id="anytxt" name="anytxt" asp-for="movingin.Other" type="file" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 35px;">
+                            <a href="">View</a>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 20px;">
+                            <button id="btnuploadothers" class="btn btn-primary" type="button" style="border-radius:10px;">Upload</button>
+                        </div>
+                    </div>*@
+
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Remarks</label>
+                                        <textarea id="rem" asp-for="movingin.Remarks" class="form-control" style="border-radius: 10px; width: 618px; height: 100px; "></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Update</button>
+                        @*<button type="submit" class="btn btn-primary float-right">Create</button>*@
+                    </div>
+                    @*<div class="form-group">
+                        <button id="btnsendmail" type="button" class="btn btn-primary float-right" style="border-radius:10px;">Send Mail</button>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@

@@ -1,0 +1,120 @@
+﻿using System;
+using System.Collections.Generic;
+
+#nullable disable
+
+namespace PMS_Admin_Web.Models
+{
+    public partial class Propertymaster
+    {
+        public int Id { get; set; }
+        public int? Bldngid { get; set; }
+        public string PropertyRef { get; set; }
+        public string PropertySource { get; set; }
+        public string Location { get; set; }
+        public string PropertyType { get; set; }
+        public string BldgName { get; set; }
+        public string Paci { get; set; }
+        public string BlockName { get; set; }
+        public string StreetName { get; set; }
+        public string BldgNo { get; set; }
+        public string Floors { get; set; }
+        public string AptNo { get; set; }
+        public string Units { get; set; }
+        public string Bed { get; set; }
+        public string Bath { get; set; }
+        public string Balcony { get; set; }
+        public string Kitchen { get; set; }
+        public string LivingRoom { get; set; }
+        public string StudyRoom { get; set; }
+        public string MaidRoom { get; set; }
+        public string Areasize { get; set; }
+        public decimal? Amount { get; set; }
+        public string SalesType { get; set; }
+        public string Pool { get; set; }
+        public string Parking { get; set; }
+        public string Garden { get; set; }
+        public string Internet { get; set; }
+        public string Gym { get; set; }
+        public string Security { get; set; }
+        public string Furnished { get; set; }
+        public string PlayArea { get; set; }
+        public string CabelTv { get; set; }
+        public string Cctv { get; set; }
+        public string Osn { get; set; }
+        public string Ac { get; set; }
+        public string Seaview { get; set; }
+        public DateTime? Pdate { get; set; }
+        public string Status { get; set; }
+        public string Description { get; set; }
+        public string Source { get; set; }
+        public string Poc { get; set; }
+        public string Pocnumber { get; set; }
+        public string Sqmtrs { get; set; }
+        public string Facilities { get; set; }
+        public decimal? Ppersqmtr { get; set; }
+        public DateTime? Searchdate { get; set; }
+        public DateTime? Availabledate { get; set; }
+        public string Updatedby { get; set; }
+        public DateTime? Updatedon { get; set; }
+        public string Vistedby { get; set; }
+        public string Imagepath { get; set; }
+        public DateTime? Doc { get; set; }
+        public DateTime? Dou { get; set; }
+        public string Remarks { get; set; }
+        public string Resf { get; set; }
+        public string Leaseno { get; set; }
+        public string Moveoutremarks { get; set; }
+        public DateTime? Moveout { get; set; }
+        public string Vacatingstatus { get; set; }
+        public int? Moveoutid { get; set; }
+        public int? Tid { get; set; }
+        public string Cleaseno { get; set; }
+        public string Cname { get; set; }
+        public string Cnat { get; set; }
+        public string Cmob { get; set; }
+        public decimal? Crent { get; set; }
+        public string Captno { get; set; }
+        public string Cbtype { get; set; }
+        public string Cftype { get; set; }
+        public DateTime? Leasestart { get; set; }
+        public DateTime? Leaseend { get; set; }
+        public string Rstatus { get; set; }
+        public string Reservedfor { get; set; }
+        public string Rnat { get; set; }
+        public decimal? Reservedrent { get; set; }
+        public string Rftype { get; set; }
+        public string Rbtype { get; set; }
+        public DateTime? Rlstart { get; set; }
+        public DateTime? Rlend { get; set; }
+        public string Rmob { get; set; }
+        public string Lmonthrent { get; set; }
+        public string Reservation { get; set; }
+        public string Action { get; set; }
+        public DateTime? Pupdatetime { get; set; }
+        public string Pupdateby { get; set; }
+        public string Pmode { get; set; }
+        public string Painting { get; set; }
+        public DateTime? Paintingdate { get; set; }
+        public string Refub { get; set; }
+        public DateTime? Refubdate { get; set; }
+        public string Generalremarks { get; set; }
+        public string Highlighting { get; set; }
+        public string Rented { get; set; }
+        public string Updated { get; set; }
+        public string Leasetype { get; set; }
+        public string Paid { get; set; }
+        public string Note { get; set; }
+        public string Kwtaccept { get; set; }
+        public string PaPainting { get; set; }
+        public DateTime? PaPaintingdate { get; set; }
+        public string PaRefub { get; set; }
+        public DateTime? PaRefubdate { get; set; }
+        public string PaRemarks { get; set; }
+        public DateTime? PaDoc { get; set; }
+        public string PaMode { get; set; }
+        public int? Tenantid { get; set; }
+        public int? Orderid { get; set; }
+        public string Showflat { get; set; }
+    }
+}

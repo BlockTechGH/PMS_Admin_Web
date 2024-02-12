@@ -1,0 +1,113 @@
+﻿@model PMS_Admin_Web.Models.Paymentvoucher
+
+@{
+    //if (Model.Id == 0)
+    ViewData["Title"] = "Edit Temporary Receipt";
+    //else
+    //    ViewData["Title"] = "Update User";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@if(ViewBag.Message == "Refresh")
+{
+    <script>
+        window.history.back();
+    </script>
+}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form class="form-horizontal" asp-controller="Accounts" asp-action="EditTemporaryReceipt">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Edit Temporary Receipt</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Voucher No</label>
+                            <input disabled asp-for="Voucherno" id="voucherno" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Property Name</label>
+                            <input asp-for="Pname" id="pname" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Apt No</label>
+                            <input asp-for="Aptno" id="aptno" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Tenant Name</label>
+                            <input asp-for="Tname" id="tname" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Remarks</label>
+                            <textarea asp-for="Comments" id="remarks" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3">
+
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <button id="print" class="btn btn-primary" style="border-radius: 10px; float: right;">Print</button>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <button asp-action="AccountsReceivable" asp-route-fromtemp="yes" asp-route-id="@Model.Id" asp-route-voucherno="@Model.Voucherno" class="btn btn-primary" style="border-radius: 10px; float: right;">Create Voucher</button>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <button type="submit" asp-route-voucherno="@Model.Voucherno" class="btn btn-primary" style="border-radius: 10px; float: right;">Update Remark</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@
+
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

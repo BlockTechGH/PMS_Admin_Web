@@ -1,0 +1,792 @@
+﻿@model PMS_Admin_Web.Models.Property.PropertyAndAreaModel
+
+@{
+
+    ViewData["Title"] = "Create Property";
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+        /*location.reload();*/
+    </script>
+}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    function loadproperty() {
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("PropertyNames", "Property")",
+            success: function (response) {
+                //alert(response);
+                //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                $.each(response, function (k, v) {
+                    $('#buildingName').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    function loadLocation() {
+        $.ajax({
+            type:"GET",
+            url:"@Url.Action("LoadAreaName", "Common")",
+            dataType: "json",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#location').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        loadproperty();
+        loadLocation();
+        $('#propertyList').hide();
+        $('#divActionbuttons').hide();
+    })
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#addButton').click(function () {
+            /*var units = $('#units').val();*/
+            /*var floors = $('#floors').val();*/
+            /*var propertyName = $('#propertyName').val();*/
+            var propertySource = $('#propertySource :selected').val();
+            var propertyType = $('#propertyType :selected').val();
+            var bed = $('#bed :selected').val();
+            /*var aptno = 1;*/
+
+            if (propertySource == null) {
+                alert("Select the Property Source")
+                return false;
+            }
+            if (propertyType == "null") {
+                alert("Enter the Property Type")
+                return false;
+            }
+            if (bed == "null") {
+                if (propertyType != "Commercial Space") {
+                    alert("Select the Bed Type")
+                    return false;
+                }
+            }
+
+            var propertyTypecolumn = null;
+            var flag = 0;
+            if (propertyType == "Commercial Space") {
+                /*var propertyTypecolumn = null;*/
+                $('#propertyList #propertyTypecolumn').each(function () {
+                    //alert($(this).html());
+                    propertyTypecolumn = $(this).prop("innerText");
+                    if (propertyType == propertyTypecolumn) {
+                        alert("Already added");
+                        flag = 1;
+                    }
+                    //else {
+                    //    $('#tbody').append('<tr>');
+                    //    $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                    //    $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                    //    $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                    //    $('#tbody').append('</tr>');
+                    //    /*return false;*/
+                    //}
+                    //return false;
+                });
+                if (flag == 0) {
+                    $('#tbody').append('<tr>');
+                    $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                    $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                    $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                    $('#tbody').append('</tr>');
+                }
+            }
+            else if (propertyType == "Commercial") {
+                /*var propertyTypecolumn = null;*/
+                $('#propertyList #propertyTypecolumn').each(function () {
+                    //alert($(this).html());
+                    propertyTypecolumn = $(this).prop("innerText");
+                    if (propertyType == propertyTypecolumn) {
+                        alert("Already added");
+                        flag = 1;
+                    }
+                    //else {
+                    //    $('#tbody').append('<tr>');
+                    //    $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                    //    $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                    //    $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                    //    $('#tbody').append('</tr>');
+                    //    /*return false;*/
+                    //}
+                    //return false;
+
+                });
+                if (flag == 0) {
+                    $('#tbody').append('<tr>');
+                    $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                    $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                    $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                    $('#tbody').append('</tr>');
+                }
+            }
+            else if (propertyType == "Residential") {
+                /*var propertyTypecolumn = null;*/
+                $('#propertyList #propertyTypecolumn').each(function () {
+                    //alert($(this).html());
+                    propertyTypecolumn = $(this).prop("innerText");
+                    if (propertyType == propertyTypecolumn) {
+                        alert("Already added");
+                        /*return false;*/
+                    }
+                    else {
+                        $('#tbody').append('<tr>');
+                        $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                        $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                        $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                        $('#tbody').append('</tr>');
+                        /*return false;*/
+                    }
+                    return false;
+
+                });
+                if (propertyTypecolumn == null) {
+                    $('#tbody').append('<tr>');
+                    $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                    $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                    $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                    $('#tbody').append('</tr>');
+                }
+            }
+            else if (propertyType == "Studio") {
+                /*var propertyTypecolumn = null;*/
+                $('#propertyList #propertyTypecolumn').each(function () {
+                    //alert($(this).html());
+                    propertyTypecolumn = $(this).prop("innerText");
+                    if (propertyType == propertyTypecolumn) {
+                        alert("Already added");
+                        /*return false;*/
+                    }
+                    else {
+                        $('#tbody').append('<tr>');
+                        $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                        $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                        $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                        $('#tbody').append('</tr>');
+                        /*return false;*/
+                    }
+                    return false;
+                });
+                if (propertyTypecolumn == null) {
+                    $('#tbody').append('<tr>');
+                    $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                    $('#tbody').append('<td style="color:black" id="bedroomColumn">' + "" + '</td>');
+                    $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                    $('#tbody').append('</tr>');
+                }
+            }
+            else {
+                /*var propertyTypecolumn = null;*/
+                //$('#propertyList #propertyTypecolumn').each(function () {
+                //    //alert($(this).html());
+                //    var propertyTypecolumn = $(this).html();
+                //    if (propertyType == propertyTypecolumn) {
+                //        alert("Already added");
+                //    }
+                //});
+                $('#propertyList tr').each(function () {
+                    propertyTypecolumn = $(this).find("#propertyTypecolumn").val();
+
+                    var bedroomColumn = $(this).find("#bedroomColumn").val();
+                    if (propertyType == propertyTypecolumn && bed == bedroomColumn) {
+                        alert("Already added");
+                        return false;
+                    }
+
+
+                });
+                if (propertyTypecolumn == null) {
+                    $('#tbody').append('<tr>');
+                    $('#tbody').append('<td style="color:black" id="propertyTypecolumn">' + propertyType + '</td>');
+                    $('#tbody').append('<td style="color:black" id="bedroomColumn">' + bed + '</td>');
+                    $('#tbody').append('<td style="color:black">' + "00.000" + '</td>');
+                    $('#tbody').append('</tr>');
+                }
+            }
+        })
+
+        $('#clearButton').click(function () {
+            $('#tbody').remove();
+        })
+
+        $('#propertySource').change(function () {
+            var propertySource = $('#propertySource :selected').val();
+            $.ajax({
+                type:"POST",
+                url: "@Url.Action("LoadPropertyRefNoMarketing", "Common")",
+                data: { propertySource: propertySource},
+                /*dataType: "json",*/
+                success: function (response) {
+                    $('#propertyRefno').val(response);
+                    if (propertySource == "ManagedProperty") {
+                        $('#propertyList').hide();
+                        $('#divActionbuttons').hide();
+                    }
+                    else {
+                        $('#propertyList').show();
+                        $('#divActionbuttons').show();
+                    }
+                }
+            })
+
+        })
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+
+    <form asp-controller="Marketing" asp-action="Property">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Create Property</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Property Ref No</label>
+                            <input disabled id="propertyRefno" asp-for="Property.PropertyRef" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Property Source</label>
+                            <select id="propertySource" asp-for="Property.PropertySource" class="form-control" style="border-radius: 10px;">
+                                <option hidden value="null">--Select--</option>
+                                <option value="ManagedProperty">Managed Property</option>
+                                <option value="StandAloneProperty">StandAlone Property</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Search Date</label>
+                            <input id="searchdate" asp-for="Property.PropertyRef" class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Available Date</label>
+                            <input id="availabledate" asp-for="Property.PropertyRef" class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#BasicDetails">Basic Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#FurtherDetails">Further Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#OtherDetails">Other Details</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="BasicDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            @Html.HiddenFor(model => model.Property.Id)
+                            @Html.HiddenFor(model => model.Property.PropertyRef)
+                            @Html.HiddenFor(model => model.Property.PropertySource)
+                            @Html.HiddenFor(model => model.Property.Floors)
+                            @Html.HiddenFor(model => model.Property.AptNo)
+                            @Html.HiddenFor(model => model.Property.Pdate)
+                            @Html.HiddenFor(model => model.Property.Doc)
+                            @Html.HiddenFor(model => model.Property.Status)
+                            @Html.HiddenFor(model => model.Property.Crent)
+                            @Html.HiddenFor(model => model.Property.Reservedrent)
+                            @Html.HiddenFor(model => model.Property.Rented)
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Type</label>
+                                        <select id="propertyType" asp-for="Property.PropertyType" class="form-control" style="border-radius: 10px;">
+                                            <option hidden value="null">--Select--</option>
+                                            <option value="Apartment">Apartment</option>
+                                            <option value="Commercial">Commercial</option>
+                                            <option value="Commercial Space">Commercial Space</option>
+                                            <option value="Duplex">Duplex</option>
+                                            <option value="Penthouse Apartment">Penthouse Apartment</option>
+                                            <option value="Residential">Residential</option>
+                                            <option value="Studio">Studio</option>
+                                            <option value="Villa">Villa</option>
+                                            <option value="Villa Apartment">Villa Apartment</option>
+                                            <option value="Villa Floor">Villa Floor</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Location</label>
+                                        <select id="location" asp-for="Property.Location" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Block Name</label>
+                                        <input asp-for="Property.BlockName" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Street Name</label>
+                                        <input asp-for="Property.StreetName" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Building Number</label>
+                                        <input asp-for="Property.BldgNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Building Name</label>
+                                        <input id="propertyName" asp-for="Property.BldgName" class="form-control" type="text" style="border-radius: 10px;" list="buildingName" />
+                                        <datalist id="buildingName">
+                                        </datalist>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apt No</label>
+                                        <input asp-for="Property.AptNo" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Floors</label>
+                                        <input id="floors" asp-for="Property.Floors" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Bed</label>
+                                        <select id="bed" asp-for="Property.Bed" class="form-control" style="border-radius: 10px;">
+                                            <option hidden value="null">--Select--</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            @*<option value="Mulhaq">Mulhaq</option>
+                                                <option value="Basement">Basement</option>
+                                                <option value="Shop">Shop</option>
+                                                <option value="RT">RT</option>*@
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Bath</label>
+                                        <input asp-for="Property.Bath" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Status</label>
+                                        <select id="status" asp-for="Property.Status" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Available">Available</option>
+                                            <option value="NotAvailable">Not Available</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">PACI</label>
+                                        <input id="paci" asp-for="Property.Paci" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Areasize</label>
+                                        <input id="areasize" asp-for="Property.Areasize" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Units</label>
+                                        <input id="units" asp-for="Property.Units" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Sales Type</label>
+                                        <select id="status" asp-for="Property.SalesType" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Rent">Rent</option>
+                                            <option value="sales">Sales</option>
+                                            <option value="Lease">Lease</option>
+                                            <option value="Commercial">Commercial</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Price/Sq mtr</label>
+                                        <input asp-for="Property.Ppersqmtr" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Rent</label>
+                                        <input asp-for="Property.Amount" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Sq mtrs</label>
+                                        <input asp-for="Property.Sqmtrs" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Poc Name</label>
+                                        <input asp-for="Property.Poc" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Poc Number</label>
+                                        <input asp-for="Property.Pocnumber" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+
+                                <div id="divActionbuttons" class="col-lg-3">
+                                    <div class="form-group" style="padding-top: 31px;">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <button id="addButton" type="button" class="btn btn-primary">Add</button>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <button id="clearButton" type="button" class="btn btn-primary">Clear</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <div class="row" style="width:100%">
+                                        <table id="propertyList" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                            <thead class="bg-success">
+                                                <tr>
+                                                    <th hidden></th>
+                                                    <th class="table-bordered" id="propertyTypecolumnheader"><label style="color: black; font-size: 13px;">Property Type</label></th>
+                                                    <th class="table-bordered" id="bedroomColumnheader"><label style="color: black; font-size: 13px;">Bedrooms</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 13px;">Rent</label></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbody" class="bg-white">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="FurtherDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Furnished</label>
+                                        <select id="furnished" asp-for="Property.Furnished" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="SF">SF</option>
+                                            <option value="FF">FF</option>
+                                            <option value="UF">UF</option>
+                                            <option value="SF/FF/UF">SF/FF/UF</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Kitchen</label>
+                                        <select asp-for="Property.Kitchen" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Equipped</option>
+                                            <option value="No">Not Equipped</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Balcony</label>
+                                        <select asp-for="Property.Balcony" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Parking</label>
+                                        <select asp-for="Property.Parking" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Basement">Basement</option>
+                                            <option value="Shaded">Shaded</option>
+                                            <option value="Both">Both</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Pool</label>
+                                        <select asp-for="Property.Pool" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Gym</label>
+                                        <select asp-for="Property.Gym" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Garden</label>
+                                        <select asp-for="Property.Garden" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">OSN</label>
+                                        <select asp-for="Property.Osn" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">CCTV</label>
+                                        <select asp-for="Property.Cctv" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Internet</label>
+                                        <select asp-for="Property.Internet" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Cable TV</label>
+                                        <select asp-for="Property.CabelTv" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Security</label>
+                                        <select asp-for="Property.Security" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Living Room</label>
+                                        <select asp-for="Property.LivingRoom" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Study Room</label>
+                                        <select asp-for="Property.StudyRoom" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Maid Room</label>
+                                        <select asp-for="Property.MaidRoom" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Driver's Room</label>
+                                        <select class="form-control">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">AC</label>
+                                        <select asp-for="Property.Ac" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Landlord RESF</label>
+                                        <select asp-for="Property.Resf" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Sea View</label>
+                                        <select asp-for="Property.Seaview" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                @*<div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Play Area</label>
+                                            <select asp-for="Property.PlayArea" class="form-control">
+                                                <option value="">--Select--</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <span asp-validation-for="Property.PlayArea" class="text-danger"></span>
+                                        </div>
+                                    </div>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="OtherDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Source</label>
+                                        <input asp-for="Property.Source" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Visited By</label>
+                                        <input asp-for="Property.Vistedby" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                @using Microsoft.AspNetCore.Http;
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Updated By</label>
+                                        <input readonly asp-for="Property.Updatedby" value="@Context.Session.GetString("CurrentUsername")" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Kuwaitis Acceptance</label>
+                                        <input asp-for="Property.Kwtaccept" type="checkbox" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Pictures</label>
+                                        <input type="file" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Description</label>
+                                        @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                        <textarea asp-for="Property.Description" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                        <span asp-validation-for="Property.Description" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary float-right" style="border-radius:10px;" onclick="location.href='@Url.Action("CreateProperty", "Property",Model)'">Create</button>
+                        @*<button type="submit" class="btn btn-primary float-right" style="border-radius:10px;">Create</button>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@

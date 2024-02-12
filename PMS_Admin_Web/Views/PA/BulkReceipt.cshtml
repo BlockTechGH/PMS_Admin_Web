@@ -1,0 +1,346 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+@model List<PMS_Admin_Web.Models.Bulkprinting>
+@using PMS_Admin_Web.Repository;
+
+@{
+    ViewData["Title"] = "Receipts";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<!--script goes here...-->
+<script>
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+
+        $('#btnView').click(function () {
+            var month = $('#month').val();
+
+            if (month.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    data: { fromperiod: month},
+                    url: "@Url.Action("BulkReceiptView", "PA")",
+                    success: function (response) {
+                        $('#tbody').html('');
+                        var totalamount = "";
+                        $.each(response, function (k, v) {
+                            var from = v.fromperiod.split('T');
+                            var fromrearrange = from[0].split('-');
+                            var fromperiod = fromrearrange[2] + '-' + fromrearrange[1] + '-' + fromrearrange[0];
+
+                            var to = v.toperiod.split('T');
+                            var torearrange = to[0].split('-');
+                            var toperiod = torearrange[2] + '-' + torearrange[1] + '-' + torearrange[0];
+
+                            var doc = v.doc.split('T');
+                            var docrearrange = doc[0].split('-');
+                            var createddate = docrearrange[2] + '-' + docrearrange[1] + '-' + docrearrange[0];
+
+                            $('#tbody').append(`<tr>
+                                                    <td hidden>${v.id}</td>
+                                                    <td style="color:black;">${v.rno}</td>
+                                                    <td style="color:black;">${v.aptno}</td>
+                                                    <td style="color:black;">${v.tname}</td>
+                                                    <td style="color:black;">${v.mrent}</td>
+                                                    <td style="color:black;">${fromperiod}</td>
+                                                    <td style="color:black;">${toperiod}</td>
+                                                    <td style="color:black;">${v.ptype}</td>
+                                                    <td style="color:black;">${createddate}</td>
+                                                    <td style="text-align: center;"><a href="@Url.Action("PrintReceipt", "PA")?Id=${v.id}">Print</a></td>
+                                                </tr>`);
+
+                            if (totalamount == "") {
+                                totalamount = Number(v.mrent);
+                            }
+                            else {
+                                totalamount = Number(totalamount) + Number(v.mrent);
+                            }
+                            $('#totalamount').val(totalamount);
+                        });
+                    }
+                })
+            }
+            else {
+                $('#tbody').html('');
+                /*$('#tbody').append('<tr>');*/
+                $('#tbody').append('<tr><td style="color:black;" colspan="9"><p style="text-align: center;">Search string empty</p></td></tr>');
+                /*$('#tbody').append('</tr>');*/
+                $('#totalamount').val('');
+            }
+        });
+
+        $('#btn100records').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BulkReceipt100Records", "PA")",
+                success: function (response) {
+                    $('#tbody').html('');
+                    var totalamount = "";
+                    $.each(response, function (k, v) {
+                        var from = v.fromperiod.split('T');
+                        var fromrearrange = from[0].split('-');
+                        var fromperiod = fromrearrange[2] + '-' + fromrearrange[1] + '-' + fromrearrange[0];
+
+                        var to = v.toperiod.split('T');
+                        var torearrange = to[0].split('-');
+                        var toperiod = torearrange[2] + '-' + torearrange[1] + '-' + torearrange[0];
+
+                        var doc = v.doc.split('T');
+                        var docrearrange = doc[0].split('-');
+                        var createddate = docrearrange[2] + '-' + docrearrange[1] + '-' + docrearrange[0];
+
+                        $('#tbody').append(`<tr>
+                                                <td hidden>${v.id}</td>
+                                                <td style="color:black;">${v.rno}</td>
+                                                <td style="color:black;">${v.aptno}</td>
+                                                <td style="color:black;">${v.tname}</td>
+                                                <td style="color:black;">${v.mrent}</td>
+                                                <td style="color:black;">${fromperiod}</td>
+                                                <td style="color:black;">${toperiod}</td>
+                                                <td style="color:black;">${v.ptype}</td>
+                                                <td style="color:black;">${createddate}</td>
+                                                <td style="text-align: center;"><a href="@Url.Action("PrintReceipt", "PA")?Id=${v.id}">Print</a></td>
+                                            </tr>`);
+
+                        if (totalamount == "") {
+                            totalamount = Number(v.mrent);
+                        }
+                        else {
+                            totalamount = Number(totalamount) + Number(v.mrent);
+                        }
+                        $('#totalamount').val(totalamount);
+                    });
+                }
+            })
+        });
+
+        $('#btnviewall').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BulkReceiptViewAll", "PA")",
+                success: function (response) {
+                    $('#tbody').html('');
+                    var totalamount = "";
+                    $.each(response, function (k, v) {
+                        var from = v.fromperiod.split('T');
+                        var fromrearrange = from[0].split('-');
+                        var fromperiod = fromrearrange[2] + '-' + fromrearrange[1] + '-' + fromrearrange[0];
+
+                        var to = v.toperiod.split('T');
+                        var torearrange = to[0].split('-');
+                        var toperiod = torearrange[2] + '-' + torearrange[1] + '-' + torearrange[0];
+
+                        var doc = v.doc.split('T');
+                        var docrearrange = doc[0].split('-');
+                        var createddate = docrearrange[2] + '-' + docrearrange[1] + '-' + docrearrange[0];
+
+                        $('#tbody').append(`<tr>
+                                                <td hidden>${v.id}</td>
+                                                <td style="color:black;">${v.rno}</td>
+                                                <td style="color:black;">${v.aptno}</td>
+                                                <td style="color:black;">${v.tname}</td>
+                                                <td style="color:black;">${v.mrent}</td>
+                                                <td style="color:black;">${fromperiod}</td>
+                                                <td style="color:black;">${toperiod}</td>
+                                                <td style="color:black;">${v.ptype}</td>
+                                                <td style="color:black;">${createddate}</td>
+                                                <td style="text-align: center;"><a href="@Url.Action("PrintReceipt", "PA")?Id=${v.id}">Print</a></td>
+                                            </tr>`);
+
+                        if (totalamount == "") {
+                            totalamount = Number(v.mrent);
+                        }
+                        else {
+                            totalamount = Number(totalamount) + Number(v.mrent);
+                        }
+                        $('#totalamount').val(totalamount);
+                    });
+                }
+            })
+        });
+
+        $('#btnviewcancelled').click(function () {
+            
+        });
+
+        //end of the docuement ready function
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form asp-action="ListUser" asp-controller="User" method="post">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Receipts To Be Collected</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3" style="margin-top: 38px;">
+                                        @*<div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <input id="collection" type="radio" name="action"/>
+                                                    <label>Collection Month</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6" style="margin-left: -60px;">
+                                                <div class="form-group">
+                                                    <input id="statement" type="radio" name="action"/>
+                                                    <label>Statement Month</label>
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                    </div>
+                                    <div class="col-lg-3" style="margin-left: -120px;">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Month</label>
+                                                    <input id="month" class="form-control" type="date" style="border-radius: 10px;"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6" style="margin-top: 30px; margin-left: -20px;">
+                                                <div class="form-group">
+                                                    <button id="btnView" type="button" class="btn btn-primary" style="border-radius:10px;">View</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3" style="margin-top: 30px; margin-left: -170px;">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <button id="btn100records" type="button" class="btn btn-primary" style="border-radius: 10px; width: 181px;">View Top 100 Records</button>
+                                                </td>
+                                                <td>
+                                                    <button id="btnviewall" type="button" class="btn btn-primary" style="border-radius: 10px;">View All</button>
+                                                </td>
+                                                @*<td>
+                                                    <button id="btnviewcancelled" type="button" class="btn btn-primary" style="border-radius: 10px; width: 135px;">View Cancelled</button>
+                                                </td>*@
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-left: 290px;">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                @*<div class="form-group">
+                                                    <label>Cash</label>
+                                                    <input id="cash" disabled type="text" class="form-control" style="border-radius: 10px" />
+                                                </div>*@
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -23px;">
+                                                @*<div class="form-group">
+                                                    <label>Knet</label>
+                                                    <input id="knet" disabled type="text" class="form-control" style="border-radius: 10px" />
+                                                </div>*@
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -23px;">
+                                                @*<div class="form-group">
+                                                    <label>Cheque</label>
+                                                    <input id="cheque" disabled type="text" class="form-control" style="border-radius: 10px" />
+                                                </div>*@
+                                            </div>
+                                            <div class="col-lg-3" style="margin-left: -10px; ">
+                                                <div class="form-group" style="width: 115px;">
+                                                    <label>Total Amount</label>
+                                                    <input id="totalamount" disabled type="text" class="form-control" style="border-radius: 10px" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                            <thead class="bg-success">
+                                <tr>
+                                    <th hidden></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Voucher</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Apt No</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Tenant Name</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Total Amount</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">From</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">To</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Payment Type</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Created On</label></th>
+                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody" class="bg-white">
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td hidden>@item.Id</td>
+                                        <td style="color:black;">@item.Rno</td>
+                                        <td style="color:black;">@item.Aptno</td>
+                                        <td style="color:black;">@CommonRepository.Truncate(item.Tname, 120)</td>
+                                        <td style="color:black;">@item.Mrent</td>
+                                        <td style="color:black;">@Convert.ToDateTime(item.Fromperiod).ToShortDateString()</td>
+                                        <td style="color:black;">@Convert.ToDateTime(item.Toperiod).ToShortDateString()</td>
+                                        <td style="color:black;">@item.Ptype</td>
+                                        <td style="color:black;">@Convert.ToDateTime(item.Doc).ToShortDateString()</td>
+                                        <td style="text-align: center;">
+                                            <a asp-controller="PA" asp-action="PrintReceipt" asp-route-id="@item.Id">Print</a>
+                                        </td>
+                                        @*<td style="text-align: center;">
+                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                            </td>*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br />
+                    @*<div id="container">
+                            <p></p>
+                            <p></p>
+                            <div class="pagination">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        @Html.PagedListPager(Model, page => Url.Action("ListUser", new { page, pageSize = Model.PageSize }))
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>*@
+                    @*<input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />*@
+                </form>
+                @*<script type="text/javascript">
+                                function PagerClick(index) {
+                                    document.getElementById("hfCurrentPageIndex").value = index;
+                                    document.forms[0].submit();
+                                }
+                    </script>*@
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

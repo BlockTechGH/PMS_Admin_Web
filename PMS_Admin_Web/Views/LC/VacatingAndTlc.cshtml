@@ -1,0 +1,227 @@
+﻿@model PMS_Admin_Web.Models.LC.VacatingsAndTlcModel
+
+@using PMS_Admin_Web.Repository
+
+@{
+    ViewData["Title"] = "Vacating List and TLC";
+}
+
+
+    @*<div class="row">*@
+        <div class="col-lg-12">
+            <form asp-action="Properties" asp-controller="MenuView" method="post">
+                <div class="card" style="color:burlywood">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <h5 style="color:black"><strong>Vacating List and TLC</strong></h5>
+                                    </div>
+                                    <br />
+                                    <div class="col-lg-3">
+                                        @*<div class="form-group">
+                                            <label class="control-label text-black-50">Mode</label>
+                                            <select asp-for="SearchMode" class="form-control">
+                                                <option value="PropertyName">Property Name</option>
+                                                <option value="Location">Location</option>
+                                                <option value="LCNo">Lease No</option>
+                                                <option value="TenantName">Tenant Name</option>
+                                                <option value="ReservedClientName">Reserved Client Name</option>
+                                            </select>
+                                        </div>*@
+                                    </div>
+                                    <div class="col-lg-3">
+                                        @*<div class="form-group">
+                                            <label class="control-label text-black-50">Keyword</label>
+                                            <input asp-for="SearchKeyword" class="form-control" type="text" />
+                                        </div>*@
+                                    </div>
+                                    <div class="col-lg-3">
+                                        @*<div class="form-group" style="padding-top: 32px;">
+                                            <button type="submit" class="btn btn-primary">Search</button>
+                                        </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#VacatingList">Vacating List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#PendingVacating">Pending Vacating</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#TLC">TLC</a>
+                            </li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="VacatingList">
+                                @*<div class="col-lg-12">*@
+                                    <br />
+                                    <div class="card">
+                                        <div class="card-body" style="overflow-x: auto; overflow-y:auto; height: 400px;">
+                                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                <thead class="bg-success">
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Property Name</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Type</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">Bed</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Tenant Name</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Lease Start Date</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 121px;">Lease End Date</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Contact</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Nationality</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 115px;">Move Out On</label></th>
+                                                        <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center; width: 100px;">Actions</label></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white">
+                                                    @foreach (var item in Model.vacatingList)
+                                                    {
+                                                    <tr>
+                                                        <td hidden>@item.Id</td>
+                                                        <td style="color:black;">@CommonRepository.Truncate(item.PropertyName, 20)</td>
+                                                        <td style="color:black;">@item.AptNo</td>
+                                                        <td style="color:black;">@item.Type</td>
+                                                        <td style="color:black;">@item.Bed</td>
+                                                        @if (item.TenantName == null)
+                                                        {
+                                                            <td style="color:black;">-</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="color:black;">@CommonRepository.Truncate(item.TenantName, 20)</td>
+                                                        }
+
+                                                        <td style="color:black;">@item.LeaseStartDate.ToShortDateString()</td>
+                                                        <td style="color:black;">@item.LeaseEndDate.ToShortDateString()</td>
+                                                        <td style="color:black;">@item.ContactNo</td>
+                                                        <td style="color:black;">@item.Nationality</td>
+                                                        <td style="color:black;">@item.MoveOutOn.ToShortDateString()</td>
+                                                        <td style="text-align: center;">
+                                                            <a asp-route-pref="@item.Pref" asp-route-name="VacatingList" asp-action="VacatingProcess" asp-controller="LC"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        </td>
+                                                        @*<td style="text-align: center;">
+            <a asp-route-id="@item.Id"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+        </td>*@
+                                                    </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @*</div>*@
+                            </div>
+                            <div class="tab-pane" id="PendingVacating">
+                                <br />
+                                <div class="card">
+                                    <div class="card-body" style="overflow-x: auto; overflow-y:auto; height: 400px;">
+                                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                            <thead class="bg-success">
+                                                <tr>
+                                                    <th hidden></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Property Name</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Type</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">Bed</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Tenant Name</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Lease Start Date</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 121px;">Lease End Date</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Contact</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Nationality</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 115px;">Move Out On</label></th>
+                                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center; width: 100px;">Actions</label></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white">
+                                                @foreach (var item in Model.pendingVacating)
+                                                {
+                                                    <tr>
+                                                        <td hidden>@item.Id</td>
+                                                        <td style="color:black;">@CommonRepository.Truncate(item.PropertyName, 20)</td>
+                                                        <td style="color:black;">@item.AptNo</td>
+                                                        <td style="color:black;">@item.Type</td>
+                                                        <td style="color:black;">@item.Bed</td>
+                                                        <td style="color:black;">@CommonRepository.Truncate(item.TenantName, 20)</td>
+                                                        <td style="color:black;">@item.LeaseStartDate.ToShortDateString()</td>
+                                                        <td style="color:black;">@item.LeaseEndDate.ToShortDateString()</td>
+                                                        <td style="color:black;">@item.ContactNo</td>
+                                                        <td style="color:black;">@item.Nationality</td>
+                                                        <td style="color:black;">@item.MoveOutOn.ToShortDateString()</td>
+                                                        <td style="text-align: center;">
+                                                            <a asp-route-id="@item.Id" asp-route-name="TLC" asp-route-pref="@item.Pref" asp-action="VacatingProcess" asp-controller="LC"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        </td>
+                                                        @*<td style="text-align: center;">
+                                                            <a asp-route-id="@item.Id"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                        </td>*@
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="TLC">
+                                <br />
+                                <div class="card">
+                                    <div class="card-body" style="overflow-x: auto; overflow-y:auto; height: 400px;">
+                                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                            <thead class="bg-success">
+                                                <tr>
+                                                    <th hidden></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Property Name</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Type</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">Bed</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Tenant Name</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 130px;">Lease Start Date</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 121px;">Lease End Date</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Contact</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Nationality</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 115px;">Move Out On</label></th>
+                                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center; width: 100px;">Actions</label></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white">
+                                                @foreach (var item in Model.tlc)
+                                                {
+                                                    <tr>
+                                                        <td hidden>@item.Id</td>
+                                                        <td style="color:black;">@CommonRepository.Truncate(item.PropertyName, 20)</td>
+                                                        <td style="color:black;">@item.AptNo</td>
+                                                        <td style="color:black;">@item.Type</td>
+                                                        <td style="color:black;">@item.Bed</td>
+                                                        <td style="color:black;">@CommonRepository.Truncate(item.TenantName, 20)</td>
+                                                        <td style="color:black;">@item.LeaseStartDate.ToShortDateString()</td>
+                                                        <td style="color:black;">@item.LeaseEndDate.ToShortDateString()</td>
+                                                        <td style="color:black;">@item.ContactNo</td>
+                                                        <td style="color:black;">@item.Nationality</td>
+                                                        <td style="color:black;">@item.MoveOutOn.ToShortDateString()</td>
+                                                        <td style="text-align: center;">
+                                                            <a asp-route-id="@item.Id" asp-route-name="TLC" asp-route-pref="@item.Pref" asp-action="VacatingProcess" asp-controller="LC"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        </td>
+                                                        @*<td style="text-align: center;">
+                                                            <a asp-route-id="@item.Id"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                        </td>*@
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    @*</div>*@

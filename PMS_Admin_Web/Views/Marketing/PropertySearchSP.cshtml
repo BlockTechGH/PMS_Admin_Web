@@ -1,0 +1,213 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@model PMS_Admin_Web.Models.Marketing.PropertySearchModel
+
+
+@{
+    ViewData["Title"] = "Property Search";
+}
+
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form asp-action="PropertySearch" asp-controller="Marketing">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Property Search</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3 float-right">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3" style="margin-top: 38px;">
+
+                            </div>
+                            <div class="col-lg-3">
+
+                            </div>
+                            <div class="col-lg-3">
+
+                            </div>
+                            <div class="col-lg-3" style="margin-top: 5px;">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Search</label>
+                                            <input id="search" class="form-control" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button id="btnSearch" class="btn btn-primary" style="border-radius: 10px; margin-top: 31px;"><i class="fa fa-search" style="font-size:20px"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                        <!--script goes here...-->
+                        <script>
+                                    $(document).ready(function () {
+                                        //start of the document ready function
+                                        //delcaring global variable to hold primary key value.
+                                        $.ajax({
+                                            type: "GET",
+                                            url: "@Url.Action("LoadPropertynameForSearch", "Property")",
+                                            //data: { searchUsername: txtSearchUser },
+                                            success: function (response) {
+                                                $('#propertyname').append('<option hidden>--Select--</option>');
+                                                $.each(response, function (k, v) {
+                                                    $('#propertyname').append('<option value="'+v+'">'+v+'</option>');
+                                                });
+                                            }
+                                        })
+
+                                        var pryEmpId;
+                                        $('.deleteprompt').click(function () {
+                                            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+                                            if (confirmMessageBox) {
+                                                pryEmpId = $(this).attr('id');
+                                                //alert(pryEmpId);
+                                                $.ajax({
+                                                    type: 'GET',
+                                                    url: "@Url.Action("DeleteProperty", "Property")",
+                                                    data: { Id: pryEmpId },
+
+                                                    success: function (response) {
+                                                        alert(response);
+                                                        location.reload();
+                                                    },
+                                                    error: function (err) {
+                                                        alert(err);
+                                                        location.reload();
+                                                    }
+                                                });
+
+                                            }
+
+                                        });
+
+                                        $('#propertyname').change(function () {
+                                            var Searchproperty = $('#propertyname :selected').val();
+
+                                            if (Searchproperty != '') {
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "@Url.Action("SearchProperty", "Property")",
+                                                    data: { searchProperty: Searchproperty },
+                                                    success: function (response) {
+                                                        $('#tbody').html('');
+                                                        $.each(response, function (k, v) {
+
+                                                            $('#tbody').append('<tr>');
+                                                            $('#tbody').append('<td hidden>' + v.id + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.bldgName + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.aptNo + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.location + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.propertyType + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.propertySource + '</td>');
+                                                            $('#tbody').append('<td style="color:black;">' + v.status + '</td>');
+                                                            @*$('#tbody').append('<td style="text-align: center;"><a href="@Url.Action("EditProperty", "Property")?Id=' + v.id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>');*@
+                                                            $('#tbody').append('<td style="text-align: center;"><a href="javascript:void(0)" id="' + v.id + '" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>');
+                                                            $('#tbody').append('</tr>');
+                                                            $('.pagination').css('display', 'none');
+                                                        });
+                                                    }
+                                                })
+                                            }
+                                            else {
+                                                $('#tbody').html('');
+                                                /*$('#tbody').append('<tr>');*/
+                                                $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                                                /*$('#tbody').append('</tr>');*/
+                                            }
+                                        });
+
+                                        //end of the docuement ready function
+                                    });
+                        </script>
+                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                            <thead class="bg-success">
+                                <tr>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Ref No</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Building Name</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Status</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Property Type</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Location</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Block</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Bed</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Bath</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Furnished</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Kitchen</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Rent</label></th>
+                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody" class="bg-white">
+                                @foreach (var item in Model.propertymasters)
+                                {
+                                    <tr>
+                                        <td style="color:black;">@item.PropertyRef</td>
+                                        <td style="color:black;">@item.BldgName</td>
+                                        <td style="color:black;">@item.Status</td>
+                                        <td style="color:black;">@item.PropertyType</td>
+                                        <td style="color:black;">@item.Location</td>
+                                        <td style="color:black;">@item.BlockName</td>
+                                        <td style="color:black;">@item.Bed</td>
+                                        <td style="color:black;">@item.Bath</td>
+                                        <td style="color:black;">@item.Furnished</td>
+                                        <td style="color:black;">@item.Kitchen</td>
+                                        <td style="color:black;">@item.Amount</td>
+                                        <td style="text-align: center;">
+                                            <a asp-controller="Marketing" asp-action="PropertyDetail" asp-route-propertyref="@item.PropertyRef" asp-route-propertysource="StandAloneProperty" asp-route-propertytype="@item.PropertyType" asp-route-bed="@item.Bed" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                        </td>
+                                        @*<td style="text-align: center;">
+                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+            </td>*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <!--<div id="container">
+                            <p></p>
+                            <p></p>
+                            <div class="pagination">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        Html.PagedListPager(Model, page => Url.Action("ListProperties", new { page, pageSize = Model.PageSize }))
+                                    </div>
+                                </div>
+                            </div>-->
+                        @*<div class="row">
+                                <div class="col-lg-12" style="padding: 10px;padding-top: 50px;margin-left: 215px;">
+                                    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Products
+                                </div>
+                            </div>*@
+                        <!--</div>-->
+                    </div>
+                    <br />
+
+
+
+
+
+
+                </form>
+                @*<script type="text/javascript">
+                        function PagerClick(index) {
+                            document.getElementById("hfCurrentPageIndex").value = index;
+                            document.forms[0].submit();
+                        }
+                    </script>*@
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

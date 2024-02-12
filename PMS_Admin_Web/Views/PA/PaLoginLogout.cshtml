@@ -1,0 +1,387 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model PMS_Admin_Web.Models.MovingInOut.PALoginModel
+@*@using X.PagedList.Mvc.Core
+    @model X.PagedList.IPagedList<PMS_Admin_Web.Models.User>*@
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "Login / Logout";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script>
+    $(document).ready(function () {
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                Id = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteAttendanceList", "MovingInOut")",
+                    data: { id: Id },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#btnlogin').click(function () {
+            var txtremarks = $('#txtremarks').val();
+            $.ajax({
+                type: "POST",
+                data: { txtremarks: txtremarks},
+                url: "@Url.Action("BtnLoginPaLoginLogout", "PA")",
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            })
+        })
+
+        $('#btnlogout').click(function () {
+            var txtremarks = $('#txtremarks').val();
+            $.ajax({
+                type: "POST",
+                data: { txtremarks: txtremarks},
+                url: "@Url.Action("BtnLogoutPaLoginLogout1", "PA")",
+                success: function (response) {
+                    if (response == "LogOut is already done") {
+                        var confirmMessageBox = confirm('LogOut is already done, Do you want to enter again ?');
+                        if (confirmMessageBox) {
+                            $.ajax({
+                                type: "POST",
+                                data: { txtremarks: txtremarks },
+                                url: "@Url.Action("BtnLogoutPaLoginLogout2", "PA")",
+                                success: function (response) {
+                                    alert(response);
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                    }
+                    else {
+                        alert(response);
+                        window.location.reload();
+                    }
+                }
+            })
+        })
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form asp-action="PaLoginLogout" asp-controller="PA" method="post">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Login / Logout</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                        </div>
+                        <div class="row" style="margin-top: 15px;">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="text-black-50">PA Names</label>
+                                    <input type="text" asp-for="palogin.Paname" class="form-control" style="border-radius:10px;" value="@Context.Session.GetString("CurrentUsername")" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="text-black-50">Comments</label>
+                                    <textarea id="txtremarks" type="text" asp-for="palogin.Remarks" class="form-control" style="border-radius:10px;"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-lg-3" style="margin-top: 30px;">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button id="btnlogin" asp-route-mode="Login" class="btn btn-primary" type="button" style="border-radius:10px">Login</button>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button id="btnlogout" asp-route-mode="Logout" class="btn btn-primary" type="button" style="border-radius:10px">Logout</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+
+                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                            <thead class="bg-success">
+                                <tr>
+                                    <th hidden></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">PA Name</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Log Mode</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Log Time</label></th>
+                                    @*<th class="table-bordered"><label style="color: black; font-size: 17px;">Status</label></th>*@
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Comments</label></th>
+                                    @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>*@
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                @if (Model.palogins.Count > 0)
+                                {
+                                    @foreach (var item in Model.palogins)
+                                    {
+                                        <tr>
+                                            <td hidden>@item.Id</td>
+                                            <td style="color:black;">@item.Paname</td>
+                                            <td style="color:black;">@item.Logmode</td>
+                                            <td style="color:black;">@item.Logtime</td>
+                                            @*<td style="color:black;">@item.Mode</td>*@
+                                            <td style="color:black;">@item.Remarks</td>
+                                            @*<td style="text-align: center;">
+                                                    <a asp-route-mode="@item.Id" class="EditId" id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                </td>*@
+                                        </tr>
+                                    }
+                                }
+                                @if (Model.palogins.Count == 0)
+                                {
+
+                                    <tr>
+                                        <td colspan="6" style="text-align:center">
+                                            No records to display
+                                        </td>
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br />
+                    <!--New LoginLogout Popup-->
+                    <!--<script>
+                                $(document).ready(function () {
+                                    $('#login').click(function () {
+                                    var datetime = $('#datetime').val();
+                                    var remarks = $('#remarks').val();
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("PaLogin", "MovingInOut")",
+                                            data: { logindateTime: datetime, remarks: remarks },
+                                            success: function (response) {
+                                                alert(response)
+                                                location.reload();
+                                            }
+                                        })
+                                    })
+
+                                    $('#logout').click(function () {
+                                    var datetime = $('#datetime').val();
+                                    var remarks = $('#remarks').val();
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("PaLogOut", "MovingInOut")",
+                                            data: { logindateTime: datetime, remarks: remarks },
+                                            success: function (response) {
+                                                alert(response)
+                                                location.reload();
+                                            }
+                                        })
+                                    })
+
+                                    $('#close').click(function () {
+                                        location.reload();
+                                    })
+                                })
+
+                    </script>
+                    <div id="LoginLogoutModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Login/Logout</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="form-group">
+                                                <label>Date & Time</label>
+                                                <input id="datetime" type="datetime-local" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Remarks</label>
+                                                <textarea id="remarks" class="form-control" style="border-radius: 10px;"></textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button id="login" type="button" class="btn btn-primary">Login</button>
+                                                <button id="logout" type="button" class="btn btn-primary">Logout</button>
+                                                <button id="close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <!---->
+                    <!--Absent Popup-->
+                    <!--<script>
+
+                                $(document).ready(function () {
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: "@Url.Action("LoadPaNames", "MovingInOut")",
+                                        success: function (response) {
+                                            //alert(response);
+                                            //$('#propertyname').append('<option value="" hidden> --Select-- </option>');
+                                            $.each(response, function (k, v) {
+                                                $('#PaNames').append('<option value="' + v + '" > ' + v + '</option>');
+                                            });
+                                        }
+                                    })
+
+                                    $('#absent').click(function () {
+                                        var datetime = $('#Absentdatetime').val();
+                                        var remarks = $('#Absentremarks').val();
+                                        var paname = $('#PaName').val();
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("PaAbsent", "MovingInOut")",
+                                            data: { logindateTime: datetime, remarks: remarks, paname: paname},
+                                            success: function (response) {
+                                                alert(response)
+                                                location.reload();
+                                            }
+                                        })
+                                    })
+
+                                    $('#AbsentClose').click(function () {
+                                        location.reload();
+                                    })
+                                })
+
+                    </script>
+                    <div id="AbsentModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Login/Logout</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>PA Name</label>
+                                                <input id="PaName" type="text" class="form-control" style="border-radius: 10px;" list="PaNames" />
+                                                <datalist id="PaNames"></datalist>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Date & Time</label>
+                                                <input id="Absentdatetime" type="datetime-local" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Remarks</label>
+                                                <textarea id="Absentremarks" class="form-control" style="border-radius: 10px;"></textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button id="absent" type="button" class="btn btn-primary">Absent</button>
+                                                <button id="AbsentClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <!---->
+                    <!--Update LoginLogout Popup-->
+                    <!--<script>
+                                $(document).ready(function () {
+
+                                    $('#update').click(function () {
+                                        var Id = $('.EditId').attr('id');
+                                        var datetime = $('#datetime').val();
+                                        var remarks = $('#Updateremarks').val();
+                                        //alert(Id)
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("PaUpdateAttendance", "MovingInOut")",
+                                            data: { id: Id, remarks: remarks },
+                                            success: function (response) {
+                                                alert(response)
+                                                location.reload();
+                                            }
+                                        })
+                                    })
+
+                                    $('#closeupdate').click(function () {
+                                        location.reload();
+                                    })
+                                })
+
+                    </script>
+                    <div id="UpdateLoginLogoutModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Login/Logout</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="form-group">
+                                                <label>Date & Time</label>
+                                                <input readonly id="datetime" type="datetime-local" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Remarks</label>
+                                                <textarea id="Updateremarks" class="form-control" style="border-radius: 10px;"></textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button id="update" type="button" class="btn btn-primary">Update</button>
+                                                <button id="closeupdate" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <!---->
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

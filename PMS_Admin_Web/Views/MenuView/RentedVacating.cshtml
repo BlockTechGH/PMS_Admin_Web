@@ -1,0 +1,895 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+
+@model PMS_Admin_Web.Models.Property.RentedVacatingModel
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "Rented Vacating";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    function updateselectedrecord(aptno, tname, nationality, bedroom, bathroom, rent, modepay, furnish, corpind, lstart, lend) {
+        var confirmmsgbox = confirm('Are you sure to update the changes for the selected record ?');
+        if (confirmmsgbox) {
+            var rentedgrid = document.getElementsByClassName('rentedgrid');
+            var rentedgridlength = rentedgrid.length;
+            var bname = $('#bname').val();
+            var rentdatetxt = $('#rentdatetxt').val();
+            //var aptno = $(this).closest("tr").find('td:eq(1)').text();
+            //var tname = $(this).closest("tr").find('td:eq(2)').text();
+            //var nationality = $(this).closest("tr").find('td:eq(3)').text();
+            //var bedroom = $(this).closest("tr").find('td:eq(4)').text();
+            //var bathroom = $(this).closest("tr").find('td:eq(5)').text();
+            //var rent = $(this).closest("tr").find('td:eq(6)').text();
+            //var modepay = $(this).closest("tr").find('td:eq(7)').text();
+            //var furnish = $(this).closest("tr").find('td:eq(8)').text();
+            //var corpind = $(this).closest("tr").find('td:eq(9)').text();
+            //var lstart= $(this).closest("tr").find('td:eq(10)').text();
+            //var lend= $(this).closest("tr").find('td:eq(11)').text();
+
+            if (rentedgrid.length == 0) {
+                alert('No records found to update');
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, rentdatetxt: rentdatetxt, rentedgridlength: rentedgridlength, corpind: corpind, modepay: modepay, aptno: aptno, tname: tname, nationality: nationality, bedroom: bedroom, bathroom: bathroom, rent: rent, furnish: furnish, lstart: lstart, lend: lend},
+                url: "@Url.Action("UpdateSelectedRecordRentedRentedVacating", "MenuView")",
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            })
+        }
+    }
+
+    function moverecordmg(aptno, tname, nationality, bedroom, bathroom, rent, modepay, furnish, corpind, lstart, lend) {
+        var mastergridclass = document.getElementsByClassName('mastergridclass');
+        if (mastergridclass.length == 0) {
+            alert('NO RECORDS FOUND TO MOVE')
+            return false;
+        }
+        else {
+            //var aptno = $(this).closest("tr").find('td:eq(1)').text();
+            //var tname = $(this).closest("tr").find('td:eq(2)').text();
+            //var nationality = $(this).closest("tr").find('td:eq(3)').text();
+            //var bedroom = $(this).closest("tr").find('td:eq(4)').text();
+            //var bathroom = $(this).closest("tr").find('td:eq(5)').text();
+            //var rent = $(this).closest("tr").find('td:eq(6)').text();
+            //var modepay = $(this).closest("tr").find('td:eq(7)').text();
+            //var furnish = $(this).closest("tr").find('td:eq(8)').text();
+            //var corpind = $(this).closest("tr").find('td:eq(9)').text();
+            //var lstart = $(this).closest("tr").find('td:eq(10)').text();
+            //var lend = $(this).closest("tr").find('td:eq(11)').text();
+
+            $('#tbodyrentedgrid').append(`<tr id="rentg_${aptno}" class="rentedgrid">
+                                            <td hidden>${id}</td>
+                                            <td style="color:black;">${aptno}</td>
+                                            <td style="color:black;">${tname}</td>
+                                            <td style="color:black;">${nationality}</td>
+                                            <td style="color:black;">${bedroom}</td>
+                                            <td style="color:black;">${bathroom}</td>
+                                            <td style="color:black;">${rent}</td>
+                                            <td style="color:black;">${modepay}</td>
+                                            <td style="color:black;">${furnish}</td>
+                                            <td style="color:black;">${corpind}</td>
+                                            <td style="color:black;">${lstart}</td>
+                                            <td style="color:black;">${lend}</td>
+                                            <td style="text-align: center;"><a href="javascript:void(0)" onclick="updateselectedrecord('${aptno}','${tname}','${nationality}','${bedroom}','${bathroom}','${rent}','${modepay}','${furnish}','${corpind}','${lstart}','${lend}')">Update Selected Record</a></td>
+                                            <td style="text-align: center;"><a href="javascript:void(0)" onclick="remove('rentg_${aptno}')">Remove</a></td>
+                                          </tr>`);
+        }
+    }
+
+    function remove(rowid) {
+        $(`#${rowid}`).remove();
+    }
+
+    function moverentfromaccounts(rowid,aptno) {
+        var accgridRow = document.getElementById(rowid);
+        var accgridCells = accgridRow.getElementsByTagName("td");
+        var rentgridRow = document.getElementById('rentg_' + aptno);
+        var rentgridCells = rentgridRow.getElementsByTagName("td");
+
+        rentgridCells[6].innerText = accgridCells[3].innerText;
+    }
+
+    function vaccinsertfromacc(aptno,rentpaid) {
+        var rentdatetxt = $('#rentdatetxt').val();
+        $.ajax({
+            type: "POST",
+            data: { aptno: aptno, rentpaid: rentpaid, rentdatetxt: rentdatetxt},
+            url: "@Url.Action("", "MenuView")",
+            success: function (response) {
+
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //declaring global variable to hold primary key value.
+
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var id = $(this).attr('id');
+                var voucherno = $(this).attr('data-voucher');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteTemporaryReceipt", "Accounts")",
+                    data: { id: id, voucherno: voucherno },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $('#btnrenewallc').click(function () {
+            var bname = $('#bname').val();
+            var rentdatetxt = $('#rentdatetxt').val();
+            $.ajax({
+                type: "POST",
+                data: { bname: bname, rentdatetxt: rentdatetxt},
+                url: "@Url.Action("BtnRenewalLCRentedVacating", "MenuView")",
+                success: function (response) {
+                    $('#tbodymastergrid').html('');
+                    $.each(response, function (k, v) {
+                        var leasestart = v.leasestart.split('T');
+                        var leaseend = v.leaseend.split('T');
+                        $('#tbodymastergrid').append(`<tr class="mastergridclass">
+                                                        <td hidden>${v.id}</td>
+                                                        <td style="color:black;">${v.aptNo}</td>
+                                                        <td style="color:black;">${v.cname}</td>
+                                                        <td style="color:black;">${v.cnat}</td>
+                                                        <td style="color:black;">${v.cbtype}</td>
+                                                        <td style="color:black;">${v.bath}</td>
+                                                        <td style="color:black;">${v.crent}</td>
+                                                        <td style="color:black;">${v.tmode}</td>
+                                                        <td style="color:black;">${v.cftype}</td>
+                                                        <td style="color:black;">${v.tctype}</td>
+                                                        <td style="color:black;">${leasestart[0]}</td>
+                                                        <td style="color:black;">${leaseend[0]}</td>
+                                                        <td style="text-align: center;"><a href="javascript:void(0)" onclick="moverecordmg('${v.aptNo}','${v.cname}','${v.cnat}','${v.cbtype}','${v.bath}','${v.crent}','${v.tmode}','${v.cftype}','${v.tctype}','${leasestart[0]}','${leaseend[0]}')">Move</a></td>
+                                                      </tr>`);
+                    })
+                }
+            })
+        })
+
+        $('.moverecordmg').click(function () {
+            var mastergridclass = document.getElementsByClassName('mastergridclass');
+            if (mastergridclass.length == 0) {
+                alert('NO RECORDS FOUND TO MOVE')
+                return false;
+            }
+            else {
+
+                var aptno = $(this).closest("tr").find('td:eq(1)').text();
+                var tname = $(this).closest("tr").find('td:eq(2)').text();
+                var nationality = $(this).closest("tr").find('td:eq(3)').text();
+                var bedroom = $(this).closest("tr").find('td:eq(4)').text();
+                var bathroom = $(this).closest("tr").find('td:eq(5)').text();
+                var rent = $(this).closest("tr").find('td:eq(6)').text();
+                var modepay = $(this).closest("tr").find('td:eq(7)').text();
+                var furnish = $(this).closest("tr").find('td:eq(8)').text();
+                var corpind = $(this).closest("tr").find('td:eq(9)').text();
+                var lstart = $(this).closest("tr").find('td:eq(10)').text();
+                var lend = $(this).closest("tr").find('td:eq(11)').text();
+
+                $('#tbodyrentedgrid').append(`<tr id="rentg_${aptno}" class="rentedgrid">
+                                                <td hidden>${id}</td>
+                                                <td style="color:black;">${aptno}</td>
+                                                <td style="color:black;">${tname}</td>
+                                                <td style="color:black;">${nationality}</td>
+                                                <td style="color:black;">${bedroom}</td>
+                                                <td style="color:black;">${bathroom}</td>
+                                                <td style="color:black;">${rent}</td>
+                                                <td style="color:black;">${modepay}</td>
+                                                <td style="color:black;">${furnish}</td>
+                                                <td style="color:black;">${corpind}</td>
+                                                <td style="color:black;">${lstart}</td>
+                                                <td style="color:black;">${lend}</td>
+                                                <td style="text-align: center;"><a href="javascript:void(0)" onclick="updateselectedrecord('${aptno}','${tname}','${nationality}','${bedroom}','${bathroom}','${rent}','${modepay}','${furnish}','${corpind}','${lstart}','${lend}')">Update Selected Record</a></td>
+                                                <td style="text-align: center;"><a href="javascript:void(0)" onclick="remove('rentg_${aptno}')">Remove</a></td>
+                                              </tr>`);
+            }
+        })
+
+        $('.updateselectedrecord').click(function () {
+            var confirmmsgbox = confirm('Are you sure to update the changes for the selected record ?');
+            if (confirmmsgbox) {
+                var rentedgrid = document.getElementsByClassName('rentedgrid');
+                var rentedgridlength = rentedgrid.length;
+                var bname = $('#bname').val();
+                var rentdatetxt = $('#rentdatetxt').val();
+                var aptno = $(this).closest("tr").find('td:eq(1)').text();
+                var tname = $(this).closest("tr").find('td:eq(2)').text();
+                var nationality = $(this).closest("tr").find('td:eq(3)').text();
+                var bedroom = $(this).closest("tr").find('td:eq(4)').text();
+                var bathroom = $(this).closest("tr").find('td:eq(5)').text();
+                var rent = $(this).closest("tr").find('td:eq(6)').text();
+                var modepay = $(this).closest("tr").find('td:eq(7)').text();
+                var furnish = $(this).closest("tr").find('td:eq(8)').text();
+                var corpind = $(this).closest("tr").find('td:eq(9)').text();
+                var lstart= $(this).closest("tr").find('td:eq(10)').text();
+                var lend= $(this).closest("tr").find('td:eq(11)').text();
+
+                if (rentedgridlength == 0) {
+                    alert('No records found to update');
+                    return false;
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, rentdatetxt: rentdatetxt, rentedgridlength: rentedgridlength, corpind: corpind, modepay: modepay, aptno: aptno, tname: tname, nationality: nationality, bedroom: bedroom, bathroom: bathroom, rent: rent, furnish: furnish, lstart: lstart, lend: lend},
+                    url: "@Url.Action("UpdateSelectedRecordRentedRentedVacating", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        $('#btnloadfromlcrented').click(function () {
+            //not there in old application
+        });
+
+        $('#btnupdateallrented').click(function () {
+            var confirmmsgbox = confirm('Are you sure to update the changes ?');
+            if (confirmmsgbox) {
+                var bname = $('#bname').val();
+                var rentdatetxt = $('#rentdatetxt').val();
+                var rentedgridclassaptno = document.getElementsByClassName('rentedgridclassaptno');
+                var rentedgridclasstname = document.getElementsByClassName('rentedgridclasstname');
+                var rentedgridclassnat = document.getElementsByClassName('rentedgridclassnat');
+                var rentedgridclassbed = document.getElementsByClassName('rentedgridclassbed');
+                var rentedgridclassbath = document.getElementsByClassName('rentedgridclassbath');
+                var rentedgridclassrent = document.getElementsByClassName('rentedgridclassrent');
+                var rentedgridclasspaymode = document.getElementsByClassName('rentedgridclasspaymode');
+                var rentedgridclassfurnish = document.getElementsByClassName('rentedgridclassfurnish');
+                var rentedgridclasscorpind = document.getElementsByClassName('rentedgridclasscorpind');
+                var rentedgridclasslstart = document.getElementsByClassName('rentedgridclasslstart');
+                var rentedgridclasslend = document.getElementsByClassName('rentedgridclasslend');
+                var rentedgrid = document.getElementsByClassName('rentedgrid');
+                var rentedgridlength = rentedgrid.length;
+                var corpind = [], modepay = [], aptno = [], tname = [], nationality = [], bedroom = [], bathroom = [], rent = [], furnish = [], lstart = [], lend = [];
+                for (let i = 0; i < rentedgridlength; i++) {
+                    aptno.push(rentedgridclassaptno[i].innerText);
+                    tname.push(rentedgridclasstname[i].innerText);
+                    nationality.push(rentedgridclassnat[i].innerText);
+                    bedroom.push(rentedgridclassbed[i].innerText);
+                    bathroom.push(rentedgridclassbath[i].innerText);
+                    rent.push(rentedgridclassrent[i].innerText);
+                    modepay.push(rentedgridclasspaymode[i].innerText);
+                    furnish.push(rentedgridclassfurnish[i].innerText);
+                    corpind.push(rentedgridclasscorpind[i].innerText);
+                    lstart.push(rentedgridclasslstart[i].innerText);
+                    lend.push(rentedgridclasslend[i].innerText);
+                }
+
+                if (rentedgridlength == 0) {
+                    alert('No records found to update');
+                    return false;
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, rentdatetxt: rentdatetxt, rentedgridlength: rentedgridlength, corpind: corpind, modepay: modepay, aptno: aptno, tname: tname, nationality: nationality, bedroom: bedroom, bathroom: bathroom, rent: rent, furnish: furnish, lstart: lstart, lend: lend},
+                    url: "@Url.Action("BtnUpdateAllRentedRentedVacating", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        });
+
+        $('#btnupdatereserved').click(function () {
+            var confirmmsgbox = confirm('Are you sure to update the changes ?');
+            if (confirmmsgbox) {
+                var rgridclass = document.getElementsByClassName('rgridclass');
+                var rgridclasslength = rgridclass.length;
+                var bname = $('#bname').val();
+                var rentdatetxt = $('#rentdatetxt').val();
+                var rgridclassaptno = document.getElementsByClassName('rgridclassaptno');
+                var aptno = [];
+
+                for (let i = 0; i < rgridclasslength; i++) {
+                    aptno.push(rgridclassaptno[i].innerText);
+                }
+
+                if (rgridclasslength == 0) {
+                    alert('No records found to update');
+                    return false;
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, rentdatetxt: rentdatetxt, rgridclasslength: rgridclasslength, aptno: aptno },
+                    url: "@Url.Action("UpdateReservedRentedVacating", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        $('.updatereservedclientselected').click(function () {
+            var confirmmsgbox = confirm('Are you sure to update the changes ?');
+            if (confirmmsgbox) {
+                var rgridclass = document.getElementsByClassName('rgridclass');
+                var rgridclasslength = rgridclass.length;
+                var bname = $('#bname').val();
+                var rentdatetxt = $('#rentdatetxt').val();
+                var aptno = $(this).closest("tr").find('td:eq(1)').text();
+                var tname = $(this).closest("tr").find('td:eq(2)').text();
+                var nationality = $(this).closest("tr").find('td:eq(3)').text();
+                var bedroom = $(this).closest("tr").find('td:eq(4)').text();
+                var bathroom = $(this).closest("tr").find('td:eq(5)').text();
+                var rent = $(this).closest("tr").find('td:eq(6)').text();
+                var modepay = $(this).closest("tr").find('td:eq(7)').text();
+                var furnish = $(this).closest("tr").find('td:eq(8)').text();
+                var corpind = $(this).closest("tr").find('td:eq(9)').text();
+                var lstart = $(this).closest("tr").find('td:eq(10)').text();
+                var lend = $(this).closest("tr").find('td:eq(11)').text();
+
+                if (rgridclasslength == 0) {
+                    alert('No records found to update');
+                    return false;
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, rentdatetxt: rentdatetxt, rgridclasslength: rgridclasslength, corpind: corpind, modepay: modepay, aptno: aptno, tname: tname, nationality: nationality, bedroom: bedroom, bathroom: bathroom, rent: rent, furnish: furnish, lstart: lstart, lend: lend},
+                    url: "@Url.Action("UpdateReservedClientSelectedRentedVacating", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        $('#btnupdatevacated').click(function () {
+            var confirmmsgbox = confirm('Are you sure to update the changes ?');
+            if (confirmmsgbox) {
+                  
+                var tlcgridclass = document.getElementsByClassName('tlcgridclass');
+                var tlcgridclasslength = tlcgridclass.length;
+                var bname = $('#bname').val();
+                var rentdatetxt = $('#rentdatetxt').val();
+                var tlcgridclassaptno = document.getElementsByClassName('tlcgridclassaptno');
+                var tlcgridclasstname = document.getElementsByClassName('tlcgridclasstname');
+                var aptno = [], tname = [];
+
+                for (let i = 0; i < tlcgridclasslength; i++) {
+                    aptno.push(tlcgridclassaptno[i].innerText);
+                    tname.push(tlcgridclasstname[i].innerText);
+                }
+
+                if (rgridclasslength == 0) {
+                    alert('No records found to update');
+                    return false;
+                }
+                $.ajax({
+                    type: "POST",
+                    data: { bname: bname, rentdatetxt: rentdatetxt, tlcgridclasslength: tlcgridclasslength, aptno: aptno, tname: tname },
+                    url: "@Url.Action("BtnUpdateVacatedRentedVacating", "MenuView")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        
+
+        //end of the document ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    @*<input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                    <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />*@
+                    <input type="hidden" id="bname" asp-for="bname" />
+                    <input type="hidden" id="rentdatetxt" asp-for="rentdatetxt" />
+                    <form>
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>Rented Vacating</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3 float-right">
+                                    <label style="color: black;"><strong>Note:- Always update the Vacating info first then update the Newly rented fields</strong></label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="row">
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button id="btnvacated" type="button" class="btn btn-primary" data-target="#vacatedModal" data-toggle="modal" data-backdrop="static" style="border-radius:10px">Vacated</button>
+                                        </div>
+                                        @*<div class="col-lg-3" style="margin-top: 31px;">
+                                <button id="btnrented" type="button" class="btn btn-primary" style="border-radius:10px">Rented</button>
+                            </div>*@
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button id="btnreserved" type="button" class="btn btn-primary" data-target="#reservedModal" data-toggle="modal" data-backdrop="static" style="border-radius:10px;">Reserved</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="card" style="width: 100%;">
+                                    <div class="card-body">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label style="color: black;"><strong>Lease Starts from Property Master</strong></label>
+                                                </td>
+                                                <td>
+                                                    <input id="pmcount" asp-for="pmcount" disabled type="text" class="form-control" style="border-radius: 10px; margin-left: 15px;" />
+                                                </td>
+                                                <td>
+                                                    <button id="btnrenewallc" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 100px;">Renewal LC</button>
+                                                </td>
+                                                @*<td>
+                                                    <button id="btnmove" type="button" class="btn btn-primary" style="border-radius:10px;">Move</button>
+                                                </td>*@
+                                            </tr>
+                                        </table>
+                                        <div style="overflow-y:auto; overflow-x:auto">
+                                            <table id="tablemastergrid" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                <thead class="bg-success">
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt No</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Tenant Name</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Nationality</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">Bedroom</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Bathroom</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Rent</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Mode of Payment</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Status</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 175px;">Corporate/Individual</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease Start</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease End</label></th>
+                                                        <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodymastergrid" class="bg-white">
+                                                    @foreach (var item in Model.mastergrid)
+                                                    {
+                                                        <tr id="mastergrid_@item.AptNo" class="mastergridclass">
+                                                            <td hidden>@item.Id</td>
+                                                            <td style="color:black;">@item.AptNo</td>
+                                                            <td style="color:black;">@item.Cname</td>
+                                                            <td style="color:black;">@item.Cnat</td>
+                                                            <td style="color:black;">@item.Cbtype</td>
+                                                            <td style="color:black;">@item.Bath</td>
+                                                            <td style="color:black;">@item.Crent</td>
+                                                            <td style="color:black;">@item.tmode</td>
+                                                            <td style="color:black;">@item.Cftype</td>
+                                                            <td style="color:black;">@item.tctype</td>
+                                                            <td style="color:black;">@Convert.ToDateTime(item.Leasestart).ToShortDateString()</td>
+                                                            <td style="color:black;">@Convert.ToDateTime(item.Leaseend).ToShortDateString()</td>
+                                                            <td style="text-align: center;">
+                                                                <a href="javascript:void(0)" class="moverecordmg">Move</a> @*class="moverecordmg"*@
+                                                            </td>
+                                                            @*<td style="text-align: center;">
+                                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                            </td>*@
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="card" style="width: 100%;">
+                                    <div class="card-body">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label style="color: black;"><strong>Rented Apartments</strong></label>
+                                                </td>
+                                                <td>
+                                                    <input id="rentedcount" asp-for="rentedcount" disabled type="text" class="form-control" style="border-radius: 10px; margin-left: 15px;" />
+                                                </td>
+                                                @*<td>
+                                                    <button id="btnupdateselectedrecordrented" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 30px;">Update Selected Record</button>
+                                                </td>*@
+                                                <td>
+                                                    <button id="btnloadfromlcrented" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 30px;">Load from LC</button>
+                                                </td>
+                                                @*<td>
+                                                    <button id="btnremoverented" type="button" class="btn btn-primary" style="border-radius:10px;">Remove</button>
+                                                </td>*@
+                                                <td>
+                                                    <button id="btnupdateallrented" type="button" class="btn btn-primary" style="border-radius:10px;">Update All</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div style="overflow-y: auto; overflow-x: auto">
+                                            <table id="tablerentedgrid" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                <thead class="bg-success">
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        @*<th></th>*@
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt No</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Tenant Name</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Nationality</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">Bedroom</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Bathroom</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Rent</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Mode of Payment</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Status</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 175px;">Corporate/Individual</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease Start</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease End</label></th>
+                                                        <th class="table-bordered" colspan="2"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyrentedgrid" class="bg-white">
+                                                    @foreach (var item in Model.rentedgrid)
+                                                    {
+                                                        <tr id="rentg_@item.Aptno" class="rentedgrid">
+                                                            <td hidden>@item.Id</td>
+                                                            @*<td style="color:black;"><input type="checkbox" name="selectedids" /></td>*@
+                                                            <td class="rentedgridclassaptno" style="color:black;">@item.Aptno</td>
+                                                            <td class="rentedgridclasstname" style="color:black;">@item.tname</td>
+                                                            <td class="rentedgridclassnat" style="color:black;">@item.tnat</td>
+                                                            <td class="rentedgridclassbed" style="color:black;">@item.tbed</td>
+                                                            <td class="rentedgridclassbath" style="color:black;">@item.tbath</td>
+                                                            <td class="rentedgridclassrent" style="color:black;">@item.trent</td>
+                                                            <td class="rentedgridclasspaymode" style="color:black;">@item.tmode</td>
+                                                            <td class="rentedgridclassfurnish" style="color:black;">@item.ttype</td>
+                                                            <td class="rentedgridclasscorpind" style="color:black;">@item.tctype</td>
+                                                            <td class="rentedgridclasslstart" style="color:black;">@Convert.ToDateTime(item.Lcdate).ToShortDateString()</td>
+                                                            <td class="rentedgridclasslend" style="color:black;">@Convert.ToDateTime(item.leaseend).ToShortDateString()</td>
+                                                            <td style="text-align: center;">
+                                                                <a href="javascript:void(0)" class="updateselectedrecord">Update Selected Record</a>@*class="updateselectedrecord"*@
+                                                            </td>
+                                                            <td style="text-align: center;">
+                                                                <a href="javascript:void(0)" onclick="remove('rentg_@item.Aptno')">Remove</a>
+                                                            </td>
+                                                            @*<td style="text-align: center;">
+                                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                            </td>*@
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="card" style="width: 100%;">
+                                    <div class="card-body">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label style="color: black;"><strong>From Accounts</strong></label>
+                                                </td>
+                                                <td>
+                                                    <button id="btnmoverentfromaccs" type="button" class="btn btn-primary" style="border-radius: 10px; width: 235px; margin-left: 15px;">Move Rent From Accounts</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div style="overflow-y: auto; overflow-x: auto">
+                                            <table id="tableACCGRID" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                <thead class="bg-success">
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt No</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Tenant Name</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Rent Paid</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 95px;">Date From</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 95px">Date To</label></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodyACCGRID" class="bg-white">
+                                                    @foreach (var item in Model.ACCGRID)
+                                                    {
+                                                        <tr id="accgrid_@item.Aptno">
+                                                            <td hidden>@item.Id</td>
+                                                            <td style="color:black;">@item.Aptno</td>
+                                                            <td style="color:black;">@item.Tname</td>
+                                                            <td style="color:black;">@item.Totamt</td>
+                                                            <td style="color:black;">@Convert.ToDateTime(item.Rentdatefrom).ToShortDateString()</td>
+                                                            <td style="color:black;">@Convert.ToDateTime(item.Rentdateto).ToShortDateString()</td>
+                                                            <td style="text-align: center;">
+                                                                <a href="javascript:void(0)" onclick="moverentfromaccounts('accgrid_@item.Aptno','@item.Aptno')">Move Rent From Accounts</a>
+                                                            </td>
+                                                            @*<td style="text-align: center;">
+                                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                            </td>*@
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br />
+                    </form>
+                    <!--popup for vacated-->
+                    <div id="vacatedModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="card" style="width: 198%; margin-left: -395px; ">
+                                <div class="card-body">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Vacated</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="card" style="width: 100%;">
+                                                        <div class="card-body">
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label style="color: black;"><strong>Vacated Apartments</strong></label>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input id="vacatingcount" asp-for="vacatingcount" disabled type="text" class="form-control" style="border-radius: 10px; margin-left: 15px;" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <button id="btnupdatevacated" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 225px;">Update</button>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            <div style="overflow-y: auto; overflow-x: auto">
+                                                                <table id="tabletlcgrid" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                                    <thead class="bg-success">
+                                                                        <tr>
+                                                                            <th hidden></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt No</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Tenant Name</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Nationality</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">Bedroom</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Bathroom</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Rent</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Moving Out Date</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 125px;">Key Return on</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease Start</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease End</label></th>
+                                                                            @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>*@
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="tbodytlcgrid" class="bg-white">
+                                                                        @foreach (var item in Model.tlcgrid)
+                                                                        {
+                                                                            <tr id="tlcgrid_@item.Aptno" class="tlcgridclass">
+                                                                                <td hidden>@item.Id</td>
+                                                                                <td class="tlcgridclassaptno" style="color:black;">@item.Aptno</td>
+                                                                                <td class="tlcgridclasstname" style="color:black;">@item.Tenantname</td>
+                                                                                <td style="color:black;">@item.Nationality</td>
+                                                                                <td style="color:black;">@item.Btype</td>
+                                                                                <td style="color:black;"></td>
+                                                                                <td style="color:black;"></td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.Movedate).ToShortDateString()</td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.Keyreturndate).ToShortDateString()</td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.Leasestart).ToShortDateString()</td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.Leaseend).ToShortDateString()</td>
+                                                                                @*<td style="text-align: center;">
+                                                                                    <a asp-action="EditTemporaryReceipt" asp-controller="Accounts" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                                                </td>
+                                                                                <td style="text-align: center;">
+                                                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                                                </td>*@
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="card" style="width: 100%;">
+                                                        <div class="card-body">
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label style="color: black;"><strong>From Accounts</strong></label>
+                                                                    </td>
+                                                                    @*<td>
+                                                                        <input id="VAccaptno" disabled type="text" class="form-control" style="border-radius: 10px; margin-left: 15px;" name="Apt No" />
+                                                                    </td>*@
+                                                                    @*<td>
+                                                                        <button id="btnVsinsertfromacc" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 15px;">Insert From Accounts</button>
+                                                                    </td>*@
+                                                                </tr>
+                                                            </table>
+                                                            <div style="overflow-y: auto; overflow-x: auto">
+                                                                <table id="tableVFROMACCGRID" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                                    <thead class="bg-success">
+                                                                        <tr>
+                                                                            <th hidden></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt No</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Tenant Name</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Rent Paid</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">Date From</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Date To</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Remarks</label></th>
+                                                                            <th class="table-bordered" colspan="1"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="tbodyVFROMACCGRID" class="bg-white">
+                                                                        @foreach (var item in Model.VFROMACCGRID)
+                                                                        {
+                                                                            <tr>
+                                                                                <td hidden>@item.Id</td>
+                                                                                <td style="color:black;">@item.Aptno</td>
+                                                                                <td style="color:black;">@item.Tname</td>
+                                                                                <td style="color:black;">@item.Totamt</td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.Rentdatefrom).ToShortDateString()</td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.Rentdateto).ToShortDateString()</td>
+                                                                                <td style="color:black;">@item.Description</td>
+                                                                                <td style="text-align: center;">
+                                                                                    <a href="javascript:void(0)" onclick="vaccinsertfromacc('@item.Aptno','@item.Totamt')">Insert From Accounts</a>
+                                                                                </td>
+                                                                                @*<td style="text-align: center;">
+                                                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                                                </td>*@
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="modal-footer">
+                                <button id="btnsaveremark" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                                <button id="btnclearremark" type="button" class="btn btn-primary" style="border-radius:10px;">Clear</button>
+                            </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                    <!--popup for reserved-->
+                    <div id="reservedModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="card" style="width: 198%; margin-left: -395px; ">
+                                <div class="card-body">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Reserved</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <div class="card" style="width: 100%;">
+                                                        <div class="card-body">
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label style="color: black; width: 170px;"><strong>Reserved Apartments</strong></label>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input id="reservedcount" asp-for="reservedcount" disabled type="text" class="form-control" style="border-radius: 10px; margin-left: 15px;" />
+                                                                    </td>
+                                                                    @*<td>
+                                                                        <button id="btnremovereserved" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 225px;">Remove</button>
+                                                                    </td>*@
+                                                                    <td>
+                                                                        <button id="btnupdatereserved" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 225px;">Update</button>
+                                                                    </td>
+                                                                    @*<td>
+                                                                        <button id="btnupdatereservedclientselected" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 71px; width: 100%; ">Update Reserved Client Info for Selected</button>
+                                                                    </td>*@
+                                                                </tr>
+                                                            </table>
+                                                            <div style="overflow-y: auto; overflow-x: auto">
+                                                                <table id="tablergrid" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                                    <thead class="bg-success">
+                                                                        <tr>
+                                                                            <th hidden></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Apt No</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Tenant Name</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Nationality</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">Bedroom</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Bathroom</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Rent</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Mode of Payment</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 125px;">Status</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 170px;">Corporate/Individual</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease Start</label></th>
+                                                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Lease End</label></th>
+                                                                            <th class="table-bordered" colspan="2"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="tbodyrgrid" class="bg-white">
+                                                                        @foreach (var item in Model.rgrid)
+                                                                        {
+                                                                            <tr id="rgrid_@item.APTNO" class="rgridclass">
+                                                                                <td hidden>@item.Id</td>
+                                                                                <td class="rgridclassaptno" style="color:black;">@item.APTNO</td>
+                                                                                <td style="color:black;">@item.TNAME</td>
+                                                                                <td style="color:black;">@item.tnat</td>
+                                                                                <td style="color:black;">@item.bed</td>
+                                                                                <td style="color:black;"></td>
+                                                                                <td style="color:black;">@item.TRENT</td>
+                                                                                <td style="color:black;">@item.ptype</td>
+                                                                                <td style="color:black;">@item.ttype</td>
+                                                                                <td style="color:black;">@item.inqtype</td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.leasestart).ToShortDateString()</td>
+                                                                                <td style="color:black;">@Convert.ToDateTime(item.leaseend).ToShortDateString()</td>
+                                                                                <td style="text-align: center;">
+                                                                                    <a href="javascript:void(0)" onclick="remove('rgrid_@item.APTNO')">Remove</a>
+                                                                                </td>
+                                                                                <td style="text-align: center;">
+                                                                                    <a href="javascript:void(0)" class="updatereservedclientselected">Update Reserved Client Info</a>
+                                                                                </td>
+                                                                                @*<td style="text-align: center;">
+                                                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                                                </td>*@
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class="modal-footer">
+                                <button id="btnsaveremark" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                                <button id="btnclearremark" type="button" class="btn btn-primary" style="border-radius:10px;">Clear</button>
+                            </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,562 @@
+﻿@model PMS_Admin_Web.Models.LC.RentChangeModel
+
+@{
+    ViewData["Title"] = "Edit Rent Change";
+}
+
+@*@if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+        </script>
+
+    }*@
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+            function generatemail() {
+                var confirmMessageBox = confirm('Would you like to email the Rent change Approved Notice ?');
+                if (confirmMessageBox) {
+                    var changeInrent = "";
+                    var rentincrease = $('#rentincrease').val();
+                    var rentdecrease = $('#rentdecrease').val();
+                    if (rentincrease != null) {
+                        changeInrent = rentincrease;
+                    }
+                    else {
+                        changeInrent = rentdecrease;
+                    }
+                    var propertyname = $('#propertyname :selected').val();
+                    var aptno = $('#aptno :selected').val();
+                    var tenantname = $('#tenantname').val();
+                    var oldrent = $('#lcrent').val();
+                    var newrent = $('#newrent').val();
+                    var effectfrom = $('#effectfrom').val();
+                    var remarks = $('#remarks').val();
+                    var mailto = $('#mailto').val();
+                    var mailcc = $('#mailcc').val();
+                    var approvednotice = $('#approvednotice').val();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("RentChangeEmail", "LC")",
+                        data: { changeinrent: changeInrent, propertyname: propertyname, aptno: aptno, tenantname: tenantname, oldrent: oldrent, newrent: newrent, effectfrom: effectfrom, remarks: remarks, mailto: mailto, mailcc: mailcc, attachment: approvednotice },
+                        success: function (response) {
+                            alert(response);
+                        }
+                    })
+
+                }
+            }
+            $(document).ready(function () {
+                //alert('h');
+                generatemail();
+                //$('#btnsendmail').click(function () {
+                //    generatemail();
+                //})
+
+
+            })
+    </script>
+}
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<script>
+    function loadpropertynames() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadPropertyName", "Common")",
+            success: function (response) {
+                //alert(response)
+                $('#aptno').html('');
+                $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                /*$('#refno').val('');*/
+                $.each(response, function (k, v) {
+                    $('#propertyname').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+
+            }
+        })
+    }
+
+    @*function propertyname() {
+        var aptno_hidden = $('#aptno_hidden').val();
+        var pname = $('#propertyname :selected').val();
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadApartmentNo", "LC")",
+            data: { propertyname: pname },
+            dataType: "json",
+            success: function (response) {
+                //alert(response)
+                $('#aptno').html('');
+                $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                $('#refno').val('');
+                $.each(response, function (k, v) {
+                    if (aptno_hidden == v) {
+                        $('#aptno').append('<option value="' + v + '" selected="selected"> ' + v + '</option>');
+                        aptno(pname, v);
+                    }
+                    else {
+                        $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                    }
+
+                });
+
+            }
+        })
+    }
+
+    function aptno(propertyname, aptno) {
+        var pname = propertyname;
+        var ano = aptno;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadRefNo", "LC")",
+            data: { propertyname: pname, aptno: ano },
+            dataType: "json",
+            success: function (response) {
+                //alert(response.propertyRef)
+                //alert(response.cname)
+                //alert(response.crent)
+                $('#refno').val(response.propertyRef);
+                $('#tenantname').val(response.cname);
+                $('#rent').val(response.crent);
+
+            }
+        })
+    }*@
+
+    $(document).ready(function () {
+        //var hiddenpref = $('#hiddenpref').val();
+        //$('#refno').val(hiddenpref);
+        loadpropertynames();
+        //propertyname();
+        $("#propertyname").change(function () {
+            var pname = $('#propertyname :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadApartmentNo", "LC")",
+                data: { propertyname: pname },
+                dataType: "json",
+                success: function (response) {
+                    //alert(response)
+                    $('#aptno').html('');
+                    $('#aptno').append('<option value="" hidden> --Select-- </option>');
+                    $('#refno').val('');
+                    $.each(response, function (k, v) {
+                        $('#aptno').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+
+                }
+            })
+        })
+        $("#aptno").change(function () {
+            var psource = $('#propertySource').val();
+            var pname = $('#propertyname :selected').val();
+            var ano = $('#aptno :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadRefNoForRentChange", "Common")",
+                data: { propertySource: psource, propertyname: pname, aptno: ano },
+                dataType: "json",
+                success: function (response) {
+                    //alert(response.propertyRef)
+                    //alert(response.cname)
+                    //alert(response.crent)
+                    $('#refno').val(response.propertyRef);
+                    $('#tenantname').val(response.cname);
+                    $('#rent').val(response.crent);
+                    //$('#leasetenantname').val(response.tenname);
+                    //$('#lcrent').val(response.rent);
+                    //$('#LcNo').val(response.lcno);
+                }
+            })
+
+        });
+    });
+</script>
+<script>
+
+    function leasenamerent() {
+        var lcno = $('#hiddenlcno').val();
+        //$('#LcNo :selected').val(lcno);
+        $.ajax({
+            type: "POST",
+            data: { LcNo: lcno },
+            url: "@Url.Action("LoadNameRent", "LC")",
+            success: function (response) {
+                //alert(response.tenname)
+                //alert(response.rent)
+                $('#leasetenantname').val(response.tenname);
+                $('#lcrent').val(response.rent);
+            }
+        })
+    }
+
+    function leaseno() {
+        var lcyear = $('#lcyear :selected').val();
+        var hiddenlcno = $('#hiddenlcno').val();
+        $.ajax({
+            type: "POST",
+            data: { LcYear: lcyear },
+            url: "@Url.Action("LoadLcNos", "LC")",
+            success: function (response) {
+                //alert(response)
+                $('#LcNo').html('');
+                $('#LcNo').append('<option value="" hidden> --Select-- </option>');
+                $.each(response, function (k, v) {
+                    if (v == hiddenlcno) {
+                        $('#LcNo').append('<option selected value="' + v + '" > ' + v + '</option>');
+                    }
+                    else {
+                        $('#LcNo').append('<option value="' + v + '" > ' + v + '</option>');
+                    }
+
+                });
+
+            }
+        })
+    }
+
+    $(document).ready(function () {
+
+        if ($('#hiddenlcno').val() != null) {
+            var lcno = $('#hiddenlcno').val();
+            var year = lcno.split('-')[1];
+            //alert(string1)
+            $('#lcyear').val(year)
+            leaseno();
+            leasenamerent();
+        }
+
+        $('#lcyear').change(function () {
+            var lcyear = $('#lcyear :selected').val();
+            $.ajax({
+                type: "POST",
+                data: { LcYear: lcyear },
+                url: "@Url.Action("LoadLcNos", "LC")",
+                success: function (response) {
+                    //alert(response)
+                    $('#LcNo').html('');
+                    $('#LcNo').append('<option value="" hidden> --Select-- </option>');
+                    $.each(response, function (k, v) {
+                        $('#LcNo').append('<option value="' + v + '" > ' + v + '</option>');
+                    });
+
+                }
+            })
+        })
+
+        $('#LcNo').change(function () {
+            var lcno = $('#LcNo :selected').val();
+            $.ajax({
+                type: "POST",
+                data: { LcNo: lcno },
+                url: "@Url.Action("LoadNameRent", "LC")",
+                success: function (response) {
+                    //alert(response.tenname)
+                    //alert(response.rent)
+                    $('#leasetenantname').val(response.tenname);
+                    $('#lcrent').val(response.rent);
+                }
+            })
+        })
+
+        $('#noLC').click(function () {
+            if ($("#noLC").is(":checked")) {
+                $("#lcyear").attr("disabled", "disabled");
+                $('#LcNo').attr("disabled", "disabled");
+                $('#leasetenantname').attr("disabled", "disabled");
+                $('#lcrent').attr("disabled", "disabled");
+            }
+            else {
+                $("#lcyear").removeAttr("disabled");
+                $('#LcNo').removeAttr("disabled");
+                $('#leasetenantname').removeAttr("disabled");
+                $('#lcrent').removeAttr("disabled");
+            }
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#sendEmail').click(function () {
+            var confirmMessageBox = confirm('Would you like to email the Rent change Approved Notice ?');
+            if (confirmMessageBox) {
+                var changeInrent = "";
+                var rentincrease = $('#rentincrease').val();
+                var rentdecrease = $('#rentdecrease').val();
+                if (rentincrease != null) {
+                    changeInrent = rentincrease;
+                }
+                else {
+                    changeInrent = rentdecrease;
+                }
+                var propertyname = $('#propertyname :selected').val();
+                var aptno = $('#aptno :selected').val();
+                var tenantname = $('#tenantname').val();
+                var oldrent = $('#lcrent').val();
+                var newrent = $('#newrent').val();
+                var effectfrom = $('#effectfrom').val();
+                var remarks = $('#remarks').val();
+                var mailto = $('#mailto').val();
+                var mailcc = $('#mailcc').val();
+                var approvednotice = $('#approvednotice').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("RentChangeEmail", "LC")",
+                    data: { changeinrent: changeInrent, propertyname: propertyname, aptno: aptno, tenantname: tenantname, oldrent: oldrent, newrent: newrent, effectfrom: effectfrom, remarks: remarks, mailto: mailto, mailcc: mailcc, attachment: approvednotice},
+                    dataType: "json",
+                    success: function (response) {
+                        alert(response)
+                    }
+                })
+
+            }
+        })
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form asp-controller="LC" asp-action="EditRentChange" method="post" enctype="multipart/form-data">
+
+        @Html.HiddenFor(model => model.rentchange.Id)
+
+        <input id="mailto" type="hidden" asp-for="MailTo" />
+        <input id="mailcc" type="hidden" asp-for="MailCC" />
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Rent Change</strong></h5>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#ClientAndPropertyDetails">Client and Property Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#RentDetails">Rent Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#OtherDetails">Other Details</a>
+                    </li>
+
+                </ul>
+
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="ClientAndPropertyDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Source</label>
+                                        <input id="propertySource" class="form-control" asp-for="PropertySource" type="text" style="border-radius: 10px;" value="ManagedProperty" />
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Name</label>
+                                        <select id="propertyname" asp-for="PropertyName" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apt No</label>
+                                        <select id="aptno" asp-for="AptNo" class="form-control" style="border-radius: 10px;">
+                                        </select>
+                                        <input type="hidden" id="aptno_hidden" asp-for="AptNo" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Ref</label>
+                                        <input id="refno" asp-for="rentchange.Pref" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <input type="hidden" id="hiddenpref" asp-for="rentchange.Pref" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Tenant Name</label>
+                                        <input id="tenantname" class="form-control" asp-for="TenantName" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Rent</label>
+                                        <input id="rent" class="form-control" asp-for="Rent" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC Year</label>
+                                        <select id="lcyear" class="form-control" style="border-radius: 10px;">
+                                            <option hidden> --Select--</option>
+                                            @for (int i = 2008; i <= DateTime.UtcNow.Year; i++)
+                                            {
+                                                <option value="@i">@i</option>
+                                            }
+                                        </select>
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">No LC</label>
+                                            <input id="noLC" type="checkbox" asp-for="NoLC" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Lease No</label>
+                                        <select id="LcNo" class="form-control" asp-for="rentchange.Lcno" style="border-radius: 10px;">
+                                        </select>
+                                        @*<input id="LcNo" asp-for="rentchange.Lcno" class="form-control" style="border-radius: 10px;" />*@
+                                        <input type="hidden" id="hiddenlcno" asp-for="rentchange.Lcno" />
+                                        @*<span asp-validation-for="LcInfo.Lcmob" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Tenant Name in LC</label>
+                                        <input id="leasetenantname" class="form-control" asp-for="LeaseTenantName" type="text" style="border-radius: 10px;" />
+                                        @*<span asp-validation-for="LcInfo.Ppno" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LC Rent</label>
+                                        <input id="lcrent" asp-for="rentchange.Oldrent" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="rentchange.Oldrent" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="RentDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">New Rent</label>
+                                        <input id="newrent" asp-for="rentchange.Newrent" class="form-control" type="text" style="border-radius: 10px;" />
+                                        <span asp-validation-for="rentchange.Newrent" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Effective Date</label>
+                                        <input id="effectfrom" asp-for="rentchange.Effectfrom" class="form-control" type="date" style="border-radius: 10px;" />
+                                        <span asp-validation-for="rentchange.Effectfrom" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Mode</label>
+
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Rent Increase</label>
+                                            <input id="rentincrease" type="radio" value="Rent Increase" asp-for="ChangeinRent">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Rent Decrease</label>
+                                            <input id="rentdecrease" type="radio" value="Rent Decrease" asp-for="ChangeinRent">
+                                        </div>
+
+                                        @*<span asp-validation-for="LcInfo.Period" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Change in LC</label>
+
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">LC Changes</label>
+                                            <input type="radio" value="LC Changes" asp-for="ChangeInLC">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">LC stays as it is</label>
+                                            <input type="radio" value="LC stays as it is" asp-for="ChangeInLC">
+                                        </div>
+
+                                        @*<span asp-validation-for="LcInfo.Leaseend" class="text-danger"></span>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="OtherDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Approved Notice</label>
+                                    <input id="approvednotice" type="file" name="approvednoticefile" />
+                                    <input asp-for="rentchange.Approvednotice" class="form-control" type="text" style="border-radius: 10px;" />
+                                    @*<input type="submit" class="btn btn-primary" value="Upload" />*@
+                                    @*<span asp-validation-for="rentchange.Approvednotice" class="text-danger"></span>*@
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="control-label text-black-50">Remarks</label>
+                                    <textarea id="remarks" asp-for="rentchange.Remarks" class="form-control" style="border-radius: 10px; width: 420px "></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3">
+
+                        </div>
+                        <div class="col-lg-3">
+
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @*<button type="submit" class="btn btn-primary float-right" onclick="location.href='@Url.Action("NewLOI", "LOI",Model)'">Create</button>*@
+                                <button type="submit" class="btn btn-primary float-right">Update</button>
+                            </div>
+                        </div>
+                        <!--<div class="col-lg-3">
+                            <div class="form-group">-->
+                                @*<button type="submit" class="btn btn-primary float-right" onclick="location.href='@Url.Action("NewLOI", "LOI",Model)'">Create</button>*@
+                                <!--<button id="sendEmail" type="button" class="btn btn-primary float-right">Send Email</button>
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@
+
+
+@{
+
+}

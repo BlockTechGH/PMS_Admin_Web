@@ -1,0 +1,284 @@
+﻿@model PMS_Admin_Web.Models.Users.CreateUserModel
+
+@{
+    //if (Model.Id == 0)
+    ViewData["Title"] = "Create User";
+    //else
+    //    ViewData["Title"] = "Update User";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#role').change(function () {
+            var role = $('#role :selected').val();
+            if (role == "PA") {
+                $('#username').css("display", 'none');
+                $('#dept').css("display", 'none');
+                $('#palistnames').css("display", 'block');
+                $('#padept').css("display", 'block');
+
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("LoadPAs", "User")",
+                    //data: { propertyname: pname },
+                    dataType: "json",
+                    success: function (response) {
+
+                        $('#palistnames').html('');
+                        $('#palistnames').append('<option value="" hidden> --Select-- </option>');
+
+                        $.each(response, function (k, v) {
+                            $('#palistnames').append('<option value="' + v.paName + '" > ' + v.paName + '</option>');
+                        });
+
+                    }
+                })
+
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("LoadPADept", "User")",
+                    //data: { propertyname: pname },
+                    dataType: "json",
+                    success: function (response) {
+
+                        $('#padept').html('');
+                        $('#padept').append('<option value="" hidden> --Select-- </option>');
+
+                        $.each(response, function (k, v) {
+                            $('#padept').append('<option value="' + v + '" > ' + v + '</option>');
+                        });
+                    }
+                })
+            }
+            else {
+                $('#padept').css("display", 'none');
+                $('#palistnames').css("display", 'none');
+                $('#username').css("display", 'block');
+                $('#dept').css("display", 'block');
+            }
+        })
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3">
+            
+        </div>
+    </div>
+    <br />
+    <form class="form-horizontal" asp-controller="PA" asp-action="WMR">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Generate Reports</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="col-lg-12">
+                    @Html.HiddenFor(model => model.Id)
+                    <label><strong>Based on Complaint Registered Date</strong></label>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Complaint Date</label>
+                                <input id="role" class="form-control" type="date" style="border-radius: 10px;" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <button id="role" class="btn btn-primary" style="border-radius: 10px; margin-top: 32px;">View Reports</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label><strong>Based on Job Completed Date</strong></label>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">From Date</label>
+                                <input id="role" class="form-control" type="date" style="border-radius: 10px;" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">To Date</label>
+                                <input id="role" class="form-control" type="date" style="border-radius: 10px;" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <button class="btn btn-primary" style="border-radius: 10px; margin-top: 32px;">Generate WMR</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label><strong>Property Features for WMR</strong></label>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Feature</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <input id="role" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <input id="role" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Remark</label>
+                                <textarea class="form-control" type="text" style="border-radius: 10px;"></textarea>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <button id="createNewFeature" class="btn btn-primary" type="button" style="border-radius: 10px;">Create New Feature</button>
+                                </div>
+                                <div class="col-lg-3">
+                                    <button id="delete" class="btn btn-primary" type="button" style="border-radius: 10px;">Delete</button>
+                                </div>
+                                <div class="col-lg-3">
+                                    <button id="update" class="btn btn-primary" type="button" style="border-radius: 10px;">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                            <thead class="bg-success">
+                                <tr>
+                                    <th hidden></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Feature</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Remarks</label></th>
+                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody" class="bg-white">
+                                @*@foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td hidden>@item.Id</td>
+                                        <td style="color:black;">@item.Usrname</td>
+                                        <td style="color:black;">@item.Department</td>
+                                        <td style="text-align: center;">
+                                            <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                        </td>
+                                    </tr>
+                                }*@
+                            </tbody>
+                        </table>
+                    </div>
+                        
+
+                </div>
+            </div>
+        </div>
+        @*<div class="card">
+            <div class="card-body">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-3">
+                    <button type="submit" class="btn btn-primary" style="border-radius:10px;float:right;">Save</button>
+                </div>
+                
+            </div>
+        </div>*@
+    </form>
+</div>
+@*</div>*@
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--popup for PA creation-->
+<div id="createPAModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+
+        @*<div class="card">*@
+        @*<div class="card-body">*@
+        @*<form asp-action="LC" asp-controller="MenuView" method="post">*@
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create PA</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <script>
+                $(document).ready(function () {
+
+                    $('#createPA').click(function () {
+                        var PaName = $('#PaName').val();
+                        var EmpCode = $('#EmpCode').val();
+                        if (PaName != null && EmpCode != null) {
+                            $.ajax({
+                            type: "POST",
+                            data: { paname: PaName, empcode: EmpCode },
+                            url: "@Url.Action("CreatePA", "User")",
+                            success: function (response) {
+                                alert(response);
+                                location.reload();
+                            },
+                            error: function (errResp) {
+                                alert(errResp);
+                                location.reload();
+                            }
+                        })
+                        }
+
+                    })
+                });
+            </script>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label>PA Name</label>
+                    <input id="PaName" type="text" class="form-control" style="border-radius: 10px;" />
+
+                </div>
+                <div class="form-group">
+                    <label>Emp Code</label>
+                    <input id="EmpCode" type="text" class="form-control" style="border-radius: 10px;" />
+                </div>
+                <div class="modal-footer">
+                    <button id="createPA" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                    <button type="button" class="btn btn-secondary" style="border-radius:10px;" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+        @*</form>*@
+        @*</div>*@
+        @*</div>*@
+    </div>
+</div>
+<!---->
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

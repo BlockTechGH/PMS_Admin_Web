@@ -1,0 +1,288 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+
+@model PMS_Admin_Web.Models.Accounts.pmesALLPROPERTYModel
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "PMES For All Properties";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //declaring global variable to hold primary key value.
+
+        @*$('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var id = $(this).attr('id');
+                var voucherno = $(this).attr('data-voucher');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteTemporaryReceipt", "Accounts")",
+                    data: { id: id, voucherno: voucherno },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });*@
+
+        $('#btnsummary').click(function () {
+            $('#summaryModal').modal({ backdrop: "static" });
+        })
+
+        $('#btnsummarygroupbystatement').click(function () {
+            var pmemonth = $('#pmemonth').val();
+            var pmeyear = $('#pmeyear').val();
+            $.ajax({
+                type: "POST",
+                data: { pmemonth: pmemonth, pmeyear: pmeyear},
+                url: "@Url.Action("BtnSummaryGrpStatementpmesALLPROPERTY", "Accounts")",
+                success: function (response) {
+                    $('#summarygroupbystatementModal').modal({ backdrop: "static" });
+                    $.each(response, function (k, v) {
+                        $('#tbodysummarygroupbystatement').append(`<tr>
+                                                                        <td style="color:black;">${v.pname}</td>
+                                                                        <td style="color:black;">${v.totamt}</td>
+                                                                        <td style="color:black;">${v.accstatus}</td>
+                                                                   </tr>`);
+                    })
+                }
+            })
+        })
+
+        $('#btnclosepme').click(function () {
+            var confirmMessageBox = confirm('Are you sure you want to close PME for all property ?');
+            if (confirmMessageBox) {
+                var pmemonth = $('#pmemonth').val();
+                var pmeyear = $('#pmeyear').val();
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("BtnClosepmesALLPROPERTY", "Accounts")",
+                    data: { pmemonth: pmemonth, pmeyear: pmeyear},
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    }
+                })
+            }
+        })
+
+        //end of the document ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    <input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                    <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />
+                    <form method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>PMES For All Properties</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12" style="margin-left: 10px;">
+                                    <div class="row">
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button type="button" id="btnsummary" class="btn btn-primary" style="border-radius: 10px; ">Summary</button>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-left: -54px; margin-top: 31px; ">
+                                            <button type="button" id="btnsummarygroupbystatement" class="btn btn-primary" style="border-radius: 10px; width: 240px; ">Summary Group by Statement</button>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+                                            <button type="button" id="btnclosepme" class="btn btn-primary" style="border-radius: 10px; ">Close PME</button>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label style="color:black">Total Amount</label>
+                                                        <input id="totalamount" asp-for="totamt" type="text" class="form-control" style="border-radius: 10px;" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    @*<div class="form-group">
+                                                        <label style="color:black">Sum</label>
+                                                        <input id="sum" type="text" class="form-control" style="border-radius: 10px;" />
+                                                    </div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            <input type="hidden" id="pmemonth" asp-for="pmemonth" />
+                            <input type="hidden" id="pmeyear" asp-for="pmeyear" />
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 196px;">Property</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px;">Date</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 192px;">Items/Work Description</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 180px;">Apt No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Invoice No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 106px;">Amount (KD)</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 360px;">Name</label></th>
+                                            @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                        @foreach (var item in Model.PMEGRID)
+                                        {
+                                            <tr>
+                                                <td hidden>@item.Id</td>
+                                                <td style="color:black;">@item.Pname</td>
+                                                <td style="color:black;">@Convert.ToDateTime(item.Invdate).ToShortDateString()</td>
+                                                <td style="color:black;">@item.Description</td>
+                                                <td style="color:black;">@item.Aptno</td>
+                                                <td style="color:black;">@item.Invno</td>
+                                                <td style="color:black;">@item.Totamt</td>
+                                                <td style="color:black;">@item.Accstname</td>
+                                                @*<td style="text-align: center;">
+                                                    <a class="editsublease" href="javascript:void(0)" data-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                </td>*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+
+                    <!--popup for summary-->
+                    <div id="summaryModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+
+                            <div class="card" style="width: 650px; margin-left: 100px; ">
+                                <div class="card-body">
+                                    <form>
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Summary</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div style="overflow-y:auto">
+                                                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                        <thead class="bg-success">
+                                                            <tr>
+                                                                @*<th></th>*@
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 395px;">Property</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">Amount (KD)</label></th>
+                                                                @*<th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>*@
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tbodyshowclient" class="bg-white">
+                                                            @foreach (var item in Model.DG)
+                                                            {
+                                                                <tr>
+                                                                    <td hidden>@item.Id</td>
+                                                                    <td style="color:black;">@item.Pname</td>
+                                                                    <td style="color:black;">@item.Totamt</td>
+                                                                    @*<td style="text-align: center;">
+                                                                        <a class="editsublease" href="javascript:void(0)" data-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                                    </td>
+                                                                    <td style="text-align: center;">
+                                                                        <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                                    </td>*@
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                    <!--popup for summary group by statement-->
+                    <div id="summarygroupbystatementModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+
+                            <div class="card" style="width: 700px; margin-left: 57px; ">
+                                <div class="card-body">
+                                    <form>
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Summary</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div style="overflow-y:auto">
+                                                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                        <thead class="bg-success">
+                                                            <tr>
+                                                                @*<th></th>*@
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 245px;">Property</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px; ">Amount (KD)</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px; ">Status</label></th>
+                                                                @*<th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>*@
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tbodysummarygroupbystatement" class="bg-white">
+                                                            
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" id="btnprint" class="btn btn-primary" style="border-radius: 10px; ">Print</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

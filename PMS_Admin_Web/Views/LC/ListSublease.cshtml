@@ -1,0 +1,115 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+@using PMS_Admin_Web.Repository
+@using X.PagedList.Mvc.Core
+@*@model X.PagedList.IPagedList<PMS_Admin_Web.Models.Sublease>*@
+@model List<PMS_Admin_Web.Models.Sublease>
+
+@{
+    ViewData["Title"] = "Sublease List";
+}
+
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form asp-action="ListSublease" asp-controller="LC" method="post">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Sublease List</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3 float-right">
+                                @*<button asp-action="RentChange" class="btn btn-primary">Rent Change <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>*@
+                            </div>
+                        </div>
+                        <br />
+                        <div style="overflow-y:auto">
+                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success">
+                                    <tr>
+                                        <th hidden></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 180px;">Building Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 70px;">Apt No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 120px;">LC No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 210px;">Tenant Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Sublease - LC No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Nationality</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">LC Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px; ">Payable Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Payment</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 70px;">Type</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px;">Type Of Client</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Bedroom</label></th>
+                                        @*<th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center; ">Actions</label></th>*@
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td hidden>@item.Id</td>
+                                            <td style="color:black;">@CommonRepository.Truncate(item.Pname, 20)</td>
+                                            <td style="color:black;">@item.Aptno</td>
+                                            <td style="color:black;">@item.Lno</td>
+                                            <td style="color:black;">@CommonRepository.Truncate(item.Name, 20)</td>
+                                            <td style="color:black;">@item.Rent</td>
+                                            <td style="color:black;">@item.Slno</td>
+                                            <td style="color:black;">@item.Active</td>
+                                            <td style="color:black;">@item.Nationality</td>
+                                            <td style="color:black;">@item.Actualrent</td>
+                                            <td style="color:black;">@item.Actualrent</td>
+                                            <td style="color:black;">@item.Paymode</td>
+                                            <td style="color:black;">@item.Ftype</td>
+                                            <td style="color:black;">@item.Ttype</td>
+                                            <td style="color:black;">@item.Bed</td>
+                                            @*<td style="text-align: center;">
+                                                    <a asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <a asp-route-id="@item.Id"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                </td>*@
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                    <!--<div id="container">
+                        <p></p>
+                        <p></p>-->
+                        @*<div class="pagination">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    @Html.PagedListPager(Model, page => Url.Action("ListSublease", new { page, pageSize = Model.PageSize }))
+                                </div>
+                            </div>
+                        </div>*@
+                        @*<div class="row">
+                                <div class="col-lg-12" style="padding: 10px;padding-top: 50px;margin-left: 215px;">
+                                    Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount Products
+                                </div>
+                            </div>*@
+                    <!--</div>
+                    <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />-->
+                </form>
+                @*<script type="text/javascript">
+                    function PagerClick(index) {
+                        document.getElementById("hfCurrentPageIndex").value = index;
+                        document.forms[0].submit();
+                    }
+                </script>*@
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

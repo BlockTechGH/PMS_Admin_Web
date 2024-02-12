@@ -1,0 +1,167 @@
+﻿@model PMS_Admin_Web.Models.Marketing.AdminFunctionsModel
+@using Microsoft.AspNetCore.Http;
+
+@{
+
+    ViewData["Title"] = "Edit Admin Activities";
+
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+        /*location.reload();*/
+    </script>
+}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+
+    function loadLename() {
+        $.ajax({
+            type:"GET",
+            url: "@Url.Action("LoadLeName", "Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#lename').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    function reason() {
+        var Hiddenreason = $('#reason :selected').val();
+        if (Hiddenreason == "Other") {
+            $('#divOtherReason').show();
+        }
+        else {
+            $('#divOtherReason').hide();
+            $('#otherreason').val('');
+        }
+    }
+
+    $(document).ready(function () {
+        loadLename();
+        reason();
+
+        $("#lename").change(function () {
+            $('#le').val('');
+            var le = $('#lename :selected').val();
+            $('#le').val(le);
+        });
+
+        $('#reason').change(function () {
+            var reason = $('#reason :selected').val();
+            if (reason == "Other") {
+                $('#divOtherReason').show();
+            }
+            else {
+                $('#divOtherReason').hide();
+                $('#otherreason').val('');
+            }
+        })
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+
+    <form asp-controller="Marketing" asp-action="EditAdminFunction">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Edit Admin Activities</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <br />
+                    @*@Html.HiddenFor(model => model.replacele)*@
+                    <input type="hidden" id="Id" asp-for="adminactivity.Id" />
+                    
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Date</label>
+                                <input id="date" class="form-control" asp-for="adminactivity.Date" type="date" style="border-radius:10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">From</label>
+                                <input id="from" class="form-control" asp-for="adminactivity.Fromtime" type="time" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">To</label>
+                                <input id="to" class="form-control" asp-for="adminactivity.Totime" type="time" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LE Name</label>
+                                        <input id="le" class="form-control" asp-for="adminactivity.Username" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                @if (Context.Session.GetString("CurrentUserRole") == "Administrator" && Context.Session.GetString("CurrentUsername") == "Admin")
+                                {
+                                    <div class="col-lg-6" >
+                                        <div class="form-group">
+                                            @*<label class="control-label text-black-50">LE Name</label>*@
+                                            <select id="lename" class="form-control" style="border-radius: 10px; margin-top: 32px;">
+                                                <option hidden>--Select--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Reason</label>
+                                <select id="reason" class="form-control" asp-for="adminactivity.Reason" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                    <option value="Marketing Meeting">Marketing Meeting</option>
+                                    <option value="Marketing Training">Marketing Training</option>
+                                    <option value="Training material Prep">Training material Prep</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="divOtherReason" class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Other Reason</label>
+                                <textarea id="otherreason" class="form-control" asp-for="adminactivity.OtherReason" style="border-radius: 10px; height: 100px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Advertising</label>
+                                <textarea id="advertising" class="form-control" asp-for="adminactivity.Advertising" style="border-radius: 10px; height: 100px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        @*<button type="submit" class="btn btn-primary float-right" style="border-radius:10px;" onclick="location.href='@Url.Action("CreateProperty", "Property",Model)'">Create</button>*@
+                        <button id="updateschedule" type="button" class="btn btn-primary float-right" style="border-radius:10px;">Update Activity</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    
+</div>
+@*</div>*@

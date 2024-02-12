@@ -1,0 +1,353 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    //Layout = "_Layout1";
+}
+
+<style>
+    .button2:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+</style>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+        /*location.reload();*/
+    </script>
+}
+
+<script>
+    function loadselectproperty() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadSelectPropertyShiftProperty", "PA")",
+            success: function (response) {
+                $('#selectproperty').append(`<option hidden value="">--Select--</option>`);
+                $.each(response, function (k, v) {
+                    $('#selectproperty').append(`<option value="${v}">${v}</option>`);
+                })
+                
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        loadselectproperty();
+
+        $('#showpassword').click(function () {
+            var x = document.getElementById("oldpassword");
+            var y = document.getElementById("newpassword");
+            var z = document.getElementById("confirmnewpassword");
+            if (x.type === "password") {
+                x.type = "text";
+            }
+            else {
+                x.type = "password";
+            }
+            if (y.type === "password") {
+                y.type = "text";
+            }
+            else {
+                y.type = "password";
+            }
+            if (z.type === "password") {
+                z.type = "text";
+            }
+            else {
+                z.type = "password";
+            }
+        })
+
+        $('#updatepassword').click(function () {
+            var oldpassword = $('#oldpassword').val();
+            var newpassword = $('#newpassword').val();
+            var confirmnewpassword = $('#confirmnewpassword').val();
+            if (newpassword == confirmnewpassword) {
+                $.ajax({
+                    type: "POST",
+                    data: { oldPassword: oldpassword, newPassword: newpassword },
+                    url: "@Url.Action("ChangePassword", "Common")",
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload();
+                    },
+                    error: function (errResp) {
+                        alert(errResp);
+                    }
+                })
+            }
+        })
+
+        $('#btnokshiftproperty').click(function () {
+            var selectproperty = $('#selectproperty :selected').val();
+            if (selectproperty.length < 1) {
+                alert("Select the Property");
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                data: { selectproperty: selectproperty },
+                url: "@Url.Action("BtnOkShiftProperty", "PA")",
+                success: function (response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            })
+        })
+    });
+</script>
+
+@*<script type="text/javascript">
+    function preventBack() { window.history.forward(); }
+    setTimeout("preventBack()", 0);
+    window.onunload = function () { null };
+</script>*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @*<div class="card" style="color:burlywood">*@
+            @*<div class="card-header bg-transparent"></div>*@
+            <div class="col-lg-12">
+                <form>
+                    @*<div class="card-body">*@
+                    <br />
+
+                    @using Microsoft.AspNetCore.Http;
+                    @if (Context.Session.GetString("CurrentUserDepartment") != null)
+                    {
+                        <div style="text-align:center">
+                            <label style="font-size: 20px;"><strong>@Context.Session.GetString("CurrentUserDepartment")</strong></label>
+                        </div>
+                    }
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;" asp-action="MaintenanceIssue" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-wrench" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Maintenance Issues</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;" asp-action="PaLOI" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        @*<i class="fa-solid fa-circle-info" style="font-size:24px"></i><i class="fa-solid fa-person-walking" style="font-size:24px"></i>*@
+                                        <i class="fa fa-align-justify" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>LOI/Walk-in Clients</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;" asp-action="PaMovingIn" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-sign-in" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Moving In</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C " asp-action="PaMovingOut" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-sign-out" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Moving Out</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #C38D9E " asp-action="PaDHC" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-edit" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>DHC</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 " asp-action="PaProperties" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-building" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Property Master</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E7717D " asp-action="UploadDocuments" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fas fa-file-upload" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Upload Documents</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #9A1750 " asp-action="BulkReceipt" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-receipt" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Rent Receipts</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" type="button" data-target="#passwordChangeModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: #123C69 ">
+                                <div>
+                                    <div>
+                                        <i class="fa-solid fa-gear" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Settings</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: sienna" asp-action="PaLoginLogout" asp-controller="PA">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-sign-in" style="font-size:20px"></i> <i class="fa fa-clock-o" style="font-size:24px"></i> <i class="fa fa-sign-out" style="font-size:20px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Login/Logout</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary button2" type="button" data-target="#shiftpropertyModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: #5680e9 ">
+                                <div>
+                                    <div>
+                                        <i class="fa fa-arrows-h" style="font-size:24px"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Shift Property</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    @*</div>*@
+                </form>
+
+
+                <!--popup for password change(settings)-->
+                <div id="passwordChangeModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="card">
+                            <div class="card-body">
+                                <form>
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Change password</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>Old Password</label>
+                                                <input id="oldpassword" type="password" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>New Password</label>
+                                                <input id="newpassword" type="password" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Confirm New Password</label>
+                                                <input id="confirmnewpassword" type="password" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                            <div class="form-group">
+                                                <a id="showpassword"><i class="fa-solid fa-eye"></i></a>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" id="updatepassword" class="btn btn-primary" style="border-radius:10px">Update</button>
+                                                <button type="button" class="btn btn-secondary" style="border-radius:10px" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--popup for shift property-->
+                <div id="shiftpropertyModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="card">
+                            <div class="card-body">
+                                <form>
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Change password</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>Select the Property</label>
+                                                <select id="selectproperty" class="form-control" style="border-radius: 10px;">
+
+                                                </select>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" id="btnokshiftproperty" class="btn btn-primary" style="border-radius:10px">OK</button>
+                                                <button type="button" class="btn btn-secondary" style="border-radius:10px" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+            </div>
+            @*</div>*@
+        </div>
+    </div>
+</div>

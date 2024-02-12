@@ -1,0 +1,1178 @@
+﻿@model PMS_Admin_Web.Models.LC.VacatingProcessModel
+@*@model PMS_Admin_Web.Models.Moveout*@
+
+@{
+    //if (Model.Property.Id == 0)
+    ViewData["Title"] = "Vacating Process"; 
+    //else
+    //    ViewData["Title"] = "Update Property";
+}
+
+
+    @*<div class="row">*@
+        <div class="col-lg-12">
+            <form>
+                @if (ViewBag.Message != null)
+                {
+                    <script type="text/javascript">
+
+                        window.onload = function () {
+                            alert("@ViewBag.Message");
+                        };
+                    </script>
+
+                }
+                @Html.HiddenFor(model => model.moveout.Id)
+
+                <div class="card" style="color:burlywood">
+                    <div class="card-header" style="background-color: darksalmon;">
+                        <h5 class="text-center" style="color:black"><strong>Vacating Process</strong></h5>
+                    </div>
+                    <div class="card-body">
+                        <br />
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#BasicDetails">Basic Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#PaymentDetails">Payment Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#RefurbishingCostReduction">Refurbishing Cost Reduction</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="BasicDetails">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Property Name</label>
+                                                <input class="form-control" type="text" asp-for="PropertyName" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Apt No</label>
+                                                <input class="form-control" type="text" asp-for="AptNo" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Reference No</label>
+                                                <input class="form-control" type="text" asp-for="PropertyRef" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Tenant Name</label>
+                                                <input asp-for="TenantName" class="form-control" type="text" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Vacating Notice</label>
+                                                <input asp-for="moveout.Vn" class="form-control" type="text" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Move Date</label>
+                                                <input class="form-control" type="date" asp-for="MoveOutDate" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label><strong>Management Approval/Approved Vacating Notice</strong></label>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                @if (Model.moveout.Bmapproved != null)
+                                                {
+                                                    @if (Model.moveout.Bmapproved.Trim() == "YES")
+                                                    {
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Yes</label>
+                                                                <input type="radio" asp-for="moveout.Bmapproved" value="YES" checked>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">No</label>
+                                                                <input type="radio" asp-for="moveout.Bmapproved" value="NO">
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else if (Model.moveout.Bmapproved.Trim() == "NO")
+                                                    {
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Yes</label>
+                                                                <input type="radio" asp-for="moveout.Bmapproved" value="YES">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">No</label>
+                                                                <input type="radio" asp-for="moveout.Bmapproved" value="NO" checked>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">Yes</label>
+                                                            <input type="radio" asp-for="moveout.Bmapproved" value="YES">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">No</label>
+                                                            <input type="radio" asp-for="moveout.Bmapproved" value="NO">
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Management Approval</label>
+                                                @if (Model.moveout.Bmapproval != null)
+                                                {
+                                                    <input type="checkbox" checked />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" />
+                                                }
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input asp-for="moveout.Bmapproval" type="file" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button class="btn btn-primary">Upload</button>
+                                        </div>
+
+                                    </div>
+
+                                    <label><strong>Moving Out Inventory</strong></label>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                @if (Model.moveout.Moistatus != null)
+                                                {
+                                                    @if (Model.moveout.Moistatus.Trim() == "YES")
+                                                    {
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Yes</label>
+                                                                <input asp-for="moveout.Moistatus" type="radio" value="Yes" checked>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">No</label>
+                                                                <input asp-for="moveout.Moistatus" type="radio" value="No">
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else if (Model.moveout.Moistatus.Trim() == "NO")
+                                                    {
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Yes</label>
+                                                                <input asp-for="moveout.Moistatus" type="radio" value="Yes">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">No</label>
+                                                                <input asp-for="moveout.Moistatus" type="radio" value="No" checked>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">Yes</label>
+                                                            <input asp-for="moveout.Moistatus" type="radio" value="Yes">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">No</label>
+                                                            <input asp-for="moveout.Moistatus" type="radio" value="No">
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <label class="control-label text-black-50">MOI Date:</label>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <input class="form-control" asp-for="moveout.Moidate" type="date" style="border-radius: 10px; width: 150px;" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Moving Out Inventory Report</label>
+                                                @if (Model.moveout.Moi != null)
+                                                {
+                                                    <input type="checkbox" checked />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input asp-for="moveout.Moi" type="file" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button class="btn btn-primary">Upload</button>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Moving Out Inventory List/Breakdown</label>
+                                                @if (Model.moveout.Moilist != null)
+                                                {
+                                                    <input type="checkbox" checked />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input asp-for="moveout.Moilist" type="file" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button class="btn btn-primary">Upload</button>
+                                        </div>
+
+                                    </div>
+
+                                    <label><strong>Does Tenant agree for the Refurbishing cost?</strong></label>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                @if (Model.moveout.Tenantrefurb != null)
+                                                {
+                                                    @if (Model.moveout.Tenantrefurb.Trim() == "YES")
+                                                    {
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Yes</label>
+                                                                <input asp-for="moveout.Tenantrefurb" type="radio" value="Yes" checked>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">No</label>
+                                                                <input asp-for="moveout.Tenantrefurb" type="radio" value="No">
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else if (Model.moveout.Tenantrefurb.Trim() == "NO")
+                                                    {
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Yes</label>
+                                                                <input asp-for="moveout.Tenantrefurb" type="radio" value="Yes">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">No</label>
+                                                                <input asp-for="moveout.Tenantrefurb" type="radio" value="No" checked>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">Yes</label>
+                                                            <input asp-for="moveout.Tenantrefurb" type="radio" value="Yes">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">No</label>
+                                                            <input asp-for="moveout.Tenantrefurb" type="radio" value="No">
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Refurbishing Breakdown</label>
+                                                @if (Model.moveout.Refurbbrkdown != null)
+                                                {
+                                                    <input type="checkbox" checked />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input asp-for="moveout.Refurbbrkdown" type="file" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button class="btn btn-primary">Upload</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                            
+                                        
+                                
+                            </div>
+                            
+
+                            
+                            <div class="tab-pane" id="PaymentDetails">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <label><strong>Last Month Rent Payment Details from Accounts</strong></label>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="row">
+                                                @if (Model.moveout.Rentpaid != null)
+                                                {
+                                                    @if (Model.moveout.Rentpaid.Trim() == "YES")
+                                                    {
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Paid</label>
+                                                                <input asp-for="moveout.Rentpaid" type="radio" value="Yes" checked>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Not Paid</label>
+                                                                <input asp-for="moveout.Rentpaid" type="radio" value="No">
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else if (Model.moveout.Rentpaid.Trim() == "NO")
+                                                    {
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Paid</label>
+                                                                <input asp-for="moveout.Rentpaid" type="radio" value="Yes">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label class="control-label text-black-50">Not Paid</label>
+                                                                <input asp-for="moveout.Rentpaid" type="radio" value="No" checked>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-lg-3">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">Paid</label>
+                                                            <input asp-for="moveout.Rentpaid" type="radio" value="Yes">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <div class="form-group">
+                                                            <label class="control-label text-black-50">Not Paid</label>
+                                                            <input asp-for="moveout.Rentpaid" type="radio" value="No">
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">RV No</label>
+                                                <input class="form-control" type="text" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Total Amount</label>
+                                                <input class="form-control" type="text" style="border-radius: 10px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Payment Date</label>
+                                                <input class="form-control" type="date" style="border-radius: 10px; width: 150px;" />
+                                                @*<span asp-validation-for="LcInfo.Tenname" class="text-danger"></span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                @*<label class="control-label text-black-50">Remarks</label>*@
+                                                @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                                <textarea class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <label><strong>Did the Tenant submit the Security Deposit Document?</strong></label>
+                                    <div class="row">
+                                        @if (Model.moveout.Sd != null)
+                                        {
+                                            @if (Model.moveout.Sd.Trim() == "YES")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="Yes" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="No">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for non-submission</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="LETTER">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Sd.Trim() == "NO")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="Yes">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="No" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for non-submission</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="LETTER">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Sd.Trim() == "LETTER")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="Yes">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="No">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for non-submission</label>
+                                                        <input asp-for="moveout.Sd" type="radio" value="LETTER" checked>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Yes</label>
+                                                    <input asp-for="moveout.Sd" type="radio" value="Yes">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">No</label>
+                                                    <input asp-for="moveout.Sd" type="radio" value="No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Letter for non-submission</label>
+                                                    <input asp-for="moveout.Sd" type="radio" value="LETTER">
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <label><strong>SAT Deposit Document</strong></label>
+                                    <div class="row">
+                                        @if (Model.moveout.Sat != null)
+                                        {
+                                            @if (Model.moveout.Sat.Trim() == "YES")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="Yes" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="No">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for non-submission</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="LETTER">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Sat.Trim() == "NO")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="Yes">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="No" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for non-submission</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="LETTER">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Sat.Trim() == "LETTER")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="Yes">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="No">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for non-submission</label>
+                                                        <input asp-for="moveout.Sat" type="radio" value="LETTER" checked>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Yes</label>
+                                                    <input asp-for="moveout.Sat" type="radio" value="Yes">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">No</label>
+                                                    <input asp-for="moveout.Sat" type="radio" value="No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Letter for non-submission</label>
+                                                    <input asp-for="moveout.Sat" type="radio" value="LETTER">
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <label><strong>Did the Tenant submit the Original LC?</strong></label>
+                                    <div class="row">
+                                        @if (Model.moveout.Lc != null)
+                                        {
+                                            @if (Model.moveout.Lc.Trim() == "YES")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="Yes" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="No">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for missing</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="LETTER">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Lc.Trim() == "NO")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="Yes">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="No" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for missing</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="LETTER">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Lc.Trim() == "LETTER")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Yes</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="Yes">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="No">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Letter for missing</label>
+                                                        <input asp-for="moveout.Lc" type="radio" value="LETTER" checked>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Yes</label>
+                                                    <input asp-for="moveout.Lc" type="radio" value="Yes">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">No</label>
+                                                    <input asp-for="moveout.Lc" type="radio" value="No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Letter for missing</label>
+                                                    <input asp-for="moveout.Lc" type="radio" value="LETTER">
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <label><strong>Endorsement of Documents for SD refund(For SPA)</strong></label>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">To Accounts</label>
+                                                @if(Model.moveout.Sdendorsement != null)
+                                                {
+                                                    @if(Model.moveout.Sdendorsement.Trim() == "YES")
+                                                    {
+                                                        <input asp-for="moveout.Sdendorsement" type="checkbox" value="Yes" checked/>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input asp-for="moveout.Sdendorsement" type="checkbox" value="Yes"/>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <label class="control-label text-black-50">Date:</label>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <input asp-for="moveout.Ardate" type="date" class="form-control" style="border-radius: 10px; width: 150px;" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <label><strong>Key Return Date</strong></label>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="date" class="form-control" asp-for="KeyReturnDate" style="border-radius: 10px; width: 150px;" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">SPA Remarks</label>
+                                                @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                                <textarea class="form-control" asp-for="moveout.Sparemarks" style="width: 400px; border-radius: 10px;"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Remarks\Current Status Update\Reason of Cancellation</label>
+                                                @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                                <textarea asp-for="moveout.Bmreason" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            
+                            <div class="tab-pane" id="RefurbishingCostReduction">
+                                <div class="col-lg-12">
+                                    <br />
+                                    <label><strong>Refurbishing Cost Reduction/Waiving/SD Refund</strong></label>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Tenant asked for Refurbishing Cost Reduction</label>
+                                                @if (Model.moveout.Reduction != null)
+                                                {
+                                                    @if (Model.moveout.Reduction == "YES")
+                                                    {
+                                                        <input asp-for="moveout.Reduction" type="checkbox" checked>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input asp-for="moveout.Reduction" type="checkbox">
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <label class="control-label text-black-50">Refurbishing Amount</label>
+                                            <input asp-for="moveout.Rmat" type="text" class="form-control" style="border-radius: 10px;">
+                                        </div>
+                                        @if (Model.moveout.Waved != null)
+                                        {
+                                            @if (Model.moveout.Waved == "YES")
+                                            {
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">R.cost Deducted from SD</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="Reduction from SD">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">R.cost is waived</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="YES" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Tenant agree to pay</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="Agree">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Waved == "Reduction from SD")
+                                            {
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">R.cost Deducted from SD</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="Reduction from SD" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">R.cost is waived</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="YES">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Tenant agree to pay</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="Agree">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Waved == "Agree")
+                                            {
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">R.cost Deducted from SD</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="Reduction from SD">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">R.cost is waived</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="YES">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Tenant agree to pay</label>
+                                                        <input asp-for="moveout.Waved" type="radio" value="Agree" checked>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-3" style="margin-top: 30px;">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">R.cost Deducted from SD</label>
+                                                    <input asp-for="moveout.Waved" type="radio" value="Reduction from SD">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-top: 30px;">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">R.cost is waived</label>
+                                                    <input asp-for="moveout.Waved" type="radio" value="YES">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-top: 30px;">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Tenant agree to pay</label>
+                                                    <input asp-for="moveout.Waved" type="radio" value="Agree">
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <label class="control-label text-black-50">Amount of SD</label>
+                                            <input asp-for="moveout.Sdamt" type="text" class="form-control" style="border-radius: 10px;">
+                                        </div>
+                                        @if (Model.moveout.Sdfrom != null)
+                                        {
+                                            @if (Model.moveout.Sdfrom == "Q8ealtor")
+                                            {
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">SD from Q8Realtor</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="Q8ealtor" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No SD Refund</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="NoSD">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">SD from Landlord</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="LandLord">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Sdfrom == "LandLord")
+                                            {
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">SD from Q8Realtor</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="Q8ealtor">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No SD Refund</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="NoSD">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">SD from Landlord</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="LandLord" checked>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Sdfrom == "NoSD")
+                                            {
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">SD from Q8Realtor</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="Q8ealtor">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">No SD Refund</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="NoSD" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-top: 30px;">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">SD from Landlord</label>
+                                                        <input asp-for="moveout.Sdfrom" type="radio" value="LandLord">
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-3" style="margin-top: 30px;">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">SD from Q8Realtor</label>
+                                                    <input asp-for="moveout.Sdfrom" type="radio" value="Q8ealtor">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-top: 30px;">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">No SD Refund</label>
+                                                    <input asp-for="moveout.Sdfrom" type="radio" value="NoSD">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3" style="margin-top: 30px;">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">SD from Landlord</label>
+                                                    <input asp-for="moveout.Sdfrom" type="radio" value="LandLord">
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <label><strong>Payment Mode of SD</strong></label>
+                                    <div class="row">
+                                        @if (Model.moveout.Pmodeofsd != null)
+                                        {
+                                            @if (Model.moveout.Pmodeofsd == "CASH")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Cash</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="CASH" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Bank Transfer</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="BT">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Cheque</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="CHEQUE">
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Pmodeofsd == "CHEQUE")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Cash</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="CASH">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Bank Transfer</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="BT">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Cheque</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="CHEQUE" checked>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (Model.moveout.Pmodeofsd == "BT")
+                                            {
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Cash</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="CASH">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Bank Transfer</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="BT" checked>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label text-black-50">Cheque</label>
+                                                        <input asp-for="moveout.Pmodeofsd" type="radio" value="CHEQUE">
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Cash</label>
+                                                    <input asp-for="moveout.Pmodeofsd" type="radio" value="CASH">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Bank Transfer</label>
+                                                    <input asp-for="moveout.Pmodeofsd" type="radio" value="BT">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="control-label text-black-50">Cheque</label>
+                                                    <input asp-for="moveout.Pmodeofsd" type="radio" value="CHEQUE">
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <label class="control-label text-black-50">SD after Deduction</label>
+                                            <input asp-for="moveout.Armat" type="text" class="form-control" style="border-radius: 10px;">
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 29px;">
+                                            <button style="border-radius: 10px; width: 273px; height: 40px;">Generate Acknowledgement Receipt</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                @if (Model.ForceClose != null)
+                                                {
+                                                    @if (Model.ForceClose.Trim() == "Yes")
+                                                    {
+                                                        <input type="checkbox" checked />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" />
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" />
+                                                }
+                                                <label><strong>Is it Force Closed?</strong></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label><strong>Is the file closed?</strong></label>
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Yes</label>
+                                                <input type="radio" value="Yes">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">No</label>
+                                                <input type="radio" value="No">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label text-black-50">Reason of Vacating</label>
+                                                @*<input asp-for="Property.Description" class="form-control" type="text" />*@
+                                                <textarea asp-for="Remarks" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="color:burlywood">
+                    <div class="card-body">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <button type="button" class="btn btn-primary float-right">Open File</button>
+                                </div>
+                                <div class="col-lg-4">
+                                    <button type="button" class="btn btn-primary float-right">Cancel Vacating without Doc</button>
+                                </div>
+                                <div class="col-lg-4">
+                                    <button type="button" class="btn btn-primary float-right">Force Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    @*</div>*@
+
+
+@{
+
+}

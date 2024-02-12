@@ -1,0 +1,903 @@
+﻿@model PMS_Admin_Web.Models.Accounts.AccountsReceivableModel
+
+@{
+    ViewData["Title"] = "Accounts Receivable";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    function loadpropertyname() {
+        var hiddenpname = $('#hiddenpname').val();
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadPropertyName","Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    if (hiddenpname == v) {
+                        $('#propertyname').append(`<option selected value="${v}">${v}</option>`);
+                    }
+                    else {
+                        $('#propertyname').append(`<option value="${v}">${v}</option>`);
+                    }
+
+                })
+            }
+        })
+    }
+
+    function loadaptnowithpname() {
+        var hiddenaptno = $('#hiddenaptno').val();
+        var propertyname = $('#propertyname').val();
+        $.ajax({
+            type: "POST",
+            data: { propertyname: propertyname },
+            url: "@Url.Action("LoadAptNoAccReceivable", "Common")",
+            success: function (response) {
+                $('#chkmultipleapartment').prop('disabled', false);
+                $.each(response, function (k, v) {
+                    if (hiddenaptno == v) {
+                        $('#aptno').append(`<option selected value=${v}>${v}</option>`);
+                    }
+                    else {
+                        $('#aptno').append(`<option value=${v}>${v}</option>`);
+                    }
+
+                })
+            }
+        })
+    }
+
+    function amounttowords(num) {
+        var a = ['', 'one ', 'two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 'fifteen ', 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen '];
+        var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+        if ((num = num.toString()).length > 9) return 'overflow';
+        n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+        if (!n) return; var str = '';
+        str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
+        str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
+        str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
+        str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
+        str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
+        return str;
+    }
+
+    $(document).ready(function () {
+        /*loadpropertyname();*/
+        loadaptnowithpname();
+        $('#divgaptno').hide();
+        $('#grefCol').hide();
+        $('#chkmultipleapartment').prop('disabled', true);
+        $('#voucherdate').prop('disabled', true);
+        $('#divreservedlc').hide();
+
+        $('#propertyname').change(function () {
+            var propertyname = $('#propertyname').val();
+            /*var propertyname = $('#propertyname :selected').val();*/
+
+            $.ajax({
+                type: "POST",
+                data: { propertyname: propertyname },
+                url: "@Url.Action("LoadAptNo", "Common")",
+                success: function (response) {
+                    $('#chkmultipleapartment').prop('disabled', false);
+                    $.each(response, function (k, v) {
+                        $('#aptno').append(`<option value=${v}>${v}</option>`);
+                    })
+                }
+            })
+        });
+
+        $('#chkmultipleapartment').click(function () {
+            /*var chkmultipleapartment = document.getElementById('chkmultipleapartment').checked;*/
+            var chkmultipleapartment = $('#chkmultipleapartment').prop('checked');
+            if (chkmultipleapartment == true) {
+                $('#divgaptno').show();
+                $('#grefCol').show();
+                $('#divpref').hide();
+                $('#aptno').prop('multiple', true);
+                $('#prefno').val('');
+            }
+            else {
+                $('#divgaptno').hide();
+                $('#grefCol').hide();
+                $('#aptno').prop('multiple', false);
+                $('#gaptno').val('');
+                $('#divpref').show();
+            }
+        });
+
+        var gRefsample = [];
+        $("#aptno").change(function () {
+            $("#rbshowresevedtenant").prop("checked", false);
+            $("#rbshowvacatedtenant").prop("checked", false);
+            $("#rbshowcurrenttenant").prop("checked", false);
+
+            var pname = $('#propertyname').val();
+            /*var pname = $('#propertyname :selected').val();*/
+            var ano = $('#aptno :selected').last().val();
+            var chkmultipleapartment = $('#chkmultipleapartment').prop('checked');
+            if (chkmultipleapartment) {
+                //var gAptsample = $(ano).toArray().map(item => item.text).join();
+                var gAptsample = $('#aptno option:selected').toArray().map(item => item.text).join();
+                $('#gaptno').val(gAptsample);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AptnoChangeEventAccountsReceivable", "Accounts")",
+                data: { propertyname: pname, aptno: ano },
+                dataType: "json",
+                success: function (response) {
+                    $('#prefno').val(response.pref);
+                    $('#tname').val(response.tname);
+                    $('#monthlyrent').val(response.mrent);
+                    $('#tenantid').val(response.tid);
+                    var refno = response.pref;
+
+                    if (chkmultipleapartment) {
+                        gRefsample.push(refno);
+                        $('#grefno').val(gRefsample);
+                    }
+
+                }
+            })
+            @*var gaptno = $('#gaptno').val();
+            if (gaptno.includes(",")) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("", "Accounts")",
+                    data: { propertyname: pname, aptno: ano, gaptno: gaptno},
+                    success: function (response) {
+                        $('#tenantid').val(response);
+                    }
+                })
+            }*@
+
+        });
+
+        $('#chkcash').click(function () {
+            var chkcash = document.getElementById('chkcash').checked;
+            var fromtemp = $('#fromtemp').val();
+            if (fromtemp == "no" || fromtemp == "bulkprint" || fromtemp == "PA") {
+                if (chkcash == true) {
+                    $("#cash").prop("disabled", false);
+                    var monthlyrent = $('#monthlyrent').val();
+                    $('#cash').val(monthlyrent);
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val();
+                    var bt = $('#bt').val();
+
+                    var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                    $('#receivedamount').val(totalamount);
+                }
+                else {
+                    $("#cash").prop("disabled", true);
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val();
+                    var bt = $('#bt').val();
+                    var chkdiscountamount = $('#chkdiscountamount').prop('checked');
+                    var discounttxt = $('#discounttxt').val();
+                    if (chkdiscountamount) {
+                        if (discounttxt == null || discounttxt == "") {
+                            $('#discounttxt').val('0');
+                        }
+                        else {
+                            var DISCAMT = ((Number(cash) + Number(knet) + Number(cheque) + Number(bt)) * Number(discounttxt)) / 100;
+                            var totalamount = (Number(cash) + Number(knet) + Number(cheque) + Number(bt)) - DISCAMT;
+                            $('#receivedamount').val(totalamount);
+                        }
+                    }
+                    else {
+                        var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                        $('#receivedamount').val(totalamount);
+                    }
+                }
+            }
+
+        });
+
+        $('#chkknet').click(function () {
+            var chkknet = document.getElementById('chkknet').checked;
+            var chkcash = document.getElementById('chkcash').checked;
+            var chkcheque = document.getElementById('chkcheque').checked;
+            var fromtemp = $('#fromtemp').val();
+            if (fromtemp == "no" || fromtemp == "bulkprint" || fromtemp == "PA") {
+                if (chkknet == true) {
+                    $("#knet").prop("disabled", false);
+                    if (chkcash == false && chkcheque == false) {
+                        var monthlyrent = $('#monthlyrent').val();
+                        $('#knet').val(monthlyrent);
+                    }
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val();
+                    var bt = $('#bt').val();
+                    var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                    $('#receivedamount').val(totalamount);
+                }
+                else {
+                    $("#knet").prop("disabled", true);
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val();
+                    var bt = $('#bt').val();
+                    var chkdiscountamount = $('#chkdiscountamount').prop('checked');
+                    var discounttxt = $('#discounttxt').val();
+                    if (chkdiscountamount) {
+                        if (discounttxt == null || discounttxt == "") {
+                            $('#discounttxt').val('0');
+                        }
+                        else {
+                            var DISCAMT = ((Number(cash) + Number(knet) + Number(cheque) + Number(bt)) * Number(discounttxt)) / 100;
+                            var totalamount = (Number(cash) + Number(knet) + Number(cheque) + Number(bt)) - DISCAMT;
+                            $('#receivedamount').val(totalamount);
+                        }
+                    }
+                    else {
+                        var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                        $('#receivedamount').val(totalamount);
+                    }
+                }
+            }
+        });
+
+        $('#chkcheque').click(function () {
+            var chkcheque = document.getElementById('chkcheque').checked;
+            var fromtemp = $('#fromtemp').val();
+            if (fromtemp == "no" || fromtemp == "bulkprint" || fromtemp == "PA") {
+                if (chkcheque == true) {
+                    $('#chkcash').prop('checked', false);
+                    $('#chkknet').prop('checked', false);
+                    $("#cheque").prop("disabled", false);
+                    $('#cheque').val(monthlyrent);
+
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val();
+                    var bt = $('#bt').val();
+                    var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                    $('#receivedamount').val(totalamount);
+                }
+                else {
+                    $("#cheque").prop("disabled", true);
+
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val('0');
+                    var bt = $('#bt').val();
+
+                    var chkdiscountamount = $('#chkdiscountamount').prop('checked');
+                    var discounttxt = $('#discounttxt').val();
+                    if (chkdiscountamount) {
+                        if (discounttxt == null || discounttxt == "") {
+                            $('#discounttxt').val('0');
+                        }
+                        else {
+                            var DISCAMT = ((Number(cash) + Number(knet) + Number(cheque) + Number(bt)) * Number(discounttxt)) / 100;
+                            var totalamount = (Number(cash) + Number(knet) + Number(cheque) + Number(bt)) - DISCAMT;
+                            $('#receivedamount').val(totalamount);
+                        }
+                    }
+                    else {
+                        var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                        $('#receivedamount').val(totalamount);
+                    }
+                }
+            }
+        });
+
+        $('#chkbt').click(function () {
+            var chkbt = document.getElementById('chkbt').checked;
+            var fromtemp = $('#fromtemp').val();
+            if (fromtemp == "no" || fromtemp == "bulkprint" /*|| fromtemp == "PA"*/) {
+                if (chkbt == true) {
+                    $('#chkcash').prop('checked', false);
+                    $('#chkknet').prop('checked', false);
+                    $("#bt").prop("disabled", false);
+                    $('#bt').val(monthlyrent);
+
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val();
+                    var bt = $('#bt').val();
+                    var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                    $('#receivedamount').val(totalamount);
+
+                }
+                else {
+                    $("#bt").prop("disabled", true);
+
+                    var cash = $('#cash').val();
+                    var knet = $('#knet').val();
+                    var cheque = $('#cheque').val();
+                    var bt = $('#bt').val('0');
+
+                    var chkdiscountamount = $('#chkdiscountamount').prop('checked');
+                    var discounttxt = $('#discounttxt').val();
+                    if (chkdiscountamount) {
+                        if (discounttxt == null || discounttxt == "") {
+                            $('#discounttxt').val('0');
+                        }
+                        else {
+                            var DISCAMT = ((Number(cash) + Number(knet) + Number(cheque) + Number(bt)) * Number(discounttxt)) / 100;
+                            var totalamount = (Number(cash) + Number(knet) + Number(cheque) + Number(bt)) - DISCAMT;
+                            $('#receivedamount').val(totalamount);
+                        }
+                    }
+                    else {
+                        var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+                        $('#receivedamount').val(totalamount);
+                    }
+                }
+            }
+        });
+
+        $('#chkpayingtocourt').click(function () {
+            var chkpayingtocourt = $('#chkpayingtocourt').prop('checked');
+            if (chkpayingtocourt) {
+                $('#voucherno').val('');
+                $('#voucherdate').val('');
+            }
+        })
+
+        $('#chkpayingtocourt').click(function () {
+            var chkpayingtocourt = $('#chkpayingtocourt').prop('checked');
+            if (chkpayingtocourt) {
+                $('#voucherno').val('');
+                $('#voucherdate').val('');
+            }
+        })
+
+        $('#chkpamistake').click(function () {
+            var chkpamistake = $('#chkpamistake').prop('checked');
+            if (chkpamistake) {
+                $('#voucherdate').prop('disabled', false);
+                $('#cash').prop('disabled', false);
+                $('#knet').prop('disabled', false);
+                $('#cheque').prop('disabled', false);
+            }
+            else {
+                $('#voucherdate').prop('disabled', true);
+                $('#cash').prop('disabled', true);
+                $('#knet').prop('disabled', true);
+                $('#cheque').prop('disabled', true);
+            }
+        })
+
+        $('#chkdiscountamount').click(function () {
+            var chkdiscountamount = $('#chkdiscountamount').prop('checked');
+            var discounttxt = $('#discounttxt').val();
+            var monthlyrent = $('#monthlyrent').val();
+            if (chkdiscountamount) {
+                if (discounttxt == null || discounttxt == "") {
+                    alert('Enter the discount percentage');
+                    return false;
+                }
+                else {
+                    var DISCAMT = (Number(monthlyrent) * Number(discounttxt)) / 100;
+                    $('#discountamount').val(DISCAMT);
+                }
+            }
+            else {
+                $('#discountamount').val('');
+            }
+        })
+
+        $('#clearbtn').click(function () {
+            $('#grefno').val('');
+        })
+
+        $('#rbshowresevedtenant').click(function () {
+            var rbshowresevedtenant = $('#rbshowresevedtenant').prop('checked');
+            if (rbshowresevedtenant) {
+                $('#divreservedlc').show();
+                $('#reservedlc').html('');
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("ReservedRbCheckedEvent", "Accounts")",
+                    success: function (response) {
+                        $('#reservedlc').append(`<option hidden value="">--Select--</option>`);
+                        $.each(response, function (k,v) {
+                            $('#reservedlc').append(`<option value=${v}>${v}</option>`);
+                        })
+
+                    }
+                })
+            }
+        })
+
+        $('#reservedlc').change(function () {
+            var reservedlc = $('#reservedlc :selected').val();
+            $.ajax({
+                type: "POST",
+                data: { reservedlc: reservedlc },
+                url: "@Url.Action("ReservedLcDetails", "Accounts")",
+                success: function (response) {
+                    $('#tname').val(response.teTname);
+                    $('#tenantid').val(response.id);
+                }
+            })
+        })
+
+        $('#rbshowvacatedtenant').click(function () {
+            var rbshowvacatedtenant = $('#rbshowvacatedtenant').prop('checked');
+            var propertyname = $('#propertyname').val();
+            var aptno = $('#aptno :selected').val();
+            if (rbshowvacatedtenant) {
+                $.ajax({
+                    type: "POST",
+                    data: { propertyname: propertyname, aptno: aptno },
+                    url: "@Url.Action("VacantLcDetails", "Accounts")",
+                    success: function (response) {
+                        if (response == 0) {
+                            alert('No previous Tenant Info');
+                            return false;
+                        }
+                        else {
+                            $('#tname').val(response.teTname);
+                            $('#tenantid').val(response.id);
+                        }
+                    }
+                })
+            }
+        })
+
+        $('#rbshowcurrenttenant').click(function () {
+            var rbshowcurrenttenant = $('#rbshowcurrenttenant').prop('checked');
+            if (rbshowcurrenttenant) {
+                $('#tname').val('');
+                $('#monthlyrent').val('');
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("CurrentLcDetails", "Accounts")",
+                    success: function (response) {
+                        $('#tname').val(response.tname);
+                        $('#monthlyrent').val(response.mrent);
+                        $('#tenantid').val(response.tid);
+                    }
+                })
+            }
+        })
+
+        $('#rbshowasvacant').click(function () {
+            var rbshowasvacant = $('#rbshowasvacant').prop('checked');
+            if (rbshowasvacant) {
+                $('#tname').val('VACANT');
+                $('#tenantid').val('0');
+            }
+        })
+
+        $('#btnsearch').click(function () {
+            var searchvoucherno = $('#searchvoucherno').val();
+            if (searchvoucherno != null || searchvoucherno != "") {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("SearchVoucherAccountsReceivable", "Accounts")",
+                    data: { searchvoucherno: searchvoucherno },
+                    success: function (response) {
+                        if (response == "No records found") {
+
+                        }
+                        else {
+                            $.each(response, function (k, v) {
+                                $('#tbody').append(`<tr>
+                                                        <td hidden>${v.id}</td>
+                                                        <td style="color:black;">${v.paymentType}</td>
+                                                        <td style="color:black;">${v.totamt}</td>
+                                                        <td style="color:black;">${v.rno}</td>
+                                                    </tr>`);
+                            })
+                        }
+                    }
+                })
+            }
+            else {
+                alert('Enter the Voucher NO to check');
+            }
+        })
+
+        $('#rentmonthdate').change(function () {
+            var rentmonthdate = $('#rentmonthdate').val();
+            var monthyear = rentmonthdate.split("-");
+            $('#rentyear').val(monthyear[0]);
+            $('#rentmonth').val(monthyear[1]);
+        })
+        
+        $('#collectionmonthdate').change(function () {
+            var collectionmonthdate = $('#collectionmonthdate').val();
+            var monthyear = collectionmonthdate.split("-");
+            $('#collectionyear').val(monthyear[0]);
+            $('#collectionmonth').val(monthyear[1]);
+        })
+
+    })
+</script>
+
+    
+    <div class="col-lg-12">
+        <form asp-controller="Accounts" asp-action="AccountsReceivable">
+            <div class="card" style="color:burlywood">
+                <div class="card-header" style="background-color: darksalmon;">
+                    <h5 class="text-center" style="color:black"><strong>Accounts Receivable</strong></h5>
+                </div>
+                <input hidden id="fromtemp" asp-for="fromtemp" />
+                <div class="card-body">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#BasicDetails">Basic Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#SearchVoucher">Search Voucher</a>
+                        </li>
+                    </ul>
+                    <br />
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="BasicDetails">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Property Name</label>
+                                            <input id="propertyname" asp-for="propertyname" type="text" class="form-control" style="border-radius: 10px;"/>
+                                            @*<select id="propertyname" asp-for="propertyname" class="form-control" style="border-radius: 10px;">
+                                                <option hidden value="">--Select--</option>
+                                            </select>*@
+                                            @*<input hidden id="hiddenpname" asp-for="propertyname" />*@
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Apt No</label>
+                                            <select id="aptno" class="form-control" style="border-radius: 10px;">
+                                                <option hidden value="">--Select--</option>
+                                            </select>
+                                            <input hidden id="hiddenaptno" asp-for="aptno" />
+                                            <div class="form-group">
+                                                <input type="checkbox" id="chkmultipleapartment" asp-for="chkmultipleapartment" />
+                                                <label class="control-label text-black-50">Multiple Apartment</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="divgaptno" class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Group Apt No</label>
+                                            <input id="gaptno" asp-for="groupaptno" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div id="divpref" class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Property Ref No</label>
+                                            <input id="prefno" asp-for="pref" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div id="grefCol" class="col-lg-3">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="form-group" style="width: 370px;">
+                                                    <label class="control-label text-black-50">Group Reference No</label>
+                                                    <input id="grefno" class="form-control" type="text" style="border-radius: 10px;" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <button id="clearbtn" class="btn btn-primary" style="border-radius: 10px; margin-left: 265px; margin-top: 31px; ">C</button>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="divreservedlc" class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Reserved LC</label>
+                                            <select id="reservedlc" class="form-control" style="border-radius: 10px;">
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6" style="margin-top: 35px;">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <input id="rbshowasvacant" type="radio" />
+                                                    <label class="control-label text-black-50">Show as Vacant</label>
+                                                </div>
+                                            </div>
+                                            @*<fieldset id="group1">*@
+                                                @*<div class="row">*@
+                                                    <div class="col-lg-3">
+                                                        <div class="form-group" style="width: 180px;">
+                                                            <input id="rbshowresevedtenant" asp-for="rbReservedVacatedCurrent" type="radio" value="reservedtenant" />
+                                                            <label class="control-label text-black-50">Show Reserved Tenant</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <div class="form-group" style="width: 180px; margin-left: 27px; ">
+                                                            <input id="rbshowvacatedtenant" asp-for="rbReservedVacatedCurrent" type="radio" value="vacatedtenant" />
+                                                            <label class="control-label text-black-50">Show Vacated Tenant</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <div class="form-group" style="width: 180px; margin-left: 50px; ">
+                                                            <input id="rbshowcurrenttenant" asp-for="rbReservedVacatedCurrent" type="radio" value="currenttenant" />
+                                                            <label class="control-label text-black-50">Show Current Tenant</label>
+                                                        </div>
+                                                    </div>
+                                                @*</div>*@
+                                                
+                                            @*</fieldset>*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Tenant Name</label>
+                                            <input id="tname" class="form-control" type="text" style="border-radius: 10px;" />
+                                            <input type="hidden" id="tenantid" />
+                                            <input hidden id="hiddentname" asp-for="tname" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Monthly Rent</label>
+                                            <input id="monthlyrent" asp-for="monthrent" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Monthly Rent(in words)</label>
+                                            <input id="monthlyrentinwords" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="control-label text-black-50"><b>Rent Period :</b></label>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">From</label>
+                                            <input id="fromrentperiod" asp-for="rentdatefrom" class="form-control" type="date" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">To</label>
+                                            <input id="torentperiod" asp-for="rentdateto" class="form-control" type="date" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Payment Category</label>
+                                            <select id="paymentcategory" asp-for="type" class="form-control" style="border-radius: 10px;">
+                                                <option hidden value="">--Select--</option>
+                                                <option value="ADDITIONAL RENT PAYMENT">ADDITIONAL RENT PAYMENT</option>
+                                                <option value="RENT">RENT</option>
+                                                <option value="DEPOSIT">DEPOSIT</option>
+                                                <option value="RESF">RESF</option>
+                                                <option value="GBC">GBC</option>
+                                                <option value="INTERNET"></option>
+                                                <option value="OTHER"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="control-label text-black-50"><b>Payment Type :</b></label>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <input id="chkcash" asp-for="chkcash" type="checkbox" />
+                                                <label class="control-label text-black-50">Cash</label>
+                                            </div>
+                                            <input id="cash" asp-for="cash" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <input id="chkknet" asp-for="chkknet" type="checkbox" />
+                                                <label class="control-label text-black-50">KNET</label>
+                                            </div>
+                                            <input id="knet" asp-for="knet" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <input id="chkcheque" asp-for="chkcheque" type="checkbox" />
+                                                <label class="control-label text-black-50">Cheque</label>
+                                            </div>
+                                            <input id="cheque" asp-for="cheque" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <input id="chkbt" asp-for="chkbt" type="checkbox" />
+                                                <label class="control-label text-black-50">BT</label>
+                                            </div>
+                                            <input id="bt" asp-for="bt" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Voucher No</label>
+                                            <input id="voucherno" asp-for="vno" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Voucher Date</label>
+                                            <input id="voucherdate" asp-for="vdate" class="form-control" type="date" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Received Amount</label>
+                                            <input id="receivedamount" asp-for="amt" class="form-control" type="text" style="border-radius: 10px;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Discount Amount</label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <input id="discountamount" asp-for="discountamount" class="form-control" type="text" style="border-radius: 10px; width: 160px; " />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input id="discounttxt" class="form-control" type="text" style="border-radius: 10px; margin-left: 50px;" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <div class="form-group" style="margin-left: 35px; width: 80px;">
+                                                        <input id="chkdiscountamount" asp-for="chkdiscountamount" type="checkbox" />
+                                                        <label class="control-label text-black-50">Discount</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Rent Month</label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <input id="rentmonth" asp-for="rentmonth" class="form-control" type="text" style="border-radius: 10px;" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input id="rentyear" asp-for="rentyear" class="form-control" type="text" style="border-radius: 10px; margin-left: -25px;" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input id="rentmonthdate" class="form-control" type="date" style="border-radius: 10px; width: 46px; margin-left: -50px; " />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Collection Month</label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <input id="collectionmonth" asp-for="collectionmonth" class="form-control" type="text" style="border-radius: 10px;" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input id="collectionyear" asp-for="collectionyear" class="form-control" type="text" style="border-radius: 10px; margin-left: -25px;" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input id="collectionmonthdate" class="form-control" type="date" style="border-radius: 10px; width: 46px; margin-left: -50px; " />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3" style="margin-top: 30px;">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="form-group" style="width: 127px;">
+                                                    <input id="chkpayingtocourt" asp-for="chkpayingtocourt" type="checkbox" />
+                                                    <label class="control-label text-black-50">Paying to Court</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group" style="width: 127px; margin-left: 35px; ">
+                                                    <input id="chkpending" asp-for="chkpending" type="checkbox" />
+                                                    <label class="control-label text-black-50">Pending</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group" style="width: 140px; margin-left: 21px;">
+                                                    <input id="chkpamistake" asp-for="chkpamistake" type="checkbox" />
+                                                    <label class="control-label text-black-50">PA made Mistake</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group" style="width: 83px; margin-left: 70px; ">
+                                                    <input id="chkhighlight" asp-for="chkhighlight" type="checkbox"/>
+                                                    <label class="control-label text-black-50">Highlight</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Remarks</label>
+                                            <textarea id="remarks" asp-for="desc" class="form-control" type="text" style="border-radius: 10px;"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="SearchVoucher">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="form-group" style="width: 180px;">
+                                                    <label class="control-label text-black-50">Search for Voucher No</label>
+                                                    <input id="searchvoucherno" class="form-control" type="text" style="border-radius: 10px;" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <button id="btnsearch" type="button" class="btn btn-primary" style="border-radius: 10px; margin-left: 75px; margin-top: 31px; ">Search</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div style="overflow-y:auto">
+                                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                            <thead class="bg-success">
+                                                <tr>
+                                                    <th hidden><label style="width: 80px;">Sl No</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 150px">Payment Type</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 200px">Amount Paid</label></th>
+                                                    <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px">Voucher No</label></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbody" class="bg-white">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" style="border-radius: 10px; float: right;">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    @*</div>*@
+
+
+
+
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }

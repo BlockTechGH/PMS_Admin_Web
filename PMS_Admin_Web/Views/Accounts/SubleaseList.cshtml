@@ -1,0 +1,654 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Http;
+
+@model List<PMS_Admin_Web.Models.Sublease>
+
+@using PMS_Admin_Web.Repository;
+
+
+@{
+    ViewData["Title"] = "Sublease List";
+}
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--script goes here...-->
+<script>
+    function loadpname() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadPnameFromSublease", "Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#pname').append(`<option value="${v}">${v}</option>`);
+                })
+            }
+        })
+    }
+
+    function importtoaccounts(pname, aptNo, cleaseno, cname, crent, compaddress) {
+        var confirmMessageBox = confirm('Are you sure that you want to import only selected apartment ?');
+        if (confirmMessageBox) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ImportSelectedSublease", "Accounts")",
+                data: { pname: pname, aptNo: aptNo, cleaseno: cleaseno, cname: cname, crent: crent, compaddress: compaddress},
+                success: function (response) {
+                    alert(response);
+                }
+            })
+        }
+        //else {
+
+        //}
+    }
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //declaring global variable to hold primary key value.
+
+        loadpname();
+
+        @*$('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var id = $(this).attr('id');
+                var voucherno = $(this).attr('data-voucher');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteTemporaryReceipt", "Accounts")",
+                    data: { id: id, voucherno: voucherno },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });*@
+
+        $('#btnsearch').click(function () {
+            var categories = $('#categories :selected').val();
+            var searchtxt = $('#searchtxt').val();
+
+            if (categories == null || categories == "") {
+                alert('Select the Category');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SearchTemporaryReceiptList", "Accounts")",
+                data: { categories: categories, searchtxt: searchtxt},
+                success: function (response) {
+                    $('#tbody').html('');
+                    if (response != null) {
+                        var oreceipt = 'yes';
+                        $.each(response, function (k, v) {
+                            var paymentDate = v.paymentDate.split("T");
+                            var datefrom = v.datefrom.split("T");
+                            $('#tbody').append(`<tr>
+                                                <td hidden>${v.id}</td>
+                                                <td style="color:black;">${v.voucherno}</td>
+                                                <td style="color:black;">${paymentDate[0]}</td>
+                                                <td style="color:black;">${v.inqno}</td>
+                                                <td style="color:black;">${v.loiNo1}</td>
+                                                <td style="color:black;">${v.tname}</td>
+                                                <td style="color:black;">${v.amt}</td>
+                                                <td style="color:black;">${v.cash}</td>
+                                                <td style="color:black;">${v.knet}</td>
+                                                <td style="color:black;">${v.cheque}</td>
+                                                <td style="color:black;">${v.bt}</td>
+                                                <td style="color:black;">${v.amtType}</td>
+                                                <td style="color:black;">${v.pname}</td>
+                                                <td style="color:black;">${v.aptno}</td>
+                                                <td style="color:black;">${datefrom[0]}</td>
+                                                <td style="text-align: center;"><a href="@Url.Action("EditTemporaryReceipt", "Accounts")?id=${v.id}&vno=${v.voucherno}&type=${oreceipt}"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+                                                <td style="text-align: center;"><a href="javascript:void(0)" id="${v.id}" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a></td>
+                                                </tr>`);
+                        });
+                    }
+                    else {
+                        $('#tbody').append('<p style="text-align: center;">Search string empty</p>');
+                    }
+                }
+            })
+        })
+
+        $('.editsublease').click(function () {
+            var sessionRole = $('#sessionRole').val();
+            if (sessionRole != "Analyst") {
+                alert('Access Denied! Only FCA can access this');
+                return false;
+            }
+            else {
+                $('#editsubleaseModal').modal({ backdrop: "static" });
+                var subleaseid = $(this).attr('data-id');
+                $('#subleaseid').val(subleaseid);
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("LoadNationality", "Common")",
+                    success: function (response) {
+                        $('#nationality').html('');
+                        $('#nationality').append(`<option hidden value="">--Select--</option>`);
+                        $.each(response, function (k, v) {
+                            $('#nationality').append(`<option value="${v}">${v}</option>`);
+                        })
+                    }
+                })
+
+                $.ajax({
+                    type: "POST",
+                    data: { id: subleaseid},
+                    url: "@Url.Action("LoadEditSublease", "Accounts")",
+                    success: function (response) {
+                        var lstart = response.lstart.split("T");
+                        var lend = response.lend.split("T");
+                        $('#nationality').val(response.nationality);
+                        $('#payablerent').val(response.actualrent);
+                        $('#lcrent').val(response.lcrent);
+                        $('#type').val(response.ftype);
+                        $('#bedrooms').val(response.bed);
+                        $('#leasestart').val(lstart[0]);
+                        $('#leaseend').val(lend[0]);
+
+                        if (response.paymode == "Yearly") {
+                            $('#annually').prop('checked', true);
+                        }
+                        if (response.paymode == "Semi-Annually") {
+                            $('#semesterly').prop('checked', true);
+                        }
+                        if (response.paymode == "Monthly") {
+                            $('#monthly').prop('checked', true);
+                        }
+                        if (response.paymode == "Quaterly" || response.paymode == "QP") {
+                            $('#quarterly').prop('checked', true);
+                        }
+                        if (response.ttype == "Individual Enquiry") {
+                            $('#individual').prop('checked', true);
+                        }
+                        if (response.ttype == "Corporate Enquiry") {
+                            $('#corporate').prop('checked', true);
+                        }
+                    }
+                })
+            }
+        })
+
+        $('#update').click(function () {
+            var subleaseid = $('#subleaseid').val();
+            var individual = $('#individual').prop('checked');
+            var corporate = $('#corporate').prop('checked');
+            var annually = $('#annually').prop('checked');
+            var semesterly = $('#semesterly').prop('checked');
+            var monthly = $('#monthly').prop('checked');
+            var quarterly = $('#quarterly').prop('checked');
+            var nationality = $('#nationality :selected').val();
+            var lcrent = $('#lcrent').val();
+            var payablerent = $('#payablerent').val();
+            var type = $('#type :selected').val();
+            var bedrooms = $('#bedrooms :selected').val();
+            var leasestart = $('#leasestart').val();
+            var leaseend = $('#leaseend').val();
+
+            var TTYPE;
+            if (individual) {
+                TTYPE = "Individual Enquiry";
+            }
+            else if (corporate) {
+                TTYPE = "Corporate Enquiry";
+            }
+
+            var PAYMENTMODE;
+            if (annually) {
+                PAYMENTMODE = "Yearly";
+            }
+            else if (semesterly) {
+                PAYMENTMODE = "Semi-Annually";
+            }
+            else if (monthly) {
+                PAYMENTMODE = "Monthly";
+            }
+            else if (quarterly) {
+                PAYMENTMODE = "Quaterly";
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { subleaseid: subleaseid, TTYPE: TTYPE, PAYMENTMODE: PAYMENTMODE, nationality: nationality, lcrent: lcrent, payablerent: payablerent, type: type, bedrooms: bedrooms, leasestart: leasestart, leaseend: leaseend},
+                url: "@Url.Action("UpdateSublease", "Accounts")",
+                success: function (response) {
+                    alert(response)
+                    if (response == "UPDATED") {
+                        location.reload();
+                    }
+                }
+            })
+        })
+
+        $('#inactive').click(function () {
+            var confirmMessageBox = confirm('Are you Sure ,you want to Inactive the sublease ?');
+            if (confirmMessageBox) {
+                var subleaseid = $('#subleaseid').val();
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("InactiveSublease", "Accounts")",
+                    data: { subleaseid: subleaseid },
+                    success: function (response) {
+                        alert(response);
+                        if (response == "Sublease is disabled") {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#showclients').click(function () {
+            var sessionDepartment = $('#sessionDepartment').val();
+            if (sessionDepartment == "Accounts") {
+                var pname = $('#pname :selected').val();
+                if (pname == null || pname == "") {
+                    alert('Select Property Name');
+                    return false;
+                }
+
+                $('#showclientsModal').modal({ backdrop: "static" });
+                $('#tbodyshowclient').html('');
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("LoadShowClientsSublease", "Accounts")",
+                    data: { pname: pname },
+                    success: function (response) {
+
+                        $.each(response, function (k, v) {
+                            $('#tbodyshowclient').append(`<tr>
+                                                            <td class="bldgName" style="color:black;">${v.bldgName}</td>
+                                                            <td class="aptNo" style="color:black;">${v.aptNo}</td>
+                                                            <td class="cleaseno" style="color:black;">${v.cleaseno}</td>
+                                                            <td class="cname" style="color:black;">${v.cname}</td>
+                                                            <td class="crent" style="color:black;">${v.crent}</td>
+                                                            <td class="compaddress" style="color:black;">${v.compaddress}</td>
+                                                            <td style="color:black;"><a href="javascript:void(0)" onclick="importtoaccounts('${v.bldgName}', '${v.aptNo}', '${v.cleaseno}', '${v.cname}', '${v.crent}', '${v.compaddress}')">Import</a></td>
+                                                          </tr>`);
+                        })
+                    }
+                })
+            }
+            else {
+                alert('Access denied');
+                return false;
+            }
+        })
+
+        $('importall').click(function () {
+            var confirmMessageBox = confirm('Are you sure you want to import to Accounts Master ?');
+            if (confirmMessageBox) {
+                var arraybldgname = [];
+                var arrayaptno = [];
+                var arrayleaseno = [];
+                var arrayname = [];
+                var arrayrent = [];
+                var arraycompaddress = [];
+                var pname = $('#pname :selected').val();
+                var tablebody = document.getElementById("tbodyshowclient");
+                var rowslength = tablebody.rows.length;
+                $('#tbodyshowclient tr').each(function () {
+                    var tablebldgname = $(this).find('.bldgName').html();
+                    arraybldgname.push(tablebldgname);
+
+                    var tableaptno = $(this).find('.aptNo').html();
+                    arrayaptno.push(tableaptno);
+
+                    var tableleaseno = $(this).find('.cleaseno').html();
+                    arrayleaseno.push(tableleaseno);
+
+                    var tablename = $(this).find('.cname').html();
+                    arrayname.push(tablename);
+
+                    var tablerent = $(this).find('.crent').html();
+                    arrayrent.push(tablerent);
+
+                    var tablecompadd = $(this).find('.compaddress').html();
+                    arraycompaddress.push(tablecompadd);
+                });
+
+                $.ajax({
+                    type: "POST",
+                    data: { pname: pname },
+                    url: "@Url.Action("ExistInAccPm", "Accounts")",
+                    success: function (response) {
+                        var confirmMessageBox1 = confirm(`There are already apartments available under Q8REALTOR - ${pname} Are you sure you want to remove all and import again ?`);
+                        if (confirmMessageBox1) {
+                            $.ajax({
+                                type: "POST",
+                                data: { response: response, rowslength: rowslength, pname: pname, arraybldgname: arraybldgname, arrayaptno: arrayaptno, arrayleaseno: arrayleaseno, arrayname: arrayname, arrayrent: arrayrent, arraycompaddress: arraycompaddress},
+                                url: "@Url.Action("ImportAllSublease", "Accounts")",
+                                success: function (response) {
+                                    alert(response);
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+
+        })
+
+        //end of the document ready function
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card" style="color:burlywood">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    <input type="hidden" id="sessionDepartment" value="@Context.Session.GetString("CurrentUserDepartment")" />
+                    <input type="hidden" id="sessionRole" value="@Context.Session.GetString("CurrentUserRole")" />
+                    <form method="post">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <h5 style="color:black;"><strong>Sublease List</strong></h5>
+                                </div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3"></div>
+                                <div class="col-lg-3 float-right">
+                                    @*<button asp-action="" class="btn btn-primary"> <i class="fa fa-plus-square-o" style="font-size:20px"></i></button>*@
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12" style="margin-left: 10px;">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                @*<label class="control-label text-black-50" style="width: 125px;"></label>*@
+                                                <select id="pname" class="form-control" style="border-radius: 10px; width: 435px;">
+                                                    <option value="" hidden>--Select--</option>
+                                                    <option value="bayanA">bayanA</option>
+                                                    <option value="hayaB">hayaB</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-left: -15px; ">
+                                            <button type="button" id="showclients" class="btn btn-primary" style="border-radius: 10px; width: 225px; ">Show Clients from Sublease</button>
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+
+                                        </div>
+                                        <div class="col-lg-3" style="margin-top: 31px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3"></div>
+                            </div>
+                            @*<input type="hidden" id="oreceipt" />*@
+                            <div style="overflow-y:auto">
+                                <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 395px;">Building Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 65px;">Apt No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">LC No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 300px;">Tenant Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Rent</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 140px;">Sublease - LC No</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Status</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">Nationality</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px;">LC Rent</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 115px;">Payable Rent</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Payment</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 50px;">Type</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 140px;">Type of Client</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 17px; width: 80px;">Bedroom</label></th>
+                                            <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td hidden>@item.Id</td>
+                                                <td style="color:black;">@item.Pname</td>
+                                                <td style="color:black;">@item.Aptno</td>
+                                                <td style="color:black;">@item.Lno</td>
+                                                <td style="color:black;">@CommonRepository.Truncate(item.Name, 40)</td>
+                                                <td style="color:black;">@item.Rent</td>
+                                                <td style="color:black;">@item.Slno</td>
+                                                <td style="color:black;">@item.Active</td>
+                                                <td style="color:black;">@item.Nationality</td>
+                                                <td style="color:black;">@item.Lcrent</td>
+                                                <td style="color:black;">@item.Actualrent</td>
+                                                <td style="color:black;">@item.Paymode</td>
+                                                <td style="color:black;">@item.Ftype</td>
+                                                <td style="color:black;">@item.Ttype</td>
+                                                <td style="color:black;">@item.Bed</td>
+                                                <td style="text-align: center;">
+                                                    <a class="editsublease" href="javascript:void(0)" data-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </td>
+                                                @*<td style="text-align: center;">
+                                        <a href="javascript:void(0)" id="@item.Id" data-voucher="@item.Voucherno" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                    </td>*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+
+                    <!--popup for edit sublease-->
+                    <div id="editsubleaseModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+
+                            <div class="card" style="width: 1041px; margin-left: -80px;">
+                                <div class="card-body">
+                                    <form>
+                                        <div class="modal-content" style="width: 1000px;">
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit Sublease</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" id="subleaseid" />
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">Nationality</label>
+                                                                <select id="nationality" type="text" class="form-control" style="border-radius: 10px;">
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">LC Rent</label>
+                                                                <input id="lcrent" type="text" class="form-control" style="border-radius: 10px;" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">Payable Rent</label>
+                                                                <input id="payablerent" type="text" class="form-control" style="border-radius: 10px;" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">Type</label>
+                                                                <select id="type" type="text" class="form-control" style="border-radius: 10px;">
+                                                                    <option hidden value="">--Select--</option>
+                                                                    <option value="SF">SF</option>
+                                                                    <option value="FF">FF</option>
+                                                                    <option value="UF">UF</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">Bedrooms</label>
+                                                                <select id="bedrooms" class="form-control" style="border-radius: 10px;">
+                                                                    <option hidden value="">--Select--</option>
+                                                                    <option value="1">1</option>
+                                                                    <option value="2">2</option>
+                                                                    <option value="3">3</option>
+                                                                    <option value="4">4</option>
+                                                                    <option value="5">5</option>
+                                                                    <option value="6">6</option>
+                                                                    <option value="7">7</option>
+                                                                    <option value="8">8</option>
+                                                                    <option value="Studio">Studio</option>
+                                                                    <option value="-">-</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">Lease Start</label>
+                                                                <input id="leasestart" type="date" class="form-control" style="border-radius: 10px;" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">Lease End</label>
+                                                                <input id="leaseend" type="date" class="form-control" style="border-radius: 10px;" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <label style="color:black">Mode of Payment</label>
+                                                    <fieldset id="group1">
+                                                        <div class="row">
+                                                            <div class="col-lg-3">
+                                                                <div class="form-group">
+                                                                    <input id="annually" type="radio" name="group1" />
+                                                                    <label style="color:black">Annually</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3">
+                                                                <div class="form-group">
+                                                                    <input id="semesterly" type="radio" name="group1" />
+                                                                    <label style="color:black">Semesterly</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3">
+                                                                <div class="form-group">
+                                                                    <input id="quarterly" type="radio" name="group1" />
+                                                                    <label style="color:black">Quarterly</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3">
+                                                                <div class="form-group">
+                                                                    <input id="monthly" type="radio" name="group1" />
+                                                                    <label style="color:black">Monthly</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+
+                                                    <label style="color:black">Type of Client</label>
+                                                    <fieldset id="group2">
+                                                        <div class="row">
+                                                            <div class="col-lg-3">
+                                                                <div class="form-group">
+                                                                    <input id="individual" type="radio" name="group2" />
+                                                                    <label style="color:black">Individual Client</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3">
+                                                                <div class="form-group">
+                                                                    <input id="corporate" type="radio" name="group2" />
+                                                                    <label style="color:black">Corporate Client</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <div class="form-group">
+                                                                <label style="color:black">Report Status</label>
+                                                                <input id="reportstatus" type="text" class="form-control" style="border-radius: 10px;" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" id="update" class="btn btn-primary" style="border-radius:10px;">Update</button>
+                                                <button type="button" id="inactive" class="btn btn-primary" style="border-radius:10px;">Inactive</button>
+                                                <button type="button" class="btn btn-secondary" style="border-radius:10px;" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                    <!--popup for show clients-->
+                    <div id="showclientsModal" class="modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+
+                            <div class="card" style="width: 1355px; margin-left: -265px; ">
+                                <div class="card-body">
+                                    <form>
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Show Clients from Sublease</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div style="overflow-y:auto">
+                                                    <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                        <thead class="bg-success">
+                                                            <tr>
+                                                                @*<th></th>*@
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 395px;">Building Name</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 65px;">Apt No</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">LC No</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 300px;">Tenant Name</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px">Rent</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 140px;">Company Name</label></th>
+                                                                <th class="table-bordered"><label style="color: black; font-size: 17px; width: 100px; text-align: center;">Actions</label></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tbodyshowclient" class="bg-white">
+                                                            
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button id="importall" type="button" class="btn btn-primary" style="border-radius:10px;">Import All in Accounts Master</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

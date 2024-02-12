@@ -1,0 +1,181 @@
+﻿@model PMS_Admin_Web.Models.Marketing.ContactedCorporatesModel
+
+@{
+    //if (Model.Id == 0)
+    ViewData["Title"] = "Add Contacted Corporates";
+    //else
+    //    ViewData["Title"] = "Update User";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script>
+    @*function loadLeName() {
+        $.ajax(function () {
+            $.ajax({
+            type:"GET",
+            url:"@Url.Action("LoadLeName", "Common")",
+            dataType: "json",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#location').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+        })
+    }*@
+
+    $(document).ready(function () {
+        $('#divWhen').hide();
+
+        $('#appointmentfixed').click(function () {
+            var appointmentfixed = $('#appointmentfixed').prop('checked');
+            if (appointmentfixed) {
+                $('#divWhen').show();
+            }
+            else {
+                $('#divWhen').hide();
+            }
+        })
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+
+    <form class="form-horizontal" asp-controller="Marketing" asp-action="ContactedCorporates">
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-3"></div>
+            <div class="col-lg-3"></div>
+            <div class="col-lg-3">
+                <button type="button" data-target="#printreportModal" data-toggle="modal" data-backdrop="static" data-keyboard="false" class="btn btn-primary" style="border-radius:10px;">Print</button>
+            </div>
+        </div>
+        <br />
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Add Contacted Corporate</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-6">
+                        @Html.HiddenFor(model => model.cc.Id)
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Company Name</label>
+                            <input asp-for="cc.Ccname" id="username" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Contacted Date</label>
+                            <input asp-for="cc.Cdate" id="username" class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Name of the Contact</label>
+                            <input asp-for="cc.Cname" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Designation</label>
+                            <input asp-for="cc.Cdesg" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Contact Mob No/Tel No</label>
+                            <input asp-for="cc.Cmobile" class="form-control" type="text" style="border-radius: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Follow Up Date</label>
+                            <input asp-for="cc.Fdat" class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Appointment Fixed</label>
+                            <input id="appointmentfixed" asp-for="appointment" type="checkbox" />
+                            @*<div class="row">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">Yes</label>
+                                            <input type="radio" asp-for="Appointment" value="YES">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label text-black-50">No</label>
+                                            <input type="radio" asp-for="Appointment" value="NO">
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                        <div id="divWhen" class="form-group">
+                            <label class="control-label text-black-50">When?</label>
+                            <input id="whendate" asp-for="cc.Appdate" class="form-control" type="date" style="border-radius: 10px;" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Remarks</label>
+                            <textarea asp-for="cc.Remarks" class="form-control" style="width: 400px; border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-3"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="border-radius: 10px; float: right;">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!--popup for password change(settings)-->
+    <div id="printreportModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="card">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Print Report</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Admin</label>
+                                    <input id="admin" type="checkbox"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Le Name</label>
+                                    <select id="lename" class="form-control" style="border-radius: 10px;"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Contacted Date</label>
+                                    <input id="contacteddate" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                                
+                                <div class="modal-footer">
+                                    <button type="button" id="print" class="btn btn-primary">Print</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+</div>
+@*</div>*@
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

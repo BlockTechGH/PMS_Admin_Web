@@ -1,0 +1,240 @@
+﻿@model PMS_Admin_Web.Models.Users.CreateUserModel
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#role').change(function () {
+            var role = $('#role :selected').val();
+            if (role == "PA") {
+                $('#username').css("display", 'none');
+                $('#dept').css("display", 'none');
+                $('#palistnames').css("display", 'block');
+                $('#padept').css("display", 'block');
+
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("LoadPAs", "User")",
+                    //data: { propertyname: pname },
+                    dataType: "json",
+                    success: function (response) {
+
+                        $('#palistnames').html('');
+                        $('#palistnames').append('<option value="" hidden> --Select-- </option>');
+
+                        $.each(response, function (k, v) {
+                            $('#palistnames').append('<option value="' + v.paName + '" > ' + v.paName + '</option>');
+                        });
+
+                    }
+                })
+
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("LoadPADept", "User")",
+                    //data: { propertyname: pname },
+                    dataType: "json",
+                    success: function (response) {
+
+                        $('#padept').html('');
+                        $('#padept').append('<option value="" hidden> --Select-- </option>');
+
+                        $.each(response, function (k, v) {
+                            $('#padept').append('<option value="' + v + '" > ' + v + '</option>');
+                        });
+                    }
+                })
+            }
+            else {
+                $('#padept').css("display", 'none');
+                $('#palistnames').css("display", 'none');
+                $('#username').css("display", 'block');
+                $('#dept').css("display", 'block');
+            }
+        })
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    @*@Html.Raw(@ViewBag.Alert)*@
+
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-3">
+            <button type="button" class="btn btn-primary" data-target="#createPAModal" data-toggle="modal" style="border-radius:10px; float:right;">Create PA <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>
+        </div>
+    </div>
+    <br />
+    <form class="form-horizontal" asp-controller="User" asp-action="CreateUser">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Create User</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-6">
+
+                        @Html.HiddenFor(model => model.Id)
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Role</label>
+                            <div class="col-lg-12">
+                                <div class="row">
+
+                                    <select id="role" class="form-control" asp-for="Role" style="border-radius: 10px;">
+                                        <option selected="selected" value="" hidden>--Select--</option>
+                                        <option value="Administrator">Administrator</option>
+                                        <option value="User">User</option>
+                                        <option value="SRPA">SRPA</option>
+                                        <option value="DMS">DMS</option>
+                                        <option value="Analyst">Analyst</option>
+                                        <option value="PA">PA</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Enter Username</label>
+                            <input asp-for="Username" id="username" class="form-control" type="text" style="border-radius: 10px;" />
+                            <select asp-for="PaUsername" id="palistnames" style="display: none; border-radius: 10px;" class="form-control"></select>
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Enter Password</label>
+                            <input asp-for="Password" class="form-control" type="password" style="border-radius: 10px;" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Department</label>
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    @*<select asp-for="Department" asp-items="Html.GetEnumSelectList<PMS_Admin_Web.Enum.Departments>()">
+                                        <option selected="selected" value="">--Select--</option>
+                                    </select>*@
+                                    <select id="dept" class="form-control" asp-for="Department" style="border-radius: 10px;">
+                                        <option selected="selected" value="" hidden>--Select--</option>
+                                        <option value="Accounts">Accounts</option>
+                                        <option value="Administration">Administration</option>
+                                        <option value="facilities">Facilities</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="PA">PA</option>
+                                    </select>
+                                    <select asp-for="PaDepartment" id="padept" style="display: none; border-radius: 10px;" class="form-control"></select>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Department" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label text-black-50">Designation</label>
+                            <input asp-for="Designation" class="form-control" type="text" style="border-radius: 10px;" />
+                            @*<span asp-validation-for="Designation" class="text-danger"></span>*@
+                        </div>
+                        <!--<div class="form-group">
+                    <label class="control-label">Can Login?</label>
+                    <input asp-for="LogMode" class="form-control" type="checkbox" />-->
+                        @*<span asp-validation-for="Designation" class="text-danger"></span>*@
+                        <!--</div>-->
+
+
+                    </div>
+                    <div class="col-lg-3"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="border-radius: 10px; float: right;">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<!--popup for PA creation-->
+<div id="createPAModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+
+        @*<div class="card">*@
+        @*<div class="card-body">*@
+        @*<form asp-action="LC" asp-controller="MenuView" method="post">*@
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create PA</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <script>
+                $(document).ready(function () {
+
+                    $('#createPA').click(function () {
+                        var PaName = $('#PaName').val();
+                        var EmpCode = $('#EmpCode').val();
+                        if (PaName != null && EmpCode != null) {
+                            $.ajax({
+                            type: "POST",
+                            data: { paname: PaName, empcode: EmpCode },
+                            url: "@Url.Action("CreatePA", "User")",
+                            success: function (response) {
+                                alert(response);
+                                location.reload();
+                            },
+                            error: function (errResp) {
+                                alert(errResp);
+                                location.reload();
+                            }
+                        })
+                        }
+
+                    })
+                });
+            </script>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label>PA Name</label>
+                    <input id="PaName" type="text" class="form-control" style="border-radius: 10px;" />
+
+                </div>
+                <div class="form-group">
+                    <label>Emp Code</label>
+                    <input id="EmpCode" type="text" class="form-control" style="border-radius: 10px;" />
+                </div>
+                <div class="modal-footer">
+                    <button id="createPA" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                    <button type="button" class="btn btn-secondary" style="border-radius:10px;" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+        @*</form>*@
+        @*</div>*@
+        @*</div>*@
+    </div>
+</div>
+<!---->
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

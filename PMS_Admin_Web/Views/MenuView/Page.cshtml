@@ -1,0 +1,300 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+
+@model PMS_Admin_Web.Models.Property.RENTSTModel
+
+@{
+    ViewData["Title"] = "RentSt";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+<!--script goes here...-->
+<script>
+    function call_refresh() {
+        var bname = $('#bname').val();
+        var accgridclassmonth = document.getElementsByClassName('month');
+        var accgridclassyear = document.getElementsByClassName('year');
+        //console.log(accgridclassmonth[0].innerText);
+        var smonth = accgridclassmonth[0].innerText;
+        var syear = accgridclassyear[0].innerText;
+        $.ajax({
+            type: "POST",
+            data: {},
+            url: "@Url.Action("call_refreshRENTST", "MenuView")",
+            success: function (response) {
+
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        //start of the document ready function
+        //delcaring global variable to hold primary key value.
+
+        $('#divdown').hide();
+        $('#divup').hide();
+        $('#divclose').hide();
+
+        /*var pryEmpId;*/
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+            if (confirmMessageBox) {
+                var pryEmpId = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("DeleteUser", "User")",
+                    data: { Id: pryEmpId },
+
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err);
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        
+
+
+
+        //end of the docuement ready function
+    });
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <div class="card" style="color:burlywood">
+        <div class="col-lg-12">
+            <div class="card-body">
+                <form>
+                    <div class="col-lg-12">
+                        <input type="hidden" id="bname" asp-for="bname" />
+                        <input type="hidden" id="LRENT" />
+                        <input type="hidden" id="ARENT" />
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Search Database</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <div class="form-group" style="width: 345px;">
+                                                <label class="control-label text-black-50">Tenant Name/Mobile No/Civil ID/Lease No</label>
+                                                <input id="txttnamemobnoidlno" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group" style="width: 170px;">
+                                                <label class="control-label text-black-50">Lease Start</label>
+                                                <input id="txtleasestart" class="form-control" type="text" style="border-radius: 10px;" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input id="datepicker" class="form-control" type="date" style="border-radius: 10px; margin-top: 15px;" />
+                                        </td>
+                                        <td>
+                                            <button id="btnleasestart" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Lease Start</button>
+                                        </td>
+                                        <td>
+                                            <button id="btnvacated" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Vacated</button>
+                                        </td>
+                                        <td>
+                                            <div class="col-lg-12" style="margin-top: 345px;">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group" style="width: 135px; margin-left: 50px;">
+                                                            <input id="chkindividualclient" type="radio" style="border-radius: 10px;" name="clienttype" />
+                                                            <label class="control-label text-black-50">Individual Client</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group" style="width: 135px; margin-left: 50px;">
+                                                            <input id="chkcorporateclient" type="radio" style="border-radius: 10px;" name="clienttype"/>
+                                                            <label class="control-label text-black-50">Corporate Client</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button id="btnbutton2" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Button 2</button>
+                                        </td>
+                                        <td>
+                                            <button id="btndistinctbed" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Distinct Bed</button>
+                                        </td>
+                                        <td>
+                                            <button id="btndistincttype" type="button" class="btn btn-primary" style="border-radius: 10px; margin-top: 15px;">Distinct Type</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <br />
+
+                        <div style="overflow-y: auto;">
+                            <table id="accgridtable" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                <thead class="bg-success" style="width:100%">
+                                    <tr>
+                                        <th hidden></th>
+                                        <th></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 210px;">Property/Building Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 60px;">Apt No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 50px;">Floor</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 55px;">Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 75px;">Lease No</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 110px;">Tenant Name</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 70px;">LC Rent</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 85px; ">Apt Type</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 45px;">Bed</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Lease Start</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 90px;">Lease End</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 125px;">Vacating Status</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 105px;">Move Out on</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 103px;">View History</label></th>
+                                        <th class="table-bordered"><label style="color: black; font-size: 17px; width: 125px;">No of Occupied</label></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodysearchgrid">
+                                    @*@foreach (var item in Model.accgrid)
+                                    {
+                                        <tr id="@item.pref" class="searchgridclass">
+                                            <td class="rentstatementid" hidden>@item.id</td>
+                                            <td style="color:black;"><input type="checkbox" value="@item.id" name="selectedids" /></td>
+                                            <td class="aptno" style="color:black;">@item.aptno</td>
+                                            <td class="tenantname" style="color:black;">@item.tname</td>
+                                            <td class="nationality" style="color:black;">@item.nat</td>
+                                            <td class="bed" style="color:black;">@item.bed</td>
+                                            <td class="bath" style="color:black;">@item.bath</td>
+                                            <td class="rent" style="color:black;">@item.rent</td>
+                                            <td class="mpay" style="color:black;">@item.mpay</td>
+                                            <td class="ftype" style="color:black;">@item.ftype</td>
+                                            <td class="corpinv" style="color:black;">@item.corpinv</td>
+                                            <td class="month" style="color:black;">@item.month</td>
+                                            <td class="year" style="color:black;">@item.year</td>
+                                            <td class="pref" style="color:black;">@item.pref</td>
+                                            <td style="color:black;">Updated</td>
+                                            <td class="leasestart" style="color:black;">@item.leasestart</td>
+                                            <td class="leaseend" style="color:black;">@item.leaseend</td>
+                                            <td class="actrent" style="color:black;">@item.actrent</td>
+                                            <td style="color:black;">@item.slease</td>
+
+                                        </tr>
+                                    }*@
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+                </form>
+
+
+                <!--popup for btn bed-->
+                <div id="bedModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 1190px; margin-left: -195px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Bed/Bath</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <label><strong>Bed</strong></label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <button id="btnbedupdateselectedrecordfrompm" type="button" class="btn btn-primary" style="border-radius: 10px; width: 355px;">Update Selected Record from Property Master</button>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-left: 95px;">
+                                                    <button id="btnbedupdateallfromprevrs" type="button" class="btn btn-primary" style="border-radius: 10px; width: 315px;">Update All from Previous Rent Statement</button>
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <label><strong>Bath</strong></label>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <input id="bathtxt" class="form-control" type="text" style="border-radius: 10px;" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <button id="btnbathupdateselectedrecord" type="button" class="btn btn-primary" style="border-radius: 10px;">Update Selected Record</button>
+                                                </div>
+                                                <div class="col-lg-3" style="margin-left: -65px;">
+                                                    <button id="btnbathupdateallrecord" type="button" class="btn btn-primary" style="border-radius: 10px;">Update All Record</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @*<button id="btnhide" type="button" class="btn btn-primary" style="border-radius:10px;">Hide</button>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--popup for remark-->
+                <div id="remarkModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="card" style="width: 575px; margin-left: 85px; ">
+                            <div class="card-body">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Remark</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-lg-12">
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <textarea id="remark" class="form-control" type="text" style="border-radius: 10px; width: 500px; height: 100px; "></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="btnsaveremark" type="button" class="btn btn-primary" style="border-radius:10px;">Save</button>
+                                        <button id="btnclearremark" type="button" class="btn btn-primary" style="border-radius:10px;">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@

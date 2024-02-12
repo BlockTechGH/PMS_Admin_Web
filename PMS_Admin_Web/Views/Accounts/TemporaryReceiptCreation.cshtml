@@ -1,0 +1,950 @@
+﻿@model PMS_Admin_Web.Models.Accounts.TemporaryReceiptCreationModel
+
+@{
+    ViewData["Title"] = "Create Temp. Receipt";
+}
+
+@*@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}
+@if (ViewBag.Message1 != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message1");
+        };
+    </script>
+}*@
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    function loadnotcancelledloi() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoiNotCancelled","Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#loino1').append(`<option value="${v}">${v}</option>`);
+                });
+            }
+        })
+    }
+
+    function loadingvoucherno() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadVoucherNo", "Accounts")",
+            success: function (response) {
+                $('#voucherno').val(response);
+            }
+        })
+    }
+
+    function loadingpropertyname() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("LoadPropertyName","Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#propertynameselection').append(`<option value="${v}">${v}</option>`);
+                })
+            }
+        })
+    }
+
+    function loadpayvoucherbyloino(loino1) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadPayVoucherByLoiNo", "Accounts")",
+            data: { loino1: loino1 },
+            success: function (response) {
+                if (response != 0) {
+                    $('#rentpaid').val(response.rentpaid);
+                    $('#depositpaid').val(response.deppaid);
+                    $('#clresfpaid').val(response.resfpaid);
+                    $('#llresfpaid').val(response.llresfpaid);
+                }
+            }
+        })
+    }
+
+    //function amounttowords(num) {
+    //    var a = ['', 'one ', 'two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 'fifteen ', 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen '];
+    //    var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+    //    if ((num = num.toString()).length > 9) return 'overflow';
+    //    n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    //    if (!n) return; var str = '';
+    //    str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
+    //    str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
+    //    str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
+    //    str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
+    //    str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
+    //    return str;
+    //}
+
+    $(document).ready(function () {
+        loadnotcancelledloi();
+        $('#propertynameselection').hide();
+        $('#aptnoselection').hide();
+        $('#divOther').hide();
+        $('#btnadd').hide();
+        $('#table2').hide();
+        $("#cash").prop("disabled", true);
+        $("#knet").prop("disabled", true);
+        $("#cheque").prop("disabled", true);
+        $("#bt").prop("disabled", true);
+
+        $("#loino1").change(function () {
+            var loino1 = $('#loino1 :selected').val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("LoadDetFromLoiInfo", "Accounts")",
+                data: { loino1: loino1 },
+                success: function (response) {
+                    //alert(response)
+                    $('#inqno').val(response.inqno);
+                    $('#propertyname').val(response.propertyName);
+                    $('#aptno').val(response.aptno);
+                    $('#propertysource').val(response.propertySource);
+                    $('#tenantname').val(response.clientName);
+                    $('#rentamt').val(response.rent);
+                    $('#depositamt').val(response.deposit);
+                    $('#clresf').val(response.clientResf);
+                    $('#LLRESF').val(response.llresf);
+                    var ls = response.leasedate.substring(0, 10);
+                    $('#leasestartdate').val(ls);
+                    var le = response.leaseenddate.substring(0, 10);
+                    $('#leaseenddate').val(le);
+                    $('#loivarpath').val(response.loipath);
+                    $('#loino').val(response.loiNo);
+                    $('#lename').val(response.lename);
+                    $('#dept').val(response.dept);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("LoadDetFromLcInfoByLoiNo", "Accounts")",
+                        data: { loino1: loino1 },
+                        success: function (response) {
+                            if (response != 0) {
+                                $('#lcvarpath').val(response.lcpath);
+                                $('#tenantname').val('');
+                                $('#tenantname').val(response.tenname);
+                            }
+                        }
+                    })
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("LoadPayVoucherByLoiNo", "Accounts")",
+                        data: { loino1: loino1 },
+                        success: function (response) {
+                            if (response != 0) {
+                                $('#rentpaid').val(response.rentpaid);
+                                $('#depositpaid').val(response.deppaid);
+                                $('#clresfpaid').val(response.resfpaid);
+                                $('#llresfpaid').val(response.llresfpaid);
+                            }
+                        }
+                    })
+
+                    var resfpaid = $('#clresfpaid').val();
+                    var clresf = response.clientResf/*$('#clresf').val()*/;
+                    if (clresf == resfpaid && clresf != 0) {
+                        alert(`${loino1}: RESF is already paid.New Payment will make the mistakes in sum amount`);
+                    }
+
+                    var propertysource = $('#propertysource').val();
+                    if (propertysource == 'ManagedProperty') {
+                        $("#propertyname").prop("disabled", true);
+                        $("#aptno").prop("disabled", true);
+                    }
+                    else {
+                        $("#propertyname").prop("disabled", false);
+                        $("#aptno").prop("disabled", false);
+                    }
+
+                    if (response.dept == 'MARKETING') {
+                        chkmarketing.checked = true;
+                        chkother.checked = false;
+                    }
+                    else {
+                        chkother.checked = true;
+                        chkmarketing.checked = false;
+                    }
+                }
+            })
+
+        });
+
+        $("#vouchertype").change(function () {
+            var vouchertype = $('#vouchertype :selected').val();
+            if (vouchertype == "-") {
+                $('#propertyname').hide();
+                $('#propertynameselection').show();
+                $('#aptno').hide();
+                $('#aptnoselection').show();
+                $("#loino1").prop("disabled", true);
+
+                $('#propertyname').val('');
+                $('#aptno').val('');
+                $('#leasestartdate').val('');
+                $('#leaseenddate').val('');
+                $('#tenantname').val('');
+
+                loadingpropertyname();
+                loadingvoucherno();
+            }
+            else if (vouchertype == "for original receipts") {
+                $('#voucherno').val('-');
+
+                $('#propertyname').show();
+                $('#propertynameselection').hide();
+                $('#aptno').show();
+                $('#aptnoselection').hide();
+                $("#loino1").prop("disabled", false);
+
+                $('#propertyname').val('');
+                $('#aptno').val('');
+                $('#leasestartdate').val('');
+                $('#leaseenddate').val('');
+                $('#tenantname').val('');
+            }
+            else {
+                $("#loino1").prop("disabled", false);
+
+                $('#propertyname').val('');
+                $('#aptno').val('');
+                $('#leasestartdate').val('');
+                $('#leaseenddate').val('');
+                $('#tenantname').val('');
+
+                $('#propertyname').show();
+                $('#propertynameselection').hide();
+                $('#aptno').show();
+                $('#aptnoselection').hide();
+
+                loadingvoucherno();
+            }
+        })
+
+        $('#propertynameselection').change(function () {
+            var propertynameselection = $('#propertynameselection :selected').val();
+            $('#propertyname').val(propertynameselection);
+            $.ajax({
+                type: "POST",
+                data: { propertyname: propertynameselection},
+                url: "@Url.Action("LoadAptNumber","Common")",
+                success: function (response) {
+                    $.each(response, function (k, v) {
+                        $('#aptnoselection').append(`<option value=${v}>${v}</option>`);
+                    })
+                }
+            })
+        })
+
+        $('#aptnoselection').change(function () {
+            var propertynameselection = $('#propertynameselection :selected').val();
+            var aptnoselection = $('#aptnoselection :selected').val();
+            $('#aptno').val(aptnoselection);
+            $.ajax({
+                type: "POST",
+                data: { aptno: aptnoselection, propertyname: propertynameselection},
+                url: "@Url.Action("AptChangeEventTempReceipt", "Accounts")",
+                success: function (response) {
+                    $('#tenantname').val(response.cname);
+                    /*var ls = response.leasestart.substring(0, 10);*/
+                    $('#leasestartdate').val(response.leasestart);
+                    /*var le = response.leaseend.substring(0, 10);*/
+                    $('#leaseenddate').val(response.leaseend);
+                }
+            })
+        })
+
+        $('#amounttype').change(function () {
+            $('#cash').val('');
+            $('#knet').val('');
+            $('#cheque').val('');
+            $('#bt').val('');
+            $('#totalamount').val('');
+
+            var amounttype = $('#amounttype :selected').val();
+            if (amounttype == "OTHER") {
+                $('#divOther').show();
+            }
+            else {
+                $('#divOther').hide();
+            }
+        })
+
+        $('#other').change(function () {
+            $('#cash').val('');
+            $('#knet').val('');
+            $('#cheque').val('');
+            $('#bt').val('');
+            $('#totalamount').val('');
+        })
+
+        $('#cash').change(function () {
+            var cash = $('#cash').val();
+            var knet = $('#knet').val();
+            var cheque = $('#cheque').val();
+            var bt = $('#bt').val();
+            var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+            $('#totalamount').val(totalamount);
+            //var totalamounttxt = amounttowords(totalamount);
+            //$('#totalamounttxt').val(totalamounttxt);
+        })
+        $('#knet').change(function () {
+            var cash = $('#cash').val();
+            var knet = $('#knet').val();
+            var cheque = $('#cheque').val();
+            var bt = $('#bt').val();
+            var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+            $('#totalamount').val(totalamount);
+            //var totalamounttxt = amounttowords(totalamount);
+            //$('#totalamounttxt').val(totalamounttxt);
+        })
+        $('#cheque').change(function () {
+            var cash = $('#cash').val();
+            var knet = $('#knet').val();
+            var cheque = $('#cheque').val();
+            var bt = $('#bt').val();
+            var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+            $('#totalamount').val(totalamount);
+            //var totalamounttxt = amounttowords(totalamount);
+            //$('#totalamounttxt').val(totalamounttxt);
+        })
+        $('#bt').change(function () {
+            var cash = $('#cash').val();
+            var knet = $('#knet').val();
+            var cheque = $('#cheque').val();
+            var bt = $('#bt').val();
+            var totalamount = Number(cash) + Number(knet) + Number(cheque) + Number(bt);
+            $('#totalamount').val(totalamount);
+            //var totalamounttxt = amounttowords(totalamount);
+            //$('#totalamounttxt').val(totalamounttxt);
+        })
+
+        $('#btnadd').click(function () {
+            var cash = $('#cash').val();
+            var knet = $('#knet').val();
+            var cheque = $('#cheque').val();
+            var bt = $('#bt').val();
+            var totalamount = $('#totalamount').val();
+
+            var amounttype = $('#amounttype :selected').val();
+            var other = $('#other :selected').val();
+
+            if (amounttype == null || amounttype == '') {
+                alert('Select the amount type');
+                return false;
+            }
+            if (totalamount == null || totalamount == '') {
+                alert('Total Amount should not be empty');
+                return false;
+            }
+
+
+            table = document.getElementById("table2");
+            var rows = table.rows;
+            for (var i = 1; i < rows.length; i++) {
+                var cols = rows[i].cells;
+                for (var c = 0; c < cols.length; c++) {
+                    if (amounttype == "OTHER") {
+                        if (cols[c].innerText == other) {
+                            /*return cols[0].innerHTML;*/
+                            alert(`${other} is already added`);
+                            return false;
+                        }
+                    }
+                    else {
+                        if (cols[c].innerText == amounttype) {
+                            /*return cols[0].innerHTML;*/
+                            alert(`${amounttype} is already added`);
+                            return false;
+                        }
+                    }
+
+                }
+            }
+
+            if (amounttype == "OTHER") {
+
+                if (other == null || other == '') {
+                    alert('Mention the Other type');
+                    return false;
+                }
+                $('#tbody').append(`<tr>
+                                        <td class="vouchertype" style="color: black;">${other}</td>
+                                        <td class="totalamount" style="color: black;">${totalamount}</td>
+                                        <td class="cash" style="color: black;">${cash}</td>
+                                        <td class="knet" style="color: black;">${knet}</td>
+                                        <td class="cheque" style="color: black;">${cheque}</td>
+                                        <td class="bt" style="color: black;">${bt}</td>
+                                    </tr>`);
+            }
+            else {
+                $('#tbody').append(`<tr>
+                                        <td class="vouchertype" style="color: black;">${amounttype}</td>
+                                        <td class="totalamount" style="color: black;">${totalamount}</td>
+                                        <td class="cash" style="color: black;">${cash}</td>
+                                        <td class="knet" style="color: black;">${knet}</td>
+                                        <td class="cheque" style="color: black;">${cheque}</td>
+                                        <td class="bt" style="color: black;">${bt}</td>
+                                    </tr>`);
+            }
+
+            $('#cash').val('');
+            $('#knet').val('');
+            $('#cheque').val('');
+            $('#bt').val('');
+            $('#totalamount').val('');
+        })
+
+        $('#multiplepayment').click(function () {
+            var multiplepayment = document.getElementById('multiplepayment').checked;
+            if (multiplepayment == true) {
+                $('#btnadd').show();
+                $('#table2').show();
+            }
+            else {
+                $('#btnadd').hide();
+                $('#table2').hide();
+            }
+        })
+
+        $('#chkcash').click(function () {
+            var chkcash = document.getElementById('chkcash').checked;
+            if (chkcash == true) {
+                $("#cash").prop("disabled", false);
+            }
+            else {
+                $("#cash").prop("disabled", true);
+            }
+        })
+        $('#chkknet').click(function () {
+            var chkknet = document.getElementById('chkknet').checked;
+            if (chkknet == true) {
+                $("#knet").prop("disabled", false);
+            }
+            else {
+                $("#knet").prop("disabled", true);
+            }
+        })
+        $('#chkcheque').click(function () {
+            var chkcheque = document.getElementById('chkcheque').checked;
+            if (chkcheque == true) {
+                $("#cheque").prop("disabled", false);
+            }
+            else {
+                $("#cheque").prop("disabled", true);
+            }
+        })
+        $('#chkbt').click(function () {
+            var chkbt = document.getElementById('chkbt').checked;
+            if (chkbt == true) {
+                $("#bt").prop("disabled", false);
+            }
+            else {
+                $("#bt").prop("disabled", true);
+            }
+        })
+
+
+
+
+        $('#btncreate').click(function () {
+            var arrayVouchertype = [];
+            var arrayTotalamt = [];
+            var arrayCash = [];
+            var arrayKnet = [];
+            var arrayCheque = [];
+            var arrayBt = [];
+
+            var tomail = $('#tomail').val();
+            var ccmail = $('#ccmail').val();
+            var propertyname = $('#propertyname').val();
+            var chkcash = document.getElementById('chkcash').checked;
+            var chkknet = document.getElementById('chkknet').checked;
+            var chkcheque = document.getElementById('chkcheque').checked;
+            var chkbt = document.getElementById('chkbt').checked;
+            var cash = $('#cash').val();
+            var knet = $('#knet').val();
+            var cheque = $('#cheque').val();
+            var bt = $('#bt').val();
+            var totalamount = $('#totalamount').val();
+            var remarks = $('#remarks').val();
+            var vouchertype = $('#vouchertype :selected').val();
+            var loino1 = $('#loino1 :selected').val();
+            var amounttype = $('#amounttype :selected').val();
+            var other = $('#other :selected').val();
+            var voucherno = $('#voucherno').val();
+            var fromdate = $('#fromdate').val();
+            var todate = $('#todate').val();
+            var multiplepayment = document.getElementById('multiplepayment').checked;
+            var loino = $('#loino').val();
+            var inqno = $('#inqno').val();
+            var vouchermadeon = $('#vouchermadeon').val();
+            var tenantname = $('#tenantname').val();
+            var aptno = $('#aptno').val();
+
+            var tablebody = document.getElementById("tbody");
+            var rowslength = tablebody.rows.length;
+
+            $('#tbody tr').each(function () {
+                var tableVouchertype = $(this).find('.vouchertype').html();
+                arrayVouchertype.push(tableVouchertype);
+
+                var tableTotalamt = $(this).find('.totalamount').html();
+                arrayTotalamt.push(tableTotalamt);
+
+                var tableCash = $(this).find('.cash').html();
+                arrayCash.push(tableCash);
+
+                var tableKnet = $(this).find('.knet').html();
+                arrayKnet.push(tableKnet);
+
+                var tableCheque = $(this).find('.cheque').html();
+                arrayCheque.push(tableCheque);
+
+                var tableBt = $(this).find('.bt').html();
+                arrayBt.push(tableBt);
+            });
+
+            if (propertyname == null || propertyname == "") {
+                alert('Enter the Propertyname');
+                return false;
+            }
+            var cashtype = "-";
+            if (chkcash == true) {
+                if (cash == null) {
+                    alert('Enter the Cash amt');
+                    return false;
+                }
+            }
+            if (chkknet == true) {
+                if (knet == null) {
+                    alert('Enter the KNET amt');
+                    return false;
+                }
+            }
+            if (chkcheque == true) {
+                if (cheque == null) {
+                    alert('Enter the Cheque amt');
+                    return false;
+                }
+            }
+            if (chkbt == true) {
+                if (bt == null) {
+                    alert('Enter the BT amt');
+                    return false;
+                }
+            }
+
+            if (vouchertype != '-') {
+                if (loino1 == null) {
+                    alert('Select the LOI NO');
+                    return false;
+                }
+            }
+
+            if (amounttype == null) {
+                alert('Select Voucher Type');
+                return false;
+            }
+
+            if (totalamount == null) {
+                alert('Total Amount should not be empty');
+                return false;
+            }
+
+            if (voucherno == null) {
+                alert('Enter the Voucher No');
+                return false;
+            }
+
+            if (fromdate == null) {
+                alert('Voucher From date is required');
+                return false;
+            }
+
+            if (todate == null) {
+                alert('Voucher To date is required');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { voucherno: voucherno, multiplepayment: multiplepayment, rowslength: rowslength, loino: loino, inqno: inqno, loino1: loino1, arrayVouchertype: arrayVouchertype, arrayTotalamt: arrayTotalamt, arrayCash: arrayCash, arrayKnet: arrayKnet, arrayCheque: arrayCheque, arrayBt: arrayBt, other: other, amounttype: amounttype, totalamount: totalamount, vouchermadeon: vouchermadeon, remarks: remarks, fromdate: fromdate, todate: todate, cashtype: cashtype, tenantname: tenantname, propertyname: propertyname, aptno: aptno, cash: cash, knet: knet, cheque: cheque, bt: bt, tomail: tomail, ccmail: ccmail},
+                url: "@Url.Action("CreateTemporaryReceipt", "Accounts")",
+                success: function (response) {
+                    alert(response);
+                    loadpayvoucherbyloino(loino1);
+                }
+            })
+        })
+
+    });
+</script>
+
+
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form asp-action="TemporaryReceiptCreation" asp-controller="Accounts">
+        <input id="tomail" type="hidden" asp-for="tomailid" />
+        <input id="ccmail" type="hidden" asp-for="ccmailid" />
+        <input type="hidden" asp-for="tomailidlist" />
+        <input type="hidden" asp-for="ccmailidlist" />
+
+        <input id="propertysource" type="hidden" asp-for="propertysource" />
+        <input id="rentamt" type="hidden" />
+        <input id="depositamt" type="hidden" />
+        <input id="clresf" type="hidden" />
+        <input id="LLRESF" type="hidden" />
+        <input id="loino" type="hidden" asp-for="paymentvoucher.Loino" />
+        <input id="lename" type="hidden" />
+        <input id="dept" type="hidden" asp-for="paymentvoucher.Dept" />
+        <input id="loivarpath" type="hidden" />
+        <input id="lcvarpath" type="hidden" />
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Temporary Receipt Creation</strong></h5>
+            </div>
+            <div class="card-body">
+                <br />
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Voucher Type</label>
+                                <select id="vouchertype" asp-for="paymentvoucher.Ptype" class="form-control" style="border-radius: 10px;">
+                                    <option hidden>--Select--</option>
+                                    <option value="Initial Payment">Initial Payment</option>
+                                    <option value="-">-</option>
+                                    <option value="for original receipts">for original receipts</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Voucher No</label>
+                                <input id="voucherno" asp-for="paymentvoucher.Voucherno" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Voucher Made On</label>
+                                <input id="vouchermadeon" asp-for="paymentvoucher.PaymentDate" class="form-control" type="date" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#BasicDetails">Basic Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#PaymentDetails">Payment Details</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="BasicDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Select LOI No</label>
+                                        <select id="loino1" asp-for="paymentvoucher.LoiNo1" class="form-control" style="border-radius: 10px;">
+                                            <option hidden>--Select--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Inq No</label>
+                                        <input id="inqno" asp-for="paymentvoucher.Inqno" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Property Name</label>
+                                        <input id="propertyname" asp-for="paymentvoucher.Pname" type="text" class="form-control" style="border-radius: 10px;" />
+
+                                        <select id="propertynameselection" asp-for="paymentvoucher.Pname" class="form-control" style="border-radius: 10px;">
+                                            <option value="" hidden>--Select--</option>
+                                        </select>
+                                        @*<input type="hidden" id="propertyname_hidden" asp-for="paymentvoucher.Pname" />*@
+                                    </div>
+                                </div>
+                                @*<div class="col-lg-3" style="margin-top: 38px;">
+                                    <div class="form-group">
+                                        <input id="multipleApt" type="checkbox" asp-for="MultipleApartment" />
+                                        <label class="control-label text-black-50"> Multiple Apartments</label>
+
+                                        <label class="control-label text-black-50" style="font-size: 13px;">Note: Kindly check this option if you have Multiple Apartments to reserve.</label>
+                                    </div>
+                                </div>*@
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Apartment No</label>
+                                        <input id="aptno" asp-for="paymentvoucher.Aptno" type="text" class="form-control" style="border-radius: 10px;" />
+
+                                        <select id="aptnoselection" asp-for="paymentvoucher.Aptno" class="form-control" style="border-radius: 10px;">
+                                            <option value="" hidden>--Select--</option>
+                                        </select>
+                                        @*<input type="hidden" id="aptno_hidden" asp-for="paymentvoucher.Aptno" />
+                                        <label class="control-label text-black-50" style="font-size: 13px;">Note: To select multiple apartments, if Multiple Apartment option is checked ,press ctrl and click the Apt No.</label>*@
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <label><strong>LOI Department</strong></label>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <input id="chkmarketing" type="checkbox" />
+                                        <label class="control-label text-black-50">Marketing</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <input id="chkother" type="checkbox" />
+                                        <label class="control-label text-black-50">Other</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Tenant Name</label>
+                                        <input id="tenantname" asp-for="paymentvoucher.Tname" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Lease Start Date</label>
+                                        <input id="leasestartdate" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Lease End Date</label>
+                                        <input id="leaseenddate" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Remarks</label>
+                                        <textarea id="remarks" class="form-control" type="text" style="border-radius: 10px; width: 400px;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="PaymentDetails">
+                        <div class="col-lg-12">
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Amount Type</label>
+                                        <select id="amounttype" asp-for="paymentvoucher.AmtType" class="form-control" style="border-radius: 10px;">
+                                            <option value="" hidden>--Select--</option>
+                                            <option value="RENT">RENT</option>
+                                            <option value="DEPOSIT">DEPOSIT</option>
+                                            <option value="RESF">RESF</option>
+                                            <option value="OTHER">OTHER</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" style="margin-top: 38px;">
+                                    <div class="form-group">
+                                        <input id="multiplepayment" type="checkbox" asp-for="MultiplePayment" />
+                                        <label class="control-label text-black-50"> Multiple Payments</label>
+                                    </div>
+                                </div>
+                                <div id="divOther" class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Other</label>
+                                        <select id="other" asp-for="other" class="form-control" style="border-radius: 10px;">
+                                            <option value="" hidden>--Select--</option>
+                                            <option value="Furniture">Furniture</option>
+                                            <option value="RESF-LL">RESF-LL</option>
+                                            <option value="Internet">Internet</option>
+                                            <option value="GBC">GBC</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">From</label>
+                                        <input id="fromdate" asp-for="paymentvoucher.Datefrom" class="form-control" type="date" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">To</label>
+                                        <input id="todate" asp-for="paymentvoucher.Dateto" class="form-control" type="date" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <input id="chkcash" type="checkbox" />
+                                            <label class="control-label text-black-50">Cash</label>
+                                        </div>
+                                        <input id="cash" asp-for="paymentvoucher.Cash" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <input id="chkknet" type="checkbox" />
+                                            <label class="control-label text-black-50">KNET</label>
+                                        </div>
+                                        <input id="knet" asp-for="paymentvoucher.Knet" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <input id="chkcheque" type="checkbox" />
+                                            <label class="control-label text-black-50">Cheque</label>
+                                        </div>
+                                        <input id="cheque" asp-for="paymentvoucher.Cheque" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <input id="chkbt" type="checkbox" />
+                                            <label class="control-label text-black-50">BT</label>
+                                        </div>
+                                        <input id="bt" asp-for="paymentvoucher.Bt" class="form-control" type="text" style="border-radius: 10px; margin-top: -16px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Total Amount</label>
+                                        <input id="totalamount" asp-for="totalamount" class="form-control" type="text" style="border-radius: 10px;" />
+                                        @*<input id="totalamounttxt" type="text" />*@
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" style="margin-top: 31px;">
+                                    <button id="btnadd" type="button" class="btn btn-primary" style="border-radius:10px;">Add</button>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div style="overflow-y:auto">
+                                        <table id="table2" class="table-bordered" style=" width: 100%;">
+                                            <thead class="bg-success">
+                                                <tr>
+                                                    <th style="width: 130px; color: black;">Voucher Type</th>
+                                                    <th style="width: 75px; color: black;">Amt</th>
+                                                    <th style="width: 75px; color: black;">Cash</th>
+                                                    <th style="width: 75px; color: black;">Knet</th>
+                                                    <th style="width: 75px; color: black;">Cheque</th>
+                                                    <th style="width: 50px; color: black;">BT</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Rent Paid</label>
+                                        <input id="rentpaid" asp-for="rentpaid" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Deposit Paid</label>
+                                        <input id="depositpaid" asp-for="depositpaid" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">CL RESF</label>
+                                        <input id="clresfpaid" asp-for="clresfpaid" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LL RESF</label>
+                                        <input id="llresfpaid" asp-for="llresfpaid" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LOI Rent</label>
+                                        <input id="rentloi" asp-for="loirent" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Deposit</label>
+                                        <input id="depositloi" asp-for="loideposit" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">CL RESF</label>
+                                        <input id="clresfloi" asp-for="loiclresf" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">LL RESF</label>
+                                        <input id="llresfloi" asp-for="loillresf" class="form-control" type="text" style="border-radius: 10px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="card" style="color:burlywood">
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <button type="button" id="btncreate" class="btn btn-primary float-right" style="border-radius:10px;">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>

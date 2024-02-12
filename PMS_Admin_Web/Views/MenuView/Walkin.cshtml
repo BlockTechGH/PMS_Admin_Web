@@ -1,0 +1,279 @@
+﻿@model PMS_Admin_Web.Models.PA.WalkinClientInquiryModel
+
+@{
+    ViewData["Title"] = "Walkin Client Inquiry";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+        /*location.reload();*/
+    </script>
+}
+
+<script>
+    function loadNationality() {
+        $.ajax({
+            type:"POST",
+            url: "@Url.Action("LoadNationality", "Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#nationality').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+    function loadproperty() {
+        $.ajax({
+            type:"POST",
+            url: "@Url.Action("LoadPropertyName", "Common")",
+            success: function (response) {
+                $.each(response, function (k, v) {
+                    $('#propertynames').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+    }
+
+    function viewwalkin(date, propertyName) {
+        $.ajax({
+            type: 'POST',
+            data: { date: date, propertyName: propertyName },
+            dataType: "json",
+            url: "@Url.Action("ViewWalkin", "MenuView")",
+            success: function (response) {
+                //alert(response);
+                $('#tbody').html('');
+                $.each(response, function (k, v) {
+                    $('#tbody').append(`<tr>
+                                            <td hidden>${v.id}</td>
+                                            <td style="color:black;">${v.name}</td>
+                                            <td style="color:black;">${v.nationality}</td>
+                                            <td style="color:black;">${v.status}</td>
+                                            <td style="text-align: center;"><a href="javascript:void(0)" id="${v.id}" class="deleteprompt">Remove</a></td>
+                                        </tr>`);
+                });
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        loadNationality();
+        loadproperty();
+
+        $('.deleteprompt').click(function () {
+            var confirmMessageBox = confirm('Are you sure you delete the selected record ?');
+            if (confirmMessageBox) {
+                var pryEmpId = $(this).attr('id');
+                //alert(pryEmpId);
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("RemoveWalkin", "MenuView")",
+                    data: { id: pryEmpId },
+
+                    success: function (response) {
+                        alert(response);
+                        var date = $('#date').val();
+                        var propertyName = $('#propertyName').val();
+                        viewwalkin(date, propertyName);
+                    }
+                });
+            }
+        });
+
+        $('#individual').click(function () {
+            var individual = $('#individual').val();
+            $('#status').val(individual);
+        })
+        $('#corporate').click(function () {
+            var corporate = $('#corporate').val();
+            $('#status').val(corporate);
+        })
+
+        $('#view').click(function () {
+            var date = $('#date').val();
+            var propertyName = $('#propertyName').val();
+            if (date == null || date == ""){
+                alert('Enter the Date');
+                return false;
+            }
+            if (propertyName == null || propertyName == "") {
+                alert('Select property name');
+                return false;
+            }
+            viewwalkin(date, propertyName);
+
+            @*$.ajax({
+                type: 'POST',
+                data: { date: date, propertyName: propertyName },
+                dataType: "json",
+                url: "@Url.Action("ViewWalkin", "MenuView")",
+                success: function (response) {
+                    //alert(response);
+                    $('#tbody').html('');
+                    $.each(response, function (k, v) {
+                        $('#tbody').append(`<tr>
+                                                <td hidden>${v.id}</td>
+                                                <td style="color:black;">${v.name}</td>
+                                                <td style="color:black;">${v.nationality}</td>
+                                                <td style="color:black;">${v.status}</td>
+                                                <td style="text-align: center;"><a href="javascript:void(0)" id="${v.id}" class="deleteprompt">Remove</a></td>
+                                            </tr>`);
+                    });
+                }
+            })*@
+        })
+
+        $('#btnadd').click(function () {
+            var propertyName = $('#propertyName').val();
+            var names = $('#names').val();
+            var nationality = $('#nationality :selected').val();
+            var status = $('#status').val();
+            var date = $('#date').val();
+
+            if (propertyName == null || propertyName == "") {
+                alert('Select property name');
+                return false;
+            }
+            if (names == null || names == "") {
+                alert('ENTER THE NAME');
+                return false;
+            }
+            if (nationality == null || nationality == "") {
+                alert('Enter the Nationality');
+                return false;
+            }
+            if (status == null || status == "") {
+                alert('ENTER THE STATUS');
+                return false;
+            }
+            if (date == null || date == "") {
+                alert('Enter the Date');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: { propertyName: propertyName, names: names, nationality: nationality, status: status, date: date},
+                url: "@Url.Action("BtnAddWalkin", "MenuView")",
+                success: function (response) {
+                    alert(response);
+                    viewwalkin(date, propertyName);
+                    $('#propertyName').val('');
+                    $('#names').val('');
+                    $('#nationality').prop('selectedIndex', 0);
+                    $('#status').val();
+                }
+            })
+        })
+
+    })
+</script>
+
+@*<div class="row">*@
+<div class="col-lg-12">
+    <form asp-action="WalkinClientInquiry" asp-controller="PA">
+        <div class="card" style="color:burlywood">
+            <div class="card-header" style="background-color: darksalmon;">
+                <h5 class="text-center" style="color:black"><strong>Walkin Client Inquiry</strong></h5>
+            </div>
+            <div class="card-body">
+                <div class="col-lg-12">
+                    <br />
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Property Name</label>
+                                <input id="propertyName" class="form-control" type="text" style="border-radius: 10px;" list="propertynames" />
+                                <datalist id="propertynames">
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Names</label>
+                                <input id="names" class="form-control" type="text" style="border-radius: 10px;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Nationality</label>
+                                <select id="nationality" class="form-control" style="border-radius: 10px;">
+                                    <option hidden value="">--Select--</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Status</label>
+                                <input id="status" disabled class="form-control" type="text" style="border-radius: 10px;" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 38px;">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Individual Client</label>
+                                        <input id="individual" name="enquiryType" type="radio" value="Individual">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-black-50">Corporate Client</label>
+                                        <input id="corporate" name="enquiryType" type="radio" value="Corporate">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 30px;">
+                            <button id="btnadd" type="button" class="btn btn-primary" style="border-radius:10px;">Add</button>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="control-label text-black-50">Date</label>
+                                <input class="form-control" type="date" style="border-radius: 10px;" />
+                                <br />
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="margin-top: 30px;">
+                            <button id="view" type="button" class="btn btn-primary" style="border-radius:10px;">View</button>
+                        </div>
+                        <div class="col-lg-3"></div>
+                        
+                    </div>
+                    <div class="row">
+                        <br />
+                        <div class="col-lg-12">
+                            <div class="row" style="width:100%">
+                                <table id="propertyList" class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                    <thead class="bg-success">
+                                        <tr>
+                                            <th hidden></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 13px;">Name</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 13px;">Nationality</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 13px;">Status</label></th>
+                                            <th class="table-bordered"><label style="color: black; font-size: 13px;">Action</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody" class="bg-white">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*</div>*@

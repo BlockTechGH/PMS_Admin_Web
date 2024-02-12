@@ -1,0 +1,277 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@*@model PMS_Admin_Web.Models.Users.ListUserModel*@
+
+@*@using X.PagedList.Mvc.Core
+    @model X.PagedList.IPagedList<PMS_Admin_Web.Models.User>*@
+
+@model PMS_Admin_Web.Models.LC.MailIdBoxModel;
+
+@{
+    ViewData["Title"] = "Mail ID Box";
+}
+
+
+    @*<div class="row">*@
+        <div class="col-lg-12">
+            <div class="card" style="color:burlywood">
+                <div class="col-lg-12">
+                    <div class="card-body">
+                        <br />
+                        <form asp-action="MailIdBox" asp-controller="LC" method="post">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <h5 style="color:black"><strong>Mail ID Box</strong></h5>
+                                    </div>
+                                    <div class="col-lg-3"></div>
+                                    <div class="col-lg-3"></div>
+                                    <div class="col-lg-3 float-right">
+                                        <button class="btn btn-primary" type="button" data-target="#AddMailId" data-toggle="modal">Add Mail ID <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>
+                                    </div>
+                                </div>
+                                <br />
+
+                                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                                <!--script goes here...-->
+                                <script>
+                                    $(document).ready(function () {
+                                        //start of the document ready function
+                                        //delcaring global variable to hold primary key value.
+                                        var pryEmpId;
+                                        $('.deleteprompt').click(function () {
+                                            var confirmMessageBox = confirm('Are you sure you wish to delete this record ?');
+                                            if (confirmMessageBox) {
+                                                pryEmpId = $(this).attr('id');
+                                                //alert(pryEmpId);
+                                                if (pryEmpId != '') {
+                                                    $.ajax({
+                                                        url: "@Url.Action("DeleteMailID", "LC")",
+                                                        data: { id: pryEmpId },
+                                                        //type: 'get',
+                                                        success: function (data) {
+                                                            if (data) {
+                                                                alert('Successfully Deleted');
+                                                                location.reload();
+                                                            }
+                                                        }, error: function (err) {
+                                                            /*alert(err.statusText);*/
+                                                            alert('Unknown Error');
+                                                        }
+                                                    });
+                                                }
+                                            }
+
+                                        });
+
+                                        //end of the docuement ready function
+                                    });
+                                </script>
+
+                                @*<div class="card">*@
+                                <div class="col-lg-12">
+
+                                    @*<div class="card-body">*@
+                                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="tab" href="#TO">Mail ID - TO</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="tab" href="#CC">Mail ID - CC</a>
+                                        </li>
+                                    </ul>
+                                    <br />
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="TO" style="overflow-x:auto">
+                                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                <thead class="bg-success">
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Mail Id</label></th>
+
+                                                        <th class="table-bordered" colspan="3" style="text-align: center;"><label style="color: black; font-size: 17px;">Actions</label></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white">
+                                                    @foreach (var item in Model.TO)
+                                                    {
+                                                        <tr>
+                                                            <td hidden>@item.Id</td>
+                                                            <td style="color:black;">@item.Mailid</td>
+
+                                                            @*<td style="text-align: center;">
+                                                <a data-target="#AddMailId" data-toggle="modal" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            </td>*@
+                                                            <td style="text-align: center;">
+                                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                        
+                                            </table>
+                                        </div>
+                                        <div class="tab-pane" id="CC" style="overflow-x:auto">
+                                            <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                                                <thead class="bg-success">
+                                                    <tr>
+                                                        <th hidden></th>
+                                                        <th class="table-bordered"><label style="color: black; font-size: 17px;">Mail Id</label></th>
+
+                                                        <th class="table-bordered" colspan="3" style="text-align: center;"><label style="color: black; font-size: 17px;">Actions</label></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white">
+                                                    @foreach (var item in Model.CC)
+                                                    {
+                                                        <tr>
+                                                            <td hidden>@item.Id</td>
+                                                            <td style="color:black;">@item.Mailid</td>
+
+                                                            @*<td>
+                                                <a asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            </td>*@
+                                                            <td style="text-align: center;">
+                                                                <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                                @*<tfoot>
+                                    <tr class="form-group">
+                                        <td>
+                                            <input type="text" class="form-control" style="border-radius: 10px;" />
+                                        </td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                            <input type="button" id="btnAdd" value="Add" />
+                                        </td>
+                                    </tr>
+                                </tfoot>*@
+                                            </table>
+                                        </div>
+                                    </div>
+                                    @*</div>*@
+                                </div>
+                                @*</div>*@
+                            </div>
+                            <br />
+
+                            <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+
+                    
+                            <!--popup for MailID Adding-->
+                            <div id="AddMailId" class="modal" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="card">
+                                        @*<form asp-action="AddMailIDBox" asp-controller="LC">*@
+                                        <div class="card-body">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Add Mail ID</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-lg-12">
+                                                                <div class="form-group">
+                                                                    <label>Mail ID</label>
+                                                                    <input type="text" asp-for="emailuser.Mailid" class="form-control" style="border-radius: 10px;" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group">
+                                                                    <input type="radio" asp-for="emailuser.Mailstatus" value="cc" />
+                                                                    <label>CC</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <div class="form-group">
+                                                                    <input type="radio" asp-for="emailuser.Mailstatus" value="to" />
+                                                                    <label>To</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Create</button>
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*</form>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <!---->
+                        </form>
+
+                
+
+                    <script type="text/javascript">
+                        function PagerClick(index) {
+                            document.getElementById("hfCurrentPageIndex").value = index;
+                            document.forms[0].submit();
+                        }
+                    </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @*</div>*@
+
+
+@*<script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+<script type="text/javascript">
+    $("body").on("click", "#btnAdd", function () {
+        //Reference the Name and Country TextBoxes.
+        var txtName = $("#txtName");
+        var txtCountry = $("#txtCountry");
+
+        //Get the reference of the Table's TBODY element.
+        var tBody = $("#tblCustomers > TBODY")[0];
+
+        //Add Row.
+        var row = tBody.insertRow(-1);
+
+        //Add Name cell.
+        var cell = $(row.insertCell(-1));
+        cell.html(txtName.val());
+
+        //Add Country cell.
+        cell = $(row.insertCell(-1));
+        cell.html(txtCountry.val());
+
+        //Add Button cell.
+        cell = $(row.insertCell(-1));
+        var btnRemove = $("<input />");
+        btnRemove.attr("type", "button");
+        btnRemove.attr("onclick", "Remove(this);");
+        btnRemove.val("Remove");
+        cell.append(btnRemove);
+
+        //Clear the TextBoxes.
+        txtName.val("");
+        txtCountry.val("");
+    });
+
+    function Remove(button) {
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        var name = $("TD", row).eq(0).html();
+        if (confirm("Do you want to delete: " + name)) {
+            //Get the reference of the Table.
+            var table = $("#tblCustomers")[0];
+
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+</script>*@

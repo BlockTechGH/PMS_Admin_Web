@@ -1,0 +1,140 @@
+﻿@model PMS_Admin_Web.Models.LC.VacatingsAndTlcModel
+
+@{
+    //if (Model.Property.Id == 0)
+    ViewData["Title"] = "Vacatings And TLC List";
+    //else
+    //    ViewData["Title"] = "Update Property";
+    Layout = "_Layout";
+
+}
+<script>
+    function GetAjaxData(url, method, datatype, data) {
+        var response;
+        console.log(data)
+        $.ajax({
+            async: false,
+            type: method,
+            url: url,
+            data: data,
+            dataType: datatype,
+            contentType: "application/json",
+            success: function (res) {
+                response = res;
+            },
+            error: function (err) {
+                response = err;
+            }
+        });
+        return response;
+    }
+    $(document).ready(function () {
+        $(".addnew").on('click', function () {
+            var url = $(this).attr("data-url");
+            LoadDialog(url);
+        });
+    });
+    function LoadDialog(loadurl) {
+        this.counter = undefined;
+        var htmlcontent = GetAjaxData(loadurl, "GET", "html");
+        $("#contentPlace").html(htmlcontent);
+    }
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <form asp-controller="LC" asp-action="VacatingsAndTlc">
+                
+                
+                <div class="card" style="color:burlywood">
+                    
+                    <div class="card-body">
+
+                        @*<ul class="nav nav-tabs">
+            <li role="presentation" class="@(Model.ActiveTab == PMS_Admin_Web.Models.LC.VacatingsAndTlcTab.VacatingList ? "active":string.Empty)"><a asp-route-tabname="Vacatinglist" asp-action="SwitchTab">Vacating List</a></li>
+            <li role="presentation" class="@(Model.ActiveTab == PMS_Admin_Web.Models.LC.VacatingsAndTlcTab.PendingVacating ? "active":string.Empty)"><a asp-route-tabname="PendingVacating" asp-action="SwitchTab">Pending Vacating</a></li>
+            <li role="presentation" class="@(Model.ActiveTab == PMS_Admin_Web.Models.LC.VacatingsAndTlcTab.TLC ? "active":string.Empty)"><a asp-route-tabname="TLC" asp-action="SwitchTab">TLC</a></li>
+        </ul>
+        @switch (Model.ActiveTab)
+        {
+            case PMS_Admin_Web.Models.LC.VacatingsAndTlcTab.VacatingList:
+                @
+
+                break;
+
+            case PMS_Admin_Web.Models.LC.VacatingsAndTlcTab.PendingVacating:
+                @await Component.InvokeAsync("PendingVacating");
+                break;
+
+            case PMS_Admin_Web.Models.LC.VacatingsAndTlcTab.TLC:
+                @await Component.InvokeAsync("TLC");
+                break;
+
+            default:
+                break;
+        }*@
+                        @*<button class="nav-link active addnew collapsible" type="button" data-toggle="tab" data-url="@Url.Action("VacatingList","LC")">Vacating List</button>
+                        <button type="button" class="collapsible">Open Section 1</button>
+                        <div class="content">
+                            <div id="contentPlace" class="contentPlace">
+
+                            </div>
+                        </div>
+                        <button type="button" class="collapsible">Open Section 2</button>
+                        <div class="content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        </div>
+                        <button type="button" class="collapsible">Open Section 3</button>
+                        <div class="content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        </div>*@
+
+
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <button class="nav-link active addnew" data-toggle="tab" data-url="@Url.Action("VacatingList","LC")">Vacating List</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link addnew" data-toggle="tab" data-url="@Url.Action("PendingVacating","LC")">Pending Vacating</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link addnew" data-toggle="tab" data-url="@Url.Action("TLC","LC")">TLC</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active">
+                                <div id="contentPlace" class="contentPlace">
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
+
+@{
+
+}

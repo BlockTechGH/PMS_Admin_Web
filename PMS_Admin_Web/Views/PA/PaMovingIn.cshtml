@@ -1,0 +1,260 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model List<PMS_Admin_Web.Models.PA.PaMovingInModel>
+
+@*@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<PMS_Admin_Web.Models.PA.PaMovingInModel>*@
+
+@{
+    ViewData["Title"] = "Moving In";
+}
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+
+}
+
+<script>
+    $(document).ready(function () {
+        $('#paymentViewModal').modal('hide');
+
+        $('.btnview').click(function () {
+            var $row = $(this).closest('tr');
+            tbid = $row.attr('id');
+            //alert(tbid);
+            $('#paymentViewModal').modal({ backdrop: 'static', keyboard: false });
+            var loino = tbid;
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("PaymentView", "Common")",
+                data: { loiNo: loino },
+                success: function (response) {
+                    //alert(response)
+                    $('#rentPaid').val(response.rentPaid);
+                    $('#depositPaid').val(response.depositPaid);
+                    $('#clresfPaid').val(response.clResfPaid);
+                    $('#llresfPaid').val(response.llResfPaid);
+                    $('#rentDue').val(response.rentDue);
+                    $('#depositDue').val(response.depositDue);
+                    $('#clresfDue').val(response.clResfDue);
+                    $('#llresfDue').val(response.llResfDue);
+                    if (response.rentDue <= 0 && response.depositDue <= 0 && response.clResfDue <= 0 && response.llResfDue <= 0) {
+                        $('#dueRow').hide();
+                        //$('#depositDue').hide();
+                        //$('#clresfDue').hide();
+                        //$('#llresfDue').hide();
+                    }
+
+                    $.each(response.viewPaymentListModels, function (k, v) {
+                        //alert(v.voucherType)
+                        $('#PVtbody').append('<tr>');
+                        $('#PVtbody').append('<td>' + v.voucherType + '</td>');
+                        $('#PVtbody').append('<td>' + v.amt + '</td>');
+                        $('#PVtbody').append('<td>' + v.cash + '</td>');
+                        $('#PVtbody').append('<td>' + v.knet + '</td>');
+                        $('#PVtbody').append('<td>' + v.cheque + '</td>');
+                        $('#PVtbody').append('<td>' + v.bt + '</td>');
+                        $('#PVtbody').append('<td>' + v.dateFrom +' - '+ v.dateTo + '</td>');
+                        $('#PVtbody').append('<td>' + v.remarks + '</td>');
+                        $('#PVtbody').append('</tr>');
+                    });
+                }
+            })
+        });
+    })
+</script>
+
+    @*<div class="row">*@
+        <div class="col-lg-12">
+            @*<div class="col-lg-12">*@
+            <div class="card-body">
+                <form asp-action="" asp-controller="PA">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h5 style="color:black"><strong>Moving In</strong></h5>
+                            </div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-3 float-right">
+                                @*<button asp-action="CreateUser" class="btn btn-primary">Create New User <i class="fa fa-plus-square-o" style="font-size:24px;"></i></button>*@
+                            </div>
+                        </div>
+
+                        <br />
+                        
+                        <table class="table-bordered" cellpadding="5" cellspacing="5" style="width:100%;">
+                            <thead class="bg-success">
+                                <tr>
+                                    <th hidden></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Apt No</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Type</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Lease No</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Tenant Name</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Contact</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Lease Start</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Status</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Payments</label></th>
+                                    <th class="table-bordered"><label style="color: black; font-size: 17px;">Move In Date</label></th>
+                                    @*<th class="table-bordered"><label style="color: black; font-size: 17px;">rid</label></th>*@
+                                    <th class="table-bordered" colspan="3"><label style="color: black; font-size: 17px; text-align: center;">Actions</label></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody" class="bg-white">
+                                @foreach (var item in Model)
+                                {
+                                    <tr id="@item.loino">
+                                        <td hidden>@item.propertyref</td>
+                                        <td style="color:black;">@item.aptno</td>
+                                        <td style="color:black;">@item.rftype</td>
+                                        <td style="color:black;"><a asp-controller="PA" asp-action="ViewLOI" asp-route-loino="@item.loino">@item.loino</a></td>
+                                        <td style="color:black;">@item.reservedfor</td>
+                                        <td style="color:black;">@item.rmob</td>
+                                        <td style="color:black;">@item.rlstart</td>
+                                        <td style="color:black;">@item.rstatus</td>
+                                        <td><button type="button" class="btnview btn btn-primary" style="border-radius:10px;">View</button></td>
+                                        @if(item.indate.ToShortDateString() == "01-01-0001" || item.indate.ToShortDateString() == "1/1/0001")
+                                        {
+                                            <td style="color:black;"></td>
+                                        }
+                                        else
+                                        {
+                                            <td style="color:black;">@item.indate.ToShortDateString()</td>
+                                        }
+                                        
+                                        <td style="text-align: center;">
+                                            <a asp-action="MovingInDetails" asp-controller="MovingInOut" asp-route-pref="@item.propertyref" asp-route-rid="@item.rid"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                        </td>
+                                        @*<td style="color:black;">@item.rid</td>*@
+                                        @*<td style="text-align: center;">
+                                    <a asp-controller="User" asp-action="EditUser" asp-route-id="@item.Id"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="javascript:void(0)" id="@item.Id" class="deleteprompt"><i style="color:red" class="fa fa-trash" aria-hidden="true"></i></a>
+                                </td>*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br />
+                </form>
+
+                <!--popup for payment view-->
+                <div id="paymentViewModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+
+                        @*<div class="card">*@
+                        @*<div class="card-body">*@
+                        @*<form asp-action="LC" asp-controller="MenuView" method="post">*@
+                        <div class="modal-content" style="width: 1000px; margin-left: -122px;">
+                            @**@
+                            <div class="modal-header">
+                                <h5 class="modal-title">Payment</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">Rent Paid</label>
+                                                <input disabled id="rentPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">Deposit Paid</label>
+                                                <input disabled id="depositPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">CL RESF Paid</label>
+                                                <input disabled id="clresfPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">LL RESF Paid</label>
+                                                <input disabled id="llresfPaid" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="dueRow" class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">Rent Due</label>
+                                                <input disabled id="rentDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">Deposit Due</label>
+                                                <input disabled id="depositDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">CL RESF Due</label>
+                                                <input disabled id="clresfDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label style="color:black">LL RESF Due</label>
+                                                <input disabled id="llresfDue" type="text" class="form-control" style="border-radius: 10px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+
+                                            <div style="overflow-y:auto">
+                                                <table class="table-bordered" style=" width: 100%;">
+                                                    <thead class="bg-success">
+                                                        <tr>
+                                                            <th style="width: 130px; color: black;">Voucher Type</th>
+                                                            <th style="width: 75px; color: black;">Amt</th>
+                                                            <th style="width: 75px; color: black;">Cash</th>
+                                                            <th style="width: 75px; color: black;">Knet</th>
+                                                            <th style="width: 75px; color: black;">Cheque</th>
+                                                            <th style="width: 50px; color: black;">BT</th>
+                                                            <th style="width: 190px; color: black;">Payment Period</th>
+                                                            <th style="width: 190px; color: black;">Remarks</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="PVtbody">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*</form>*@
+                        @*</div>*@
+                        @*</div>*@
+                    </div>
+                </div>
+                <!---->
+                @*<script type="text/javascript">
+            function PagerClick(index) {
+                document.getElementById("hfCurrentPageIndex").value = index;
+                document.forms[0].submit();
+            }
+        </script>*@
+            </div>
+            @*</div>*@
+            
+        </div>
+    @*</div>*@
