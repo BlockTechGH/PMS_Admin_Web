@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "LOImonthlyrptpaid";
+    Layout = "";
+}
+
+@model PMS_Admin_Web.Models.Marketing.LOImonthlyrptpaidModel;
+
+<html>
+    <head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            window.print();
+        })
+    </script>
+    </head>
+    <body>
+        <table class="table-bordered" style=" border: solid; width: 1480px; ">
+            <thead>
+                <tr>
+                    <th>
+                        <h3>MARKETING DEPARTMENT SALES PERFORMANCE</h3>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <label>@Model.FromDate - @Model.ToDate</label>
+                    </th>
+                </tr>
+                <tr>
+                    <th><label>Received : KWD @Model.TotalReceived.ToString("0.000")</label></th>
+                </tr>
+            </thead>
+            
+        </table>
+    @foreach(var lename in Model.distinctLeNames)
+    {
+        <table class="table-bordered" style=" border: solid; width: 1480px; ">
+            <thead>
+                <tr style="background-color: blue; color: white;">
+                    <th colspan="14"><h3>@lename</h3></th>
+                </tr>
+                <tr style="background-color: burlywood;">
+                    <th class="table-bordered text-center" style="width: 96px;"><label>INQ.NO</label></th>
+                    <th class="table-bordered text-center"><label>Client Name</label></th>
+                    <th class="table-bordered text-center"><label>Company</label></th>
+                    <th class="table-bordered text-center" style="width: 90px;"><label>Lease Date</label></th>
+                    <th class="table-bordered text-center"><label>Client Source</label></th>
+                    <th class="table-bordered text-center"><label>PropertyNameDetails</label></th>
+                    <th class="table-bordered text-center"><label>Property Source</label></th>
+                    <th class="table-bordered text-center"><label>Rent</label></th>
+                    <th class="table-bordered text-center"><label>Deposit</label></th>
+                    <th class="table-bordered text-center"><label>Client RESF</label></th>
+                    <th class="table-bordered text-center"><label>LL RESF</label></th>
+                    <th class="table-bordered text-center"><label>Client</label></th>
+                    <th class="table-bordered text-center"><label>Searched Property</label></th>
+                    <th class="table-bordered text-center"><label>Remarks</label></th>
+                </tr>
+            </thead>
+            
+
+            @foreach (var modelobj in Model.lOImonthlyrptpaids.Where(m => m.lename == lename))
+            {
+                <tr style="background-color: gainsboro;">
+                    <td>@modelobj.inqno</td>
+                    <td>@modelobj.ClientName</td>
+                    <td>@modelobj.ClientCompany</td>
+                    <td>@DateTime.ParseExact(modelobj.Leasedate,"MM/dd/yyyy HH:mm:ss",System.Globalization.CultureInfo.InvariantCulture).ToString("MM/dd/yyyy")</td>
+                    <td>@modelobj.ClientSource</td>
+                    <td>@modelobj.PropertyName, AptNo:@modelobj.APTNO</td>
+                    <td>@modelobj.PropertySource</td>
+                    <td>@Convert.ToDecimal(modelobj.rent).ToString("0.000")</td>
+                    <td>@Convert.ToDecimal(modelobj.deposit).ToString("0.000")</td>
+                    <td>@Convert.ToDecimal(modelobj.clientresf).ToString("0.000")</td>
+                    <td>@Convert.ToDecimal(modelobj.llresf).ToString("0.000")</td>
+                    <td>@modelobj.client</td>
+                    <td>@modelobj.sp</td>
+                    <td>@modelobj.payremarks</td>
+                </tr>
+            }
+        </table>
+        <table class="table-bordered" style=" border: solid; width: 1480px; ">
+            <thead>
+                <tr>
+                    <th>
+                        <label>Total Client RESF: @Model.lOImonthlyrptpaids.Where(m => m.lename == lename).Select(x=>Convert.ToDecimal(x.clientresf)).Sum().ToString("0.000")</label>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <label>Total LL RESF: @Model.lOImonthlyrptpaids.Where(m => m.lename == lename).Select(x=>Convert.ToDecimal(x.llresf)).Sum().ToString("0.000")</label>
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <label>Total: @Model.lOImonthlyrptpaids.Where(m => m.lename == lename).Select(x=>Convert.ToDecimal(x.clientresf) + Convert.ToDecimal(x.llresf)).Sum().ToString("0.000")</label>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    }
+    
+    </body>
+</html>
+
+

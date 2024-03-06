@@ -38,7 +38,7 @@
                     <br />
                     <div class="row">
                         <div class="col-lg-3">
-                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;">
+                            <button id="btnSalesreport" type="button" class="btn btn-primary button2" data-target="#ReportParametersModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: #e27d60;">
                                 <div>
                                     <div>
                                         <i class="fa fa-align-justify" style="font-size:24px"></i>
@@ -50,7 +50,7 @@
                             </button>
                         </div>
                         <div class="col-lg-3">
-                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;">
+                            <button id="btnMonthlyreport" type="button" class="btn btn-primary button2" data-target="#MonthlyReportModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: palevioletred;">
                                 <div>
                                     <div>
                                         <i class="fa-solid fa-file-contract" style="font-size:24px"></i>
@@ -107,7 +107,7 @@
                                         <i class="fa fa-money" style="font-size:24px"></i>
                                     </div>
                                     <div>
-                                        <strong>Drivers Log</strong>
+                                        <strong>Driver Logs</strong>
                                     </div>
                                 </div>
                             </button>
@@ -135,4 +135,166 @@
             @*</div>*@
         </div>
     </div>
+
+    <!--popup for ReportParameters-->
+    <div id="ReportParametersModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="card" style="width: 350px; margin-left: 200px; ">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Sales Detail</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label style="color:black">From Date</label>
+                                    <input id="fromdate" type="date" class="form-control" style="border-radius: 10px;"/>
+                                </div>
+                                <div class="form-group">
+                                    <label style="color:black">To Date</label>
+                                    <input id="todate" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <button id="btnPaid" type="button" class="btn btn-primary" style="border-radius:10px;">Paid</button>
+                                        <button id="btnExpected" type="button" class="btn btn-primary" style="border-radius:10px;">Expected</button>
+                                        <input type="hidden" id="Paidvalue" />
+                                        <input type="hidden" id="Expectedvalue" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="btnPrint1" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+    <!--popup for MonthlyReport-->
+    <div id="MonthlyReportModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="card" style="width: 350px; margin-left: 200px; ">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Monthly Report</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label style="color:black">From Date</label>
+                                    <input id="fromdate" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                                <div class="form-group">
+                                    <label style="color:black">To Date</label>
+                                    <input id="todate" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                                
+                            </div>
+                            <div class="modal-footer">
+                                <button id="btnPrint2" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
 </div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#Paidvalue').val('NO');
+        $('#Expectedvalue').val('NO');
+
+        $('#btnPaid').click(function () {
+            $('#Paidvalue').val('YES');
+            $('#Expectedvalue').val('NO');
+            // var pvalue = $('#Paidvalue').val();
+            // console.log(pvalue);
+        })
+
+        $('#btnExpected').click(function () {
+            $('#Paidvalue').val('NO');
+            $('#Expectedvalue').val('YES');
+        })
+
+        $('#btnPrint1').click(function () {
+            var paid = $('#Paidvalue').val();
+            var expected = $('#Expectedvalue').val();
+            var fromdate = $('#fromdate').val();
+            var todate = $('#todate').val();
+
+            if(fromdate.length < 1){
+                alert("Enter the From Date");
+                return false;
+            }
+
+            if (todate.length < 1) {
+                alert("Enter the To Date");
+                return false;
+            }
+
+            if (paid == "NO" && expected == "NO") {
+                alert("Which Report you want to generate? Paid or Expected?");
+                return false;
+            }
+
+            if (paid == "YES"){
+                window.location.href = '/Marketing/LOImonthlyrptpaid?fromdate=' + fromdate + '&todate=' + todate;
+            }
+
+            if (expected == "YES") {
+                window.location.href = '/Marketing/LOImonthlyrpt?fromdate=' + fromdate + '&todate=' + todate;
+            }
+            
+        })
+
+        $('#btnPrint2').click(function () {
+            var fromdate = $('#fromdate').val();
+            var todate = $('#todate').val();
+
+            if (fromdate.length < 1) {
+                alert("Enter the From Date");
+                return false;
+            }
+
+            if (todate.length < 1) {
+                alert("Enter the To Date");
+                return false;
+            }
+
+            $.ajax({
+                type:"POST",
+                url: @Url.Action("","Marketing"),
+                data: { oldlcno: lcno, newlcno: newlcno },
+                success: function (response) {
+
+                }
+            })
+
+            window.location.href = '/Marketing/LOImonthlyrptpaid?fromdate=' + fromdate + '&todate=' + todate;
+            
+
+            
+
+        })
+    })
+</script>

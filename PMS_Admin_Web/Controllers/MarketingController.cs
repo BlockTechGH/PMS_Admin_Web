@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -2735,6 +2736,93 @@ namespace PMS_Admin_Web.Controllers
             }
 
             return View();
+        }
+
+        //public string BtnPrint(string paid, string expected, string fromdate, string todate)
+        //{
+        //    if (paid == "YES")
+        //    {
+        //        //return RedirectToAction("LOImonthlyrptpaid", "Marketing");
+        //        return Url.Action("LOImonthlyrptpaid", "Marketing");
+        //    }
+        //    if (expected == "YES")
+        //    {
+                
+        //    }
+
+        //    return "";
+        //}
+
+        public IActionResult LOImonthlyrptpaid(string fromdate, string todate)
+        {
+            LOImonthlyrptpaidModel model = new();
+            model.lOImonthlyrptpaids = new();
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                model.lOImonthlyrptpaids = connection.Query<LOImonthlyrptpaid>($@"select LEFT(INQNO,3),APTNO,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks from(
+                                                                                 select APTNO,inqno,ClientName,ClientCompany,CASE WHEN clientsource='Other' THEN case when left(inqno,3)='CGL' THEN (SELECT OTHERSOURCE FROM CGL WHERE CGLREFNO=INQNO)  WHEN LEFT(INQNO,3)='PGL' then (SELECT OTHERSOURCE FROM PGL WHERE PGLREFNO=INQNO) END else clientsource end as clientsource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,month(leasedate) as monname,payment,
+                                                                                 case when propertysource='StandAloneProperty' then deposit else deposit-duedeposit end as deposit,case when propertysource='StandAloneProperty' then rent else  rent-duerent  end as  rent,
+                                                                                 clientresf-dueresf as clientresf,llresf,paystatus,payremarks,case when ClientSource =lename then '1' else null end as client,case when propertysource='StandAloneProperty' then '1' else null end as sp
+                                                                                 from loiinformation where lcsigned='YES' and leasedate between '{fromdate}' and '{todate}')src where enquirytype='Internal'
+                                                                                 group by inqno,ClientName,ClientCompany,ClientSource,PropertyName,aptno,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks
+                                                                                 order by Leasedate").ToList();
+
+                model.distinctLeNames = model.lOImonthlyrptpaids.Select(e => e.lename).Distinct().ToList();
+                model.FromDate = fromdate;
+                model.ToDate = todate;
+
+                
+
+                List<string> total = model.lOImonthlyrptpaids.Select(x => x.clientresf).ToList();
+                List<decimal> intList = total.Select(decimal.Parse).ToList();
+                model.TotalReceived = intList.Sum();
+
+                connection.Close();
+            }
+            return View(model);
+        }
+
+        public IActionResult LOImonthlyrpt(string fromdate, string todate)
+        {
+            LOImonthlyrptModel model=new LOImonthlyrptModel();
+            model.lOImonthlyrpts = new();
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                model.lOImonthlyrpts = connection.Query<LOImonthlyrpt>($@"select Aptno,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks from(
+                                                                         select Aptno,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,month(leasedate) as monname,payment,case when loistatus='Cancelled' then deposit-duedeposit else deposit end as deposit,case when loistatus='Cancelled' then rent-duerent else rent  end as rent,case when loistatus='Cancelled' then clientRESF -dueresf  else clientRESF end as clientresf,llresf,paystatus,payremarks,
+                                                                         case when ClientSource =lename then '1' else null end as client,case when propertysource='StandAloneProperty' then '1' else null end as sp
+                                                                         from loiinformation where lcsigned='YES' and leasedate between '{fromdate}' and '{todate}' )src  where enquirytype='Internal'
+                                                                         group by inqno,ClientName,ClientCompany,ClientSource,PropertyName,Aptno,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks
+                                                                         order by Leasedate").ToList();
+
+                model.distinctLeNames = model.lOImonthlyrpts.Select(e => e.lename).Distinct().ToList();
+                model.FromDate = fromdate;
+                model.ToDate = todate;
+
+
+
+                List<string> total = model.lOImonthlyrpts.Select(x => x.clientresf).ToList();
+                List<decimal> intList = total.Select(decimal.Parse).ToList();
+                model.TotalExpected = intList.Sum();
+
+                connection.Close();
+            }
+            return View(model);
+        }
+
+        public GetPglCglCountMonthlyReportModel GetPglCglCountMonthlyReport(string fromdate, string todate)
+        {
+            GetPglCglCountMonthlyReportModel model = new();
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                model.pglcount = connection.Query<int>($"SELECT COUNT(*) AS REC FROM PGL WHERE ENQUIRYDATE BETWEEN '{fromdate}' AND '{todate}'").FirstOrDefault();
+                model.cglcount = connection.Query<int>($"SELECT COUNT(*) AS REC FROM CGL WHERE ENQUIRYDATE BETWEEN '{fromdate}' AND '{todate}'").FirstOrDefault();
+                connection.Close();
+            }
+            return model;
         }
 
         public IActionResult ClosedLeads()
