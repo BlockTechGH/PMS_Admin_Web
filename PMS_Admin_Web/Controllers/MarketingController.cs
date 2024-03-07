@@ -2825,6 +2825,37 @@ namespace PMS_Admin_Web.Controllers
             return model;
         }
 
+        public IActionResult MonthlyAnalysismain(string fromdate, string todate)
+        { 
+            return View(); 
+        }
+
+        public IActionResult AllQueriesOnly(string fromdate, string todate)
+        { 
+            AllQueriesOnlyModel model = new AllQueriesOnlyModel();
+            model.FromDate=fromdate;
+            model.ToDate=todate;
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                model.allqueries = new();
+                model.allqueries = connection.Query<AllQueriesOnly>($@"select CGLREFNO,mobile,contactperson,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
+                                                                    (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
+                                                                     from cgl 
+                                                                    where EnquiryDate between '{fromdate}' and '{todate}'
+                                                                    union
+                                                                    select pglrefno,mobile,contactperson,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select pglrefno)) as ptdate,
+                                                                    (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone
+                                                                     from pgl
+                                                                    where EnquiryDate between '{fromdate}' and '{todate}'
+                                                                    order by CompletedBY").ToList();
+                //model.allqueries.AddRange(allqueries.ToList());
+                model.NoOfEnquiries = model.allqueries.Count();
+                connection.Close();
+            }
+            return View(model); 
+        }
+
         public IActionResult ClosedLeads()
         {
             ClosedLeadsModel model = new();

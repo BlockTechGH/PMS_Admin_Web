@@ -3,6 +3,8 @@
     //Layout = "_Layout1";
 }
 
+@using Microsoft.AspNetCore.Http;
+
 <style>
     .button2:hover {
         box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
@@ -62,7 +64,7 @@
                             </button>
                         </div>
                         <div class="col-lg-3">
-                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C ">
+                            <button id="btnAllEnquiries" type="button" class="btn btn-primary button2" data-target="#AllEnquiriesModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E8A87C ">
                                 <div>
                                     <div>
                                         <i class="fa-solid fa-house" style="font-size:24px"></i>
@@ -154,11 +156,11 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label style="color:black">From Date</label>
-                                    <input id="fromdate" type="date" class="form-control" style="border-radius: 10px;"/>
+                                    <input id="fromdate1" type="date" class="form-control" style="border-radius: 10px;"/>
                                 </div>
                                 <div class="form-group">
                                     <label style="color:black">To Date</label>
-                                    <input id="todate" type="date" class="form-control" style="border-radius: 10px;" />
+                                    <input id="todate1" type="date" class="form-control" style="border-radius: 10px;" />
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12">
@@ -197,16 +199,52 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label style="color:black">From Date</label>
-                                    <input id="fromdate" type="date" class="form-control" style="border-radius: 10px;" />
+                                    <input id="fromdate2" type="date" class="form-control" style="border-radius: 10px;" />
                                 </div>
                                 <div class="form-group">
                                     <label style="color:black">To Date</label>
-                                    <input id="todate" type="date" class="form-control" style="border-radius: 10px;" />
+                                    <input id="todate2" type="date" class="form-control" style="border-radius: 10px;" />
                                 </div>
                                 
                             </div>
                             <div class="modal-footer">
                                 <button id="btnPrint2" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+    <!--popup for AllEnquiries-->
+    <div id="AllEnquiriesModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="card" style="width: 350px; margin-left: 200px; ">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Enquiries</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label style="color:black">From Date</label>
+                                    <input id="fromdate3" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                                <div class="form-group">
+                                    <label style="color:black">To Date</label>
+                                    <input id="todate3" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button id="btnPrint3" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
                             </div>
                         </div>
                     </form>
@@ -239,8 +277,8 @@
         $('#btnPrint1').click(function () {
             var paid = $('#Paidvalue').val();
             var expected = $('#Expectedvalue').val();
-            var fromdate = $('#fromdate').val();
-            var todate = $('#todate').val();
+            var fromdate = $('#fromdate1').val();
+            var todate = $('#todate1').val();
 
             if(fromdate.length < 1){
                 alert("Enter the From Date");
@@ -268,8 +306,8 @@
         })
 
         $('#btnPrint2').click(function () {
-            var fromdate = $('#fromdate').val();
-            var todate = $('#todate').val();
+            var fromdate = $('#fromdate2').val();
+            var todate = $('#todate2').val();
 
             if (fromdate.length < 1) {
                 alert("Enter the From Date");
@@ -283,14 +321,38 @@
 
             $.ajax({
                 type:"POST",
-                url: @Url.Action("","Marketing"),
+                url: "@Url.Action("GetPglCglCountMonthlyReport","Marketing")",
                 data: { oldlcno: lcno, newlcno: newlcno },
                 success: function (response) {
-
+                    console.log(response);
+                    alert("in process");
                 }
             })
 
-            window.location.href = '/Marketing/LOImonthlyrptpaid?fromdate=' + fromdate + '&todate=' + todate;
+            //window.location.href = '/Marketing/LOImonthlyrptpaid?fromdate=' + fromdate + '&todate=' + todate;
+            
+        })
+
+        $('#btnPrint3').click(function () {
+            var fromdate = $('#fromdate3').val();
+            var todate = $('#todate3').val();
+
+            if (fromdate.length < 1) {
+                alert("Enter the From Date");
+                return false;
+            }
+
+            if (todate.length < 1) {
+                alert("Enter the To Date");
+                return false;
+            }
+
+            var permission = "@Context.Session.GetString("CurrentUserRole")";
+            var userle = "@Context.Session.GetString("CurrentUsername")";
+
+            if (permission == "Administrator" && userle == "Admin") {
+                window.location.href = '/Marketing/AllQueriesOnly?fromdate=' + fromdate + '&todate=' + todate;
+            }
             
 
             

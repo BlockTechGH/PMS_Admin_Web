@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "AllQueriesOnly";
+    Layout = "";
+}
+
+@model PMS_Admin_Web.Models.Marketing.AllQueriesOnlyModel;
+
+<html>
+    <head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link href="~/css/printlandscape.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            window.print();
+        })
+    </script>
+    </head>
+    <body>
+    <table class="table-bordered" style=" border: solid; width: 1200px; ">
+        <thead>
+            <tr>
+            <th>
+                <img src="~/icon/q8logo.png" style="width: 140px; height: 100px;" />
+            </th>
+                <th>
+                    <h3>ALL ENQUIRIES</h3>
+                </th>
+                <th>@DateTime.Today.ToShortDateString()</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>
+                    <label>Period : @Model.FromDate - @Model.ToDate</label>
+                </th>
+                <th>No Of Enquiries : @Model.NoOfEnquiries</th>
+            </tr>
+                
+        </thead>
+        
+    </table>
+    
+    <table class="table-bordered" style=" border: solid; width: 1200px; ">
+        <thead>
+            <tr style="background-color: chocolate; color: antiquewhite;">
+                <th style="width: 100px;"><h4>Enquiry Date</h4></th>
+                <th style="width: 100px;"><h4>Reference No</h4></th>
+                <th style="width: 200px;"><h4>Client Name</h4></th>
+                <th style="width: 180px;"><h4>Requirements & Budget</h4></th>
+                <th style="width: 100px;"><h4>Mobile</h4></th>
+                <th style="width: 100px;"><h4>Company</h4></th>
+                <th style="width: 110px;"><h4>Enquiry Status</h4></th>
+                <th style="width: 100px;"><h4>LE</h4></th>
+                <th style="width: 100px;"><h4>Source</h4></th>
+            </tr>
+            </thead>
+        <tbody>
+            @foreach(var obj in Model.allqueries)
+            {
+                <tr style="background-color: burlywood;">
+                    <td>@DateTime.ParseExact(obj.EnquiryDate,"MM/dd/yyyy HH:mm:ss",System.Globalization.CultureInfo.InvariantCulture).ToString("MM/dd/yyyy")</td>
+                    <td>@obj.CGLREFNO</td>
+                    <td>@obj.ClientName</td>
+                    <td>@obj.propertytype-@obj.bed & @obj.minbudget-@obj.Maxbudget</td>
+                    <td>@obj.mobile</td>
+                    <td>@obj.contactperson</td>
+                    <td>@obj.inquirystatus</td>
+                    <td>@obj.CompletedBY</td>
+                    <td>@obj.Source</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </body>
+</html>
+
+
