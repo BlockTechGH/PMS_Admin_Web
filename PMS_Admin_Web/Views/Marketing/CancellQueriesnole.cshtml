@@ -1,9 +1,9 @@
 ﻿@{
-    ViewData["Title"] = "OpenQueries";
+    ViewData["Title"] = "CancellQueriesnole";
     Layout = "";
 }
 
-@model PMS_Admin_Web.Models.Marketing.OpenQueriesModel;
+@model PMS_Admin_Web.Models.Marketing.CancellQueriesnoleModel;
 
 <html>
 <head>
@@ -23,7 +23,7 @@
                     <img src="~/icon/q8logo.png" style="width: 140px; height: 100px; margin-left: -70px;" />
                 </th>
                 <th>
-                    <h3>Open Enquiries</h3>
+                    <h3>Cancelled Enquiries</h3>
                 </th>
                 <th>@DateTime.Today.ToShortDateString()</th>
             </tr>
@@ -32,7 +32,7 @@
                 <th>
                     <label>Period : @Model.FromDate - @Model.ToDate</label>
                 </th>
-                <th>Leasing Executive : @Model.LEname</th>
+                <th></th>
             </tr>
 
         </thead>
@@ -42,35 +42,26 @@
     <table class="table-bordered" style=" border: solid; width: 1200px; ">
         <thead>
             <tr style="background-color: chocolate; color: antiquewhite;">
-                <th style="width: 100px;"><h4>Enquiry Date</h4></th>
+                <th style="width: 100px;"><h4>Inquiry Date</h4></th>
                 <th style="width: 100px;"><h4>Reference No</h4></th>
                 <th style="width: 200px;"><h4>Client Name</h4></th>
-                <th style="width: 180px;"><h4>Requirements</h4></th>
-                <th style="width: 110px;"><h4>Mobile</h4></th>
-                <th style="width: 90px;"><h4>Last PT On</h4></th>
-                <th style="width: 111px;"><h4>Last Actions On</h4></th>
-                <th><h4>Actions Taken</h4></th>
+                <th style="width: 115px;"><h4>LE Name</h4></th>
+                <th style="width: 90px;"><h4>Moving Date</h4></th>
+                <th style="width: 115px;"><h4>Date Cancelled</h4></th>
+                <th><h4>Reason Of Cancellation</h4></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var obj in Model.openqueries)
+            @foreach (var obj in Model.cancellqueriesnoles)
             {
                 <tr style="background-color: burlywood;">
-                    <td>@DateTime.ParseExact(obj.EnquiryDate,"MM/dd/yyyy HH:mm:ss",System.Globalization.CultureInfo.InvariantCulture).ToString("MM/dd/yyyy")</td>
+                    <td>@DateTime.ParseExact(obj.EnquiryDate,"MM/dd/yyyy HH:mm:ss",System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")</td>
                     <td>@obj.CGLREFNO</td>
                     <td>@obj.ClientName</td>
-                    <td>@obj.propertytype-@obj.bed & @obj.minbudget-@obj.Maxbudget</td>
-                    <td>@obj.mobile</td>
-                    @if (obj.ptdate == null)
-                    {
-                        <td>-</td>
-                    }
-                    else
-                    {
-                        <td>@DateTime.ParseExact(obj.ptdate,"MM/dd/yyyy HH:mm:ss",System.Globalization.CultureInfo.InvariantCulture).ToString("MM/dd/yyyy")</td>
-                    }
-                    <td>@obj.actiondate</td>
-                    <td>@obj.actionsdone</td>
+                    <td>@obj.CompletedBY</td>
+                    <td>@DateTime.ParseExact(obj.movingdate,"MM/dd/yyyy HH:mm:ss",System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")</td>
+                    <td>@DateTime.ParseExact(obj.dateofcancel,"MM/dd/yyyy HH:mm:ss",System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")</td>
+                    <td>@obj.reasonofcancellation</td>
                 </tr>
             }
         </tbody>

@@ -91,7 +91,7 @@
                     <br />
                     <div class="row">
                         <div class="col-lg-3">
-                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 ">
+                            <button id="btnCancelledEnquiries" type="button" class="btn btn-primary button2" data-target="#CancelledEnquiriesModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: #41B3A3 ">
                                 <div>
                                     <div>
                                         <i class="fa fa-search" style="font-size:24px"></i>
@@ -279,11 +279,50 @@
                                 </div>
                                 <div class="form-group">
                                     <label style="color:black">LE Name</label>
-                                    <select id="lenames" class="form-control" style="border-radius: 10px;" ></select>
+                                    <select id="lenames1" class="form-control" style="border-radius: 10px;" ></select>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button id="btnPrint4" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+    <!--popup for CancelledEnquiries-->
+    <div id="CancelledEnquiriesModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="card" style="width: 350px; margin-left: 200px; ">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Cancelled Enquiries</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label style="color:black">From Date</label>
+                                    <input id="fromdate5" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                                <div class="form-group">
+                                    <label style="color:black">To Date</label>
+                                    <input id="todate5" type="date" class="form-control" style="border-radius: 10px;" />
+                                </div>
+                                <div class="form-group">
+                                    <label style="color:black">LE Name</label>
+                                    <select id="lenames2" class="form-control" style="border-radius: 10px;"></select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="btnPrint5" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
                             </div>
                         </div>
                     </form>
@@ -308,19 +347,27 @@
             type: "POST",
             url: "@Url.Action("LoadLeName","Common")",
             success: function (response) {
-                $('#lenames').html('');
-                $('#lenames').append('<option value="" hidden> --Select-- </option>');
+                $('#lenames1').html('');
+                $('#lenames1').append('<option value="" hidden> --Select-- </option>');
+
+                $('#lenames2').html('');
+                $('#lenames2').append('<option value="" hidden> --Select-- </option>');
                 $.each(response, function (k, v) {
                     if (permission != "Administrator") {
                         // if (userle == v) {
                         //     $('#lenames').append('<option selected value="' + v + '" > ' + v + '</option>');
                         //     $('#lenames').prop('disabled', true);
                         // }
-                        $('#lenames').append('<option selected value="' + userle + '" > ' + userle + '</option>');
-                        $('#lenames').prop('disabled', true);
+                        $('#lenames1').append('<option selected value="' + userle + '" > ' + userle + '</option>');
+                        $('#lenames1').prop('disabled', true);
+
+                        $('#lenames2').append('<option selected value="' + userle + '" > ' + userle + '</option>');
+                        $('#lenames2').prop('disabled', true);
                     }
                     else {
-                        $('#lenames').append('<option value="' + v + '" > ' + v + '</option>');
+                        $('#lenames1').append('<option value="' + v + '" > ' + v + '</option>');
+
+                        $('#lenames2').append('<option value="' + v + '" > ' + v + '</option>');
                     }
                 });
             }
@@ -422,7 +469,7 @@
         $('#btnPrint4').click(function () {
             var fromdate = $('#fromdate4').val();
             var todate = $('#todate4').val();
-            var lenames = $('#lenames :selected').val();
+            var lenames = $('#lenames1 :selected').val();
 
             if (fromdate.length < 1) {
                 alert("Enter the From Date");
@@ -439,6 +486,29 @@
             }
             else {
                 window.location.href = '/Marketing/OpenQueriesnole?fromdate=' + fromdate + '&todate=' + todate;
+            }
+        })
+
+        $('#btnPrint5').click(function () {
+            var fromdate = $('#fromdate5').val();
+            var todate = $('#todate5').val();
+            var lenames = $('#lenames2 :selected').val();
+
+            if (fromdate.length < 1) {
+                alert("Enter the From Date");
+                return false;
+            }
+
+            if (todate.length < 1) {
+                alert("Enter the To Date");
+                return false;
+            }
+
+            if (lenames) {
+                window.location.href = '/Marketing/CancellQueries?fromdate=' + fromdate + '&todate=' + todate + '&lename=' + lenames;
+            }
+            else {
+                window.location.href = '/Marketing/CancellQueriesnole?fromdate=' + fromdate + '&todate=' + todate;
             }
         })
     })

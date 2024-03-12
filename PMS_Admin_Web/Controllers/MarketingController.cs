@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PMS_Admin_Web.Models;
@@ -12,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace PMS_Admin_Web.Controllers
 {
@@ -2738,35 +2740,21 @@ namespace PMS_Admin_Web.Controllers
             return View();
         }
 
-        //public string BtnPrint(string paid, string expected, string fromdate, string todate)
-        //{
-        //    if (paid == "YES")
-        //    {
-        //        //return RedirectToAction("LOImonthlyrptpaid", "Marketing");
-        //        return Url.Action("LOImonthlyrptpaid", "Marketing");
-        //    }
-        //    if (expected == "YES")
-        //    {
-                
-        //    }
-
-        //    return "";
-        //}
-
-        public IActionResult LOImonthlyrptpaid(string fromdate, string todate)
+        public async Task<IActionResult> LOImonthlyrptpaid(string fromdate, string todate)
         {
             LOImonthlyrptpaidModel model = new();
             model.lOImonthlyrptpaids = new();
             using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
             {
-                connection.Open();
-                model.lOImonthlyrptpaids = connection.Query<LOImonthlyrptpaid>($@"select LEFT(INQNO,3),APTNO,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks from(
+                //connection.Open();
+                await connection.OpenAsync();
+                model.lOImonthlyrptpaids = await connection.Query<LOImonthlyrptpaid>($@"select LEFT(INQNO,3),APTNO,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks from(
                                                                                  select APTNO,inqno,ClientName,ClientCompany,CASE WHEN clientsource='Other' THEN case when left(inqno,3)='CGL' THEN (SELECT OTHERSOURCE FROM CGL WHERE CGLREFNO=INQNO)  WHEN LEFT(INQNO,3)='PGL' then (SELECT OTHERSOURCE FROM PGL WHERE PGLREFNO=INQNO) END else clientsource end as clientsource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,month(leasedate) as monname,payment,
                                                                                  case when propertysource='StandAloneProperty' then deposit else deposit-duedeposit end as deposit,case when propertysource='StandAloneProperty' then rent else  rent-duerent  end as  rent,
                                                                                  clientresf-dueresf as clientresf,llresf,paystatus,payremarks,case when ClientSource =lename then '1' else null end as client,case when propertysource='StandAloneProperty' then '1' else null end as sp
                                                                                  from loiinformation where lcsigned='YES' and leasedate between '{fromdate}' and '{todate}')src where enquirytype='Internal'
                                                                                  group by inqno,ClientName,ClientCompany,ClientSource,PropertyName,aptno,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks
-                                                                                 order by Leasedate").ToList();
+                                                                                 order by Leasedate").ToListAsync();
 
                 model.distinctLeNames = model.lOImonthlyrptpaids.Select(e => e.lename).Distinct().ToList();
                 model.FromDate = fromdate;
@@ -2783,19 +2771,20 @@ namespace PMS_Admin_Web.Controllers
             return View(model);
         }
 
-        public IActionResult LOImonthlyrpt(string fromdate, string todate)
+        public async Task<IActionResult> LOImonthlyrpt(string fromdate, string todate)
         {
             LOImonthlyrptModel model=new LOImonthlyrptModel();
             model.lOImonthlyrpts = new();
             using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
             {
-                connection.Open();
-                model.lOImonthlyrpts = connection.Query<LOImonthlyrpt>($@"select Aptno,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks from(
+                //connection.Open();
+                await connection.OpenAsync();
+                model.lOImonthlyrpts = await connection.Query<LOImonthlyrpt>($@"select Aptno,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks from(
                                                                          select Aptno,inqno,ClientName,ClientCompany,ClientSource,PropertyName,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,month(leasedate) as monname,payment,case when loistatus='Cancelled' then deposit-duedeposit else deposit end as deposit,case when loistatus='Cancelled' then rent-duerent else rent  end as rent,case when loistatus='Cancelled' then clientRESF -dueresf  else clientRESF end as clientresf,llresf,paystatus,payremarks,
                                                                          case when ClientSource =lename then '1' else null end as client,case when propertysource='StandAloneProperty' then '1' else null end as sp
                                                                          from loiinformation where lcsigned='YES' and leasedate between '{fromdate}' and '{todate}' )src  where enquirytype='Internal'
                                                                          group by inqno,ClientName,ClientCompany,ClientSource,PropertyName,Aptno,PropertySource,loistatus,EnquiryType,Leasedate,loisigndate,lename,monname,deposit,rent,clientresf,llresf,client,sp,payment,paystatus,payremarks
-                                                                         order by Leasedate").ToList();
+                                                                         order by Leasedate").ToListAsync();
 
                 model.distinctLeNames = model.lOImonthlyrpts.Select(e => e.lename).Distinct().ToList();
                 model.FromDate = fromdate;
@@ -2830,16 +2819,17 @@ namespace PMS_Admin_Web.Controllers
             return View(); 
         }
 
-        public IActionResult AllQueriesOnly(string fromdate, string todate)
+        public async Task<IActionResult> AllQueriesOnly(string fromdate, string todate)
         { 
             AllQueriesOnlyModel model = new AllQueriesOnlyModel();
             model.FromDate=fromdate;
             model.ToDate=todate;
             using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
             {
-                connection.Open();
+                //connection.Open();
+                await connection.OpenAsync();
                 model.allqueries = new();
-                model.allqueries = connection.Query<AllQueriesOnly>($@"select CGLREFNO,mobile,contactperson,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
+                model.allqueries = await connection.Query<AllQueriesOnly>($@"select CGLREFNO,mobile,contactperson,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
                                                                     (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
                                                                      from cgl 
                                                                     where EnquiryDate between '{fromdate}' and '{todate}'
@@ -2848,15 +2838,15 @@ namespace PMS_Admin_Web.Controllers
                                                                     (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone
                                                                      from pgl
                                                                     where EnquiryDate between '{fromdate}' and '{todate}'
-                                                                    order by CompletedBY").ToList();
-                //model.allqueries.AddRange(allqueries.ToList());
+                                                                    order by CompletedBY").ToListAsync();
+
                 model.NoOfEnquiries = model.allqueries.Count();
                 connection.Close();
             }
             return View(model); 
         }
 
-        public IActionResult OpenQueriesnole(string fromdate, string todate)
+        public async Task<IActionResult> OpenQueriesnole(string fromdate, string todate)
         {
             OpenQueriesnoleModel model = new();
             model.FromDate = fromdate;
@@ -2864,9 +2854,10 @@ namespace PMS_Admin_Web.Controllers
             
             using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
             {
-                connection.Open();
+                //connection.Open();
+                await connection.OpenAsync();
                 model.openqueriesnoles = new();
-                model.openqueriesnoles = connection.Query<OpenQueriesnole>($@"select CGLREFNO,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
+                model.openqueriesnoles = await connection.Query<OpenQueriesnole>($@"select CGLREFNO,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
                                                                     (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
                                                                      from cgl 
                                                                     where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}'
@@ -2875,14 +2866,14 @@ namespace PMS_Admin_Web.Controllers
                                                                     (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone
                                                                      from pgl
                                                                     where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}'
-                                                                    order by enquirydate").ToList();
+                                                                    order by enquirydate").ToListAsync();
 
                 connection.Close();
             }
             return View(model);
         }
 
-        public IActionResult OpenQueries(string fromdate, string todate, string lename)
+        public async Task<IActionResult> OpenQueries(string fromdate, string todate, string lename)
         {
             OpenQueriesModel model = new();
             model.FromDate = fromdate;
@@ -2890,9 +2881,10 @@ namespace PMS_Admin_Web.Controllers
             model.LEname = lename;
             using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
             {
-                connection.Open();
+                //connection.Open();
+                await connection.OpenAsync();
                 model.openqueries = new();
-                model.openqueries = connection.Query<OpenQueries>($@"select CGLREFNO,mobile,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
+                model.openqueries = await connection.Query<OpenQueries>($@"select CGLREFNO,mobile,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
                                                                     (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
                                                                      from cgl 
                                                                     where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'
@@ -2901,8 +2893,52 @@ namespace PMS_Admin_Web.Controllers
                                                                     (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone
                                                                      from pgl
                                                                     where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'
-                                                                    order by enquirydate").ToList();
+                                                                    order by enquirydate").ToListAsync();
                 
+                connection.Close();
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> CancellQueriesnole(string fromdate, string todate)
+        {
+            CancellQueriesnoleModel model = new();
+            model.FromDate = fromdate;
+            model.ToDate = todate;
+
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //connection.Open();
+                await connection.OpenAsync();
+                model.cancellqueriesnoles = new();
+                model.cancellqueriesnoles = await connection.Query<CancellQueriesnole>($@"select CGLREFNO,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,dateofcancel,reasonofcancellation,Mobile  from cgl 
+                                                                                    where inquirystatus='Cancelled' AND EnquiryDate between '{fromdate}' and '{todate}' 
+                                                                                    union
+                                                                                    select pglrefno,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,dateofcancel,reasonofcancellation,Mobile from pgl
+                                                                                    where inquirystatus='Cancelled' AND EnquiryDate between '{fromdate}' and '{todate}'").ToListAsync();
+
+                connection.Close();
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> CancellQueries(string fromdate, string todate, string lename)
+        {
+            CancellQueriesModel model = new();
+            model.FromDate = fromdate;
+            model.ToDate = todate;
+            model.LEname = lename;
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //connection.Open();
+                await connection.OpenAsync();
+                model.cancellqueries = new();
+                model.cancellqueries = await connection.Query<CancellQueries>($@"select CGLREFNO,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,dateofcancel,reasonofcancellation,mobile  from cgl 
+                                                                    where inquirystatus='Cancelled' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'
+                                                                    union
+                                                                    select pglrefno,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,dateofcancel,reasonofcancellation,mobile from pgl
+                                                                    where inquirystatus='Cancelled' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'").ToListAsync();
+
                 connection.Close();
             }
             return View(model);
