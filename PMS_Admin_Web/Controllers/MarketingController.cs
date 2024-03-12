@@ -2856,6 +2856,58 @@ namespace PMS_Admin_Web.Controllers
             return View(model); 
         }
 
+        public IActionResult OpenQueriesnole(string fromdate, string todate)
+        {
+            OpenQueriesnoleModel model = new();
+            model.FromDate = fromdate;
+            model.ToDate = todate;
+            
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                model.openqueriesnoles = new();
+                model.openqueriesnoles = connection.Query<OpenQueriesnole>($@"select CGLREFNO,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
+                                                                    (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
+                                                                     from cgl 
+                                                                    where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}'
+                                                                    union
+                                                                    select pglrefno,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select pglrefno)) as ptdate,
+                                                                    (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone
+                                                                     from pgl
+                                                                    where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}'
+                                                                    order by enquirydate").ToList();
+
+                connection.Close();
+            }
+            return View(model);
+        }
+
+        public IActionResult OpenQueries(string fromdate, string todate, string lename)
+        {
+            OpenQueriesModel model = new();
+            model.FromDate = fromdate;
+            model.ToDate = todate;
+            model.LEname = lename;
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                model.openqueries = new();
+                model.openqueries = connection.Query<OpenQueries>($@"select CGLREFNO,mobile,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,
+                                                                    (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
+                                                                     from cgl 
+                                                                    where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'
+                                                                    union
+                                                                    select pglrefno,mobile,CompletedBY,Source,bed,propertytype,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,(select max(date) from DriverScheduel where referenceno in (select pglrefno)) as ptdate,
+                                                                    (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone
+                                                                     from pgl
+                                                                    where inquirystatus='Open' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'
+                                                                    order by enquirydate").ToList();
+                
+                connection.Close();
+            }
+            return View(model);
+        }
+
         public IActionResult ClosedLeads()
         {
             ClosedLeadsModel model = new();
