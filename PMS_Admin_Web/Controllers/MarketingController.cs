@@ -2944,6 +2944,107 @@ namespace PMS_Admin_Web.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Dlogs(string fromdate, string drivername)
+        {
+            DlogsModel model = new();
+            model.FromDate = fromdate;
+            model.Drivername = drivername;
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //connection.Open();
+                await connection.OpenAsync();
+                //model.driverformats = new();
+                //model.driverformats = await connection.Query<CancellQueries>($@"select CGLREFNO,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,dateofcancel,reasonofcancellation,mobile  from cgl 
+                //                                                    where inquirystatus='Cancelled' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'
+                //                                                    union
+                //                                                    select pglrefno,CompletedBY,Source,ClientName,Nationality,minbudget,Maxbudget,movingdate,inquirystatus,EnquiryDate,dateofcancel,reasonofcancellation,mobile from pgl
+                //                                                    where inquirystatus='Cancelled' AND EnquiryDate between '{fromdate}' and '{todate}' and completedby='{lename}'").ToListAsync();
+
+                var chkgrid = connection.Query<DriverScheduel>($@"select FromTime,ToTime,DriverName,[L.EName] LEname,ReferenceNo,ClentName,PropertyName,Address,Mobile,id,grouple from DriverScheduel where Date='{fromdate}' and drivername='{drivername.ToLower()}' order by tt").ToList();
+                var idgrid = connection.Query<IdgridModel>($"Select distinct ST2.sid, substring( ( Select ','+ST1.propertname  AS [text()] From dbo.ptv  ST1  Where ST1.SID = ST2.sid ORDER BY ST1.sid For XML PATH ('') ), 2, 1000) [address] From dbo.ptv ST2 where sid in(select id from DriverScheduel where Date='{fromdate}' and drivername='{drivername}') ").ToList();
+
+                var update = connection.Execute(@"update driverformat set timings='',lename='',refno='',cname='',pname='',sdid=''");
+
+                for(int i = 0; i < chkgrid.Count; i++)
+                {
+                    if (chkgrid[i].Address == null)
+                    {
+                        var update1 = connection.Execute($@"update driverformat set timings='{chkgrid[i].FromTime + "-" + chkgrid[i].ToTime}',dname='{chkgrid[i].DriverName}',lename='{chkgrid[i].LEname}',refno='{chkgrid[i].ReferenceNo}',cname='{chkgrid[i].ClentName}',pname='{chkgrid[i].PropertyName}',sdid='{chkgrid[i].Id}' where ftime='{chkgrid[i].FromTime}'");
+                    }
+                    else
+                    {
+                        var update1 = connection.Execute($@"update driverformat set timings='{chkgrid[i].FromTime + "-" + chkgrid[i].ToTime}',dname='{chkgrid[i].DriverName}',lename='{chkgrid[i].Address}',refno='{chkgrid[i].ReferenceNo}',cname='{chkgrid[i].ClentName}',pname='{chkgrid[i].PropertyName}',sdid='{chkgrid[i].Id}' where ftime='{chkgrid[i].FromTime}'");
+                    }
+
+                    var fid = connection.Query<int>($@"select id from driverformat where ftime='{chkgrid[i].FromTime}'").FirstOrDefault();
+                    var tid = connection.Query<int>($@"select id from driverformat where ftime='{chkgrid[i].ToTime}'").FirstOrDefault();
+
+                    var update2 = connection.Execute($@"update driverformat set timings='-----',dname='-----',lename='-----',refno='-----',cname='-----',pname='-----' where id>'{fid}' and id<='{tid}'");
+                }
+
+                for (int j = 0; j < idgrid.Count; j++)
+                {
+                    var update3 = connection.Execute($@"update driverformat set pname='{idgrid[j].address}' where sdid='{idgrid[j].sid}'");
+                }
+
+                model.driverformats = await connection.Query<Driverformat>($@"select * from driverformat").ToListAsync();
+
+                connection.Close();
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> SourceProcessOther(string othersource)
+        {
+            SourceProcessModel model = new();
+            model.SourceName = othersource;
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //connection.Open();
+                await connection.OpenAsync();
+                model.sourceprocesses = new();
+                model.sourceprocesses = await connection.Query<SourceProcess>($@"select source,cglrefno,'-',completedby,ClientName ,mobile,contactperson,propertytype,Bed,InquiryStatus,
+                (select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,(select top 1 stype from DriverScheduel where referenceno in (select cglrefno)) as stype,(select top 1 remarks from DriverScheduel where referenceno in (select cglrefno)) as remarks,
+                (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
+                   from cgl where othersource='{othersource}' 
+                union
+                select  source,pglrefno,'-',completedby,ClientName ,mobile,contactperson,propertytype,Bed,InquiryStatus 
+                ,(select max(date) from DriverScheduel where referenceno in (select pglrefno)) as ptdate,(select top 1 stype from DriverScheduel where referenceno in (select pglrefno)) as stype,(select top 1 remarks from DriverScheduel where referenceno in (select pglrefno)) as remarks,
+                (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone from pgl where othersource='{othersource}'  ").ToListAsync();
+
+                connection.Close();
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> SourceProcess(string source)
+        {
+            SourceProcessModel model = new();
+            model.SourceName = source;
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //connection.Open();
+                await connection.OpenAsync();
+                model.sourceprocesses = new();
+                model.sourceprocesses = await connection.Query<SourceProcess>($@"select source,cglrefno,'-',completedby,ClientName ,mobile,contactperson,propertytype,Bed,InquiryStatus,
+                (select max(date) from DriverScheduel where referenceno in (select cglrefno)) as ptdate,(select top 1 stype from DriverScheduel where referenceno in (select cglrefno)) as stype,(select top 1 remarks from DriverScheduel where referenceno in (select cglrefno)) as remarks,
+                (select max(date) from Actiondetails where refno =(select cglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select cglrefno) and date=(select max(date) from Actiondetails where refno =(select cglrefno))) as actionsdone
+                   from cgl where source='{source}' and inquirystatus not in('Approved')
+                union
+                select  source,pglrefno,'-',completedby,ClientName ,mobile,contactperson,propertytype,Bed,InquiryStatus 
+                ,(select max(date) from DriverScheduel where referenceno in (select pglrefno)) as ptdate,(select top 1 stype from DriverScheduel where referenceno in (select pglrefno)) as stype,(select top 1 remarks from DriverScheduel where referenceno in (select pglrefno)) as remarks,
+                (select max(date) from Actiondetails where refno =(select pglrefno)) as actiondate,(select top 1 actions from Actiondetails where refno =(select pglrefno) and date=(select max(date) from Actiondetails where refno =(select pglrefno))) as actionsdone from pgl where source='{source}'  and inquirystatus not in('Approved')
+                union
+                select ClientSource ,inqno,LoiNo,ClientName ,cmob,ClientCompany ,req,PropertyName ,aptno,loistatus,'','',loinote,'','' from LOIInformation where ClientSource ='{source}'
+                order by cglrefno").ToListAsync();
+
+                //model.sourceprocesses.AddRange(sourceprocesses);
+
+                connection.Close();
+            }
+            return View(model);
+        }
+
         public IActionResult ClosedLeads()
         {
             ClosedLeadsModel model = new();

@@ -315,6 +315,28 @@ namespace PMS_Admin_Web.Controllers
             }
         }
 
+        public List<string> SourceProgressLoadSource()
+        {
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                var sources = connection.Query<string>($"select distinct source from (select distinct source from cgl union select distinct source from pgl) src").ToList();
+                connection.Close();
+                return sources;
+            }
+        }
+
+        public List<string> SourceProgressLoadOtherSource()
+        {
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                var sources = connection.Query<string>($"select distinct othersource from (select distinct othersource from cgl union select distinct othersource from pgl) src").ToList();
+                connection.Close();
+                return sources;
+            }
+        }
+
         public string LoadPglRefNo()
         {
             using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))

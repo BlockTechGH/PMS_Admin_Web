@@ -103,7 +103,7 @@
                             </button>
                         </div>
                         <div class="col-lg-3">
-                            <button class="btn btn-primary" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E7717D ">
+                            <button id="btnDriverLogs" type="button" class="btn btn-primary button2" data-target="#DriverLogsModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: #E7717D ">
                                 <div>
                                     <div>
                                         <i class="fa fa-money" style="font-size:24px"></i>
@@ -115,7 +115,7 @@
                             </button>
                         </div>
                         <div class="col-lg-3">
-                            <button class="btn btn-primary button2" style="width: 250px; height: 105px; border-radius: 12px; background-color: #9A1750 ">
+                            <button id="btnSourceProgress" type="button" class="btn btn-primary button2" data-target="#SourceProgressModal" data-toggle="modal" data-backdrop="static" style="width: 250px; height: 105px; border-radius: 12px; background-color: #9A1750 ">
                                 <div>
                                     <div>
                                         <i class="fas fa-file-invoice-dollar" style="font-size:24px"></i>
@@ -331,6 +331,76 @@
         </div>
     </div>
     <!---->
+    <!--popup for DriverLogs-->
+    <div id="DriverLogsModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="card" style="width: 350px; margin-left: 200px; ">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Driver Logs</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label style="color:black">Driver Name</label>
+                                    <select id="drivernames" class="form-control" style="border-radius: 10px;"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label style="color:black">Date</label>
+                                    <input id="date1" type="date" class="form-control" style="border-radius: 10px;"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="btnPrint6" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
+    <!--popup for SourceProgress-->
+    <div id="SourceProgressModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="card" style="width: 350px; margin-left: 200px; ">
+                <div class="card-body">
+                    <form>
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Source Progress</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label style="color:black">Select the Source</label>
+                                    <select id="source" class="form-control" style="border-radius: 10px;"></select>
+                                </div>
+                                <div id="divothersource" class="form-group">
+                                    <label style="color:black">Other Source</label>
+                                    <select id="othersource" class="form-control" style="border-radius: 10px;"></select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="btnPrint7" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---->
 </div>
 
 
@@ -339,6 +409,7 @@
     $(document).ready(function () {
         $('#Paidvalue').val('NO');
         $('#Expectedvalue').val('NO');
+        $('#divothersource').hide();
 
         var permission = "@Context.Session.GetString("CurrentUserRole")";
         var userle = "@Context.Session.GetString("CurrentUsername")";
@@ -370,6 +441,55 @@
                         $('#lenames2').append('<option value="' + v + '" > ' + v + '</option>');
                     }
                 });
+            }
+        })
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("LoadDriver","Common")",
+            success: function (response) {
+                $('#drivernames').html('');
+                $('#drivernames').append('<option value="" hidden> --Select-- </option>');
+                
+                $.each(response, function (k, v) {
+                    $('#drivernames').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SourceProgressLoadSource","Common")",
+            success: function (response) {
+                $('#source').html('');
+                $('#source').append('<option value="" hidden> --Select-- </option>');
+
+                $.each(response, function (k, v) {
+                    $('#source').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SourceProgressLoadOtherSource","Common")",
+            success: function (response) {
+                $('#othersource').html('');
+                $('#othersource').append('<option value="" hidden> --Select-- </option>');
+
+                $.each(response, function (k, v) {
+                    $('#othersource').append('<option value="' + v + '" > ' + v + '</option>');
+                });
+            }
+        })
+
+        $('#source').click(function () {
+            var source = $('#source :selected').val();
+            if (source == "Other") {
+                $('#divothersource').show();
+            }
+            else {
+                $('#divothersource').hide();
             }
         })
 
@@ -509,6 +629,42 @@
             }
             else {
                 window.location.href = '/Marketing/CancellQueriesnole?fromdate=' + fromdate + '&todate=' + todate;
+            }
+        })
+
+        $('#btnPrint6').click(function () {
+            var fromdate = $('#date1').val();
+            
+            var drivername = $('#drivernames :selected').val();
+
+            if (fromdate.length < 1) {
+                alert("Enter the Date");
+                return false;
+            }
+            
+            window.location.href = '/Marketing/Dlogs?fromdate=' + fromdate + '&drivername=' + drivername;
+        })
+
+        $('#btnPrint7').click(function () {
+            var source = $('#source :selected').val();
+            var othersource = $('#othersource :selected').val();
+
+            if (source==null)
+            {
+                alert("Select Source");
+                return false;
+            }
+
+            if (othersource == "Other") {
+
+                if (othersource == null) {
+                    alert("Select Other Source");
+                    return false;
+                }
+                window.location.href = '/Marketing/SourceProcessOther?othersource=' + othersource;
+            }
+            else{
+                window.location.href = '/Marketing/SourceProcess?source=' + source;
             }
         })
     })
