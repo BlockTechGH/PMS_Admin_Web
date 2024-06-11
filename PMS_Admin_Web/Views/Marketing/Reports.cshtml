@@ -197,20 +197,20 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <p>In Progress</p>
-                                @* <div class="form-group">
+                                @* <p>In Progress</p> *@
+                                <div class="form-group">
                                     <label style="color:black">From Date</label>
                                     <input id="fromdate2" type="date" class="form-control" style="border-radius: 10px;" />
                                 </div>
                                 <div class="form-group">
                                     <label style="color:black">To Date</label>
                                     <input id="todate2" type="date" class="form-control" style="border-radius: 10px;" />
-                                </div> *@
+                                </div>
                                 
                             </div>
-                            @* <div class="modal-footer">
+                            <div class="modal-footer">
                                 <button id="btnPrint2" type="button" class="btn btn-primary" style="border-radius:10px;">Print</button>
-                            </div> *@
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -551,18 +551,7 @@
                 return false;
             }
 
-            $.ajax({
-                type:"POST",
-                url: "@Url.Action("GetPglCglCountMonthlyReport","Marketing")",
-                data: { oldlcno: lcno, newlcno: newlcno },
-                success: function (response) {
-                    console.log(response);
-                    alert("in process");
-                }
-            })
-
-            //window.location.href = '/Marketing/LOImonthlyrptpaid?fromdate=' + fromdate + '&todate=' + todate;
-            
+            window.location.href = '/Marketing/MonthlyAnalysismain?fromdate=' + fromdate + '&todate=' + todate;
         })
 
         $('#btnPrint3').click(function () {

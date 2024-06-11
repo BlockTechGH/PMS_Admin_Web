@@ -8,6 +8,7 @@ using PMS_Admin_Web.Models.Marketing;
 using PMS_Admin_Web.Models.Property;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
@@ -2815,8 +2816,134 @@ namespace PMS_Admin_Web.Controllers
         }
 
         public IActionResult MonthlyAnalysismain(string fromdate, string todate)
-        { 
-            return View(); 
+        {
+            MonthlyAnalysismainModel model = new();
+            model.fromdate = fromdate;
+            model.todate = todate;
+            using (var connection = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                connection.Open();
+                //page1.rpt
+                model.p1command = connection.Query<pglcgl>($"select count(*) count,sum(minbudget) sum from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                model.p1command1 = connection.Query<pglcgl>($"select count(*) count,sum(minbudget) sum from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                model.p1command2 = connection.Query<loi>($"select count(*) count from LOIInformation where inqno in(select pglrefno from pgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                model.p1command3 = connection.Query<loi>($"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}') and LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}'").FirstOrDefault();
+
+                //page2.rpt
+                //model.p2command = connection.Query<pglcgl>($"select count(*) count,sum(minbudget) sum from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //model.p2command1 = connection.Query<pglcgl>($"select count(*) count,sum(minbudget) sum from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //model.p2command2 = connection.Query<loi>($"select count(*) count from LOIInformation where inqno in(select pglrefno from pgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //model.p2command3 = connection.Query<loi>($"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}') and LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //model.p2command4= connection.Query<pc>($"select sum(minbudget) from pgl where pglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and  enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //model.p2command5 = connection.Query<pc>($"select sum(minbudget) from cgl where cglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and  enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+
+
+                connection.Close();
+            }
+            return View(model); 
+        }
+
+        public IActionResult Dummy()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult Page2PieChart1(string fromdate, string todate)
+        {
+            string query = $"select count(*) count,sum(minbudget) sum from cgl where enquirydate between '{fromdate}' and '{todate}'";
+            string query1 = $"select count(*) count,sum(minbudget) sum from pgl where enquirydate between '{fromdate}' and '{todate}'";
+            string constr = sqlConnectionString.ConnectionString;
+            List<ChartDataItem> chartData = new List<ChartDataItem>();
+            
+            using (SqlConnection con = new SqlConnection(constr))
+            {
+                using (SqlCommand cmd = new SqlCommand(query))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Connection = con;
+                    con.Open();
+                    using (SqlDataReader sdr = cmd.ExecuteReader())
+                    {
+                        while (sdr.Read())
+                        {
+                            chartData.Add(new ChartDataItem
+                            {
+                                Type = "CGL",
+                                Count = Convert.ToInt16(sdr["count"])
+                            });
+                        }
+                    }
+
+                    con.Close();
+                }
+
+                using (SqlCommand cmd1 = new SqlCommand(query1))
+                {
+                    cmd1.CommandType = CommandType.Text;
+                    cmd1.Connection = con;
+                    con.Open();
+                    using (SqlDataReader sdr = cmd1.ExecuteReader())
+                    {
+                        while (sdr.Read())
+                        {
+                            chartData.Add(new ChartDataItem
+                            {
+                                Type = "PGL",
+                                Count = Convert.ToInt16(sdr["count"])
+                            });
+                        }
+                    }
+
+                    con.Close();
+                }
+            }
+
+            return Json(chartData);
+        }
+
+        public JsonResult Page2PieChart2(string fromdate, string todate)
+        {
+            string query = $"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved'  and loisigndate between '{fromdate}' and '{todate}'";
+            //var cglcount = $"select count(*) ,sum(minbudget) from cgl where enquirydate between '{fromdate}' and '{todate}'";
+            string constr = sqlConnectionString.ConnectionString;
+            List<ChartDataItem> chartData = new List<ChartDataItem>();
+
+            using (SqlConnection con = new SqlConnection(constr))
+            {
+                var cglcount = con.Query<int>($"select count(*) from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var pglcount = con.Query<int>($"select count(*) from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var totalenq = cglcount + pglcount;
+                using (SqlCommand cmd = new SqlCommand(query))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Connection = con;
+                    con.Open();
+                    using (SqlDataReader sdr = cmd.ExecuteReader())
+                    {
+                        while (sdr.Read())
+                        {
+                            chartData.Add(new ChartDataItem
+                            {
+                                Type = "Closed",
+                                Count = Convert.ToInt16(sdr["count"])
+                            });
+                        }
+                    }
+
+                    con.Close();
+                }
+
+                chartData.Add(new ChartDataItem
+                {
+                    Type = "Unclosed",
+                    Count = totalenq
+                });
+
+                
+            }
+
+            return Json(chartData);
         }
 
         public async Task<IActionResult> AllQueriesOnly(string fromdate, string todate)
@@ -3158,4 +3285,8 @@ namespace PMS_Admin_Web.Controllers
         }
 
     }
+
+    
+
+    
 }

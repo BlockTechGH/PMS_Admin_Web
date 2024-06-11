@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Http;
 using PMS_Admin_Web.Models;
 using System.Data;
 using System.Data.SqlClient;
+using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 
 namespace PMS_Admin_Web
 {
@@ -55,6 +57,15 @@ namespace PMS_Admin_Web
             });
 
             services.AddPaging();
+
+            //services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+            services.AddControllersWithViews().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+                // Add more settings as needed
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
