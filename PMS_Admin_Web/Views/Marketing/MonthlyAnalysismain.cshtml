@@ -10,6 +10,49 @@
 
     </header>
     <body>
-
+        <div class="row">
+            <div class="col-lg-12">
+                <table style="width:100%">
+                    <thead>
+                        <tr>
+                            <th colspan="2"><h3>Client Inquiry Summary</h3></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <table class="table-bordered" style=" border: solid; border-color:black; width:100%;">
+                                    <tr style="background-color:Orange; border: solid; border-color:black;">
+                                        <td>Total Client Enquiry = @Convert.ToInt16(Model.p1command.count + Model.p1command1.count)</td>
+                                    </tr>
+                                    <tr style=" border: solid; border-color:black;">
+                                        <td>CGL = @Model.p1command.count  Closed Leads = @Model.p1command3.count</td>
+                                    </tr>
+                                    <tr style=" border: solid; border-color:black;">
+                                        <td>CGL = @Convert.ToInt16((Convert.ToInt16(Model.p1command3.count) * 100) / @Convert.ToInt16(Model.p1command.count))%  PGL = @Convert.ToInt16((Convert.ToInt16(Model.p1command2.count) * 100) / @Convert.ToInt16(Model.p1command1.count))%</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table class="table-bordered"style=" border: solid; border-color:black; width:100%;margin-right: -145px;">
+                                    <tr style="background-color:Orange; border: solid; border-color:black;">
+                                        <td>Total Closed Leads = @Convert.ToInt16(Model.p1command2.count + Model.p1command3.count)</td>
+                                    </tr>
+                                    <tr style=" border: solid; border-color:black;">
+                                        <td>PGL = @Model.p1command1.count  Closed Leads = @Model.p1command2.count</td>
+                                    </tr>
+                                    <tr style=" border: solid; border-color:black;">
+                                        <td>Total Percentage of Achieved Sales for the Month = @(Convert.ToInt16(@Convert.ToInt16(Model.p1command2.count + Model.p1command3.count)*100 / @Convert.ToInt16(Model.p1command.count + Model.p1command1.count)))%</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                
+            </div>
+        </div>
+        
     </body>
 </html>
