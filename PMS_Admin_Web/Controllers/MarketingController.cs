@@ -2946,6 +2946,94 @@ namespace PMS_Admin_Web.Controllers
             return Json(chartData);
         }
 
+        public JsonResult Page2PieChart3(string fromdate, string todate)
+        {
+            string query = $"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved'  and loisigndate between '{fromdate}' and '{todate}'";
+            //var cglcount = $"select count(*) ,sum(minbudget) from cgl where enquirydate between '{fromdate}' and '{todate}'";
+            string constr = sqlConnectionString.ConnectionString;
+            List<ChartDataItem> chartData = new List<ChartDataItem>();
+
+            using (SqlConnection con = new SqlConnection(constr))
+            {
+                var cglcount = con.Query<int>($"select count(*) from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var pglcount = con.Query<int>($"select count(*) from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var totalenq = cglcount + pglcount;
+                using (SqlCommand cmd = new SqlCommand(query))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Connection = con;
+                    con.Open();
+                    using (SqlDataReader sdr = cmd.ExecuteReader())
+                    {
+                        while (sdr.Read())
+                        {
+                            chartData.Add(new ChartDataItem
+                            {
+                                Type = "Closed",
+                                Count = Convert.ToInt16(sdr["count"])
+                            });
+                        }
+                    }
+
+                    con.Close();
+                }
+
+                chartData.Add(new ChartDataItem
+                {
+                    Type = "Unclosed",
+                    Count = totalenq
+                });
+
+
+            }
+
+            return Json(chartData);
+        }
+
+        public JsonResult Page2PieChart4(string fromdate, string todate)
+        {
+            string query = $"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved'  and loisigndate between '{fromdate}' and '{todate}'";
+            //var cglcount = $"select count(*) ,sum(minbudget) from cgl where enquirydate between '{fromdate}' and '{todate}'";
+            string constr = sqlConnectionString.ConnectionString;
+            List<ChartDataItem> chartData = new List<ChartDataItem>();
+
+            using (SqlConnection con = new SqlConnection(constr))
+            {
+                var cglcount = con.Query<int>($"select count(*) from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var pglcount = con.Query<int>($"select count(*) from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var totalenq = cglcount + pglcount;
+                using (SqlCommand cmd = new SqlCommand(query))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Connection = con;
+                    con.Open();
+                    using (SqlDataReader sdr = cmd.ExecuteReader())
+                    {
+                        while (sdr.Read())
+                        {
+                            chartData.Add(new ChartDataItem
+                            {
+                                Type = "Closed",
+                                Count = Convert.ToInt16(sdr["count"])
+                            });
+                        }
+                    }
+
+                    con.Close();
+                }
+
+                chartData.Add(new ChartDataItem
+                {
+                    Type = "Unclosed",
+                    Count = totalenq
+                });
+
+
+            }
+
+            return Json(chartData);
+        }
+
         public async Task<IActionResult> AllQueriesOnly(string fromdate, string todate)
         { 
             AllQueriesOnlyModel model = new AllQueriesOnlyModel();
