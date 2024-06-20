@@ -2905,7 +2905,7 @@ namespace PMS_Admin_Web.Controllers
         public JsonResult Page2PieChart2(string fromdate, string todate)
         {
             string query = $"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved'  and loisigndate between '{fromdate}' and '{todate}'";
-            //var cglcount = $"select count(*) ,sum(minbudget) from cgl where enquirydate between '{fromdate}' and '{todate}'";
+            
             string constr = sqlConnectionString.ConnectionString;
             List<ChartDataItem> chartData = new List<ChartDataItem>();
 
@@ -2948,8 +2948,8 @@ namespace PMS_Admin_Web.Controllers
 
         public JsonResult Page2PieChart3(string fromdate, string todate)
         {
-            string query = $"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved'  and loisigndate between '{fromdate}' and '{todate}'";
-            //var cglcount = $"select count(*) ,sum(minbudget) from cgl where enquirydate between '{fromdate}' and '{todate}'";
+            string query = $"select count(*) count from LOIInformation where inqno in(select pglrefno from pgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}'";
+            
             string constr = sqlConnectionString.ConnectionString;
             List<ChartDataItem> chartData = new List<ChartDataItem>();
 
@@ -2992,42 +2992,29 @@ namespace PMS_Admin_Web.Controllers
 
         public JsonResult Page2PieChart4(string fromdate, string todate)
         {
-            string query = $"select count(*) count from LOIInformation where inqno in(select cglrefno from cgl where enquirydate between '{fromdate}' and '{todate}' ) and LoiStatus='Approved'  and loisigndate between '{fromdate}' and '{todate}'";
-            //var cglcount = $"select count(*) ,sum(minbudget) from cgl where enquirydate between '{fromdate}' and '{todate}'";
-            string constr = sqlConnectionString.ConnectionString;
             List<ChartDataItem> chartData = new List<ChartDataItem>();
 
-            using (SqlConnection con = new SqlConnection(constr))
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
             {
-                var cglcount = con.Query<int>($"select count(*) from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
-                var pglcount = con.Query<int>($"select count(*) from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
-                var totalenq = cglcount + pglcount;
-                using (SqlCommand cmd = new SqlCommand(query))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    cmd.Connection = con;
-                    con.Open();
-                    using (SqlDataReader sdr = cmd.ExecuteReader())
-                    {
-                        while (sdr.Read())
-                        {
-                            chartData.Add(new ChartDataItem
-                            {
-                                Type = "Closed",
-                                Count = Convert.ToInt16(sdr["count"])
-                            });
-                        }
-                    }
+                var cglsum = con.Query<string>($"select sum(minbudget) sum from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var pglsum = con.Query<string>($"select sum(minbudget) sum from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var totalsum = Convert.ToDouble((cglsum == null) ? "0" : cglsum)  + Convert.ToDouble((pglsum == null) ? "0" : pglsum) ;
 
-                    con.Close();
-                }
+                var loicglsum = con.Query<string>($"select sum(minbudget) from pgl where pglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                var loipglsum = con.Query<string>($"select sum(minbudget) sum from cgl where cglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //var loitotalsum = loicglsum + loipglsum;
+                var loitotalsum = Convert.ToDouble((loicglsum == null) ? "0" : loicglsum) + Convert.ToDouble((loipglsum == null) ? "0" : loipglsum);
 
                 chartData.Add(new ChartDataItem
                 {
-                    Type = "Unclosed",
-                    Count = totalenq
+                    Type = "Minimum Value",
+                    Count = Convert.ToInt16(totalsum)
                 });
-
+                chartData.Add(new ChartDataItem
+                {
+                    Type = "Closed Minimum Value",
+                    Count = Convert.ToInt16(loitotalsum)
+                });
 
             }
 
