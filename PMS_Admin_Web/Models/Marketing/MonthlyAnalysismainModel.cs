@@ -1,4 +1,5 @@
 ﻿using PMS_Admin_Web.Controllers;
+using System.Collections.Generic;
 
 namespace PMS_Admin_Web.Models.Marketing
 {
@@ -46,5 +47,20 @@ namespace PMS_Admin_Web.Models.Marketing
     {
         public string Type { get; set; }
         public int Count { get; set; }
+    }
+
+    public class src
+    {
+        public List<srclist> Srclist { get; set; }
+        public List<string> year { get; set; }
+    }
+
+    public class srclist
+    {
+        public string tot { get; set; }
+        public string completedby { get; set; }
+        public string category { get; set; }
+        public string minbudget { get; set; }
+        public string year { get; set; }
     }
 }

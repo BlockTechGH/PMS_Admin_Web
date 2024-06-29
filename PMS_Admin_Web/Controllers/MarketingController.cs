@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Office.Interop.Excel;
 using PMS_Admin_Web.Models;
 using PMS_Admin_Web.Models.LOI;
 using PMS_Admin_Web.Models.Marketing;
@@ -3015,6 +3016,48 @@ namespace PMS_Admin_Web.Controllers
                     Type = "Closed Minimum Value",
                     Count = Convert.ToInt16(loitotalsum)
                 });
+
+            }
+
+            return Json(chartData);
+        }
+
+        public JsonResult Page3BarChart1(string fromdate, string todate)
+        {
+            src chartData = new src();
+
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                chartData.Srclist = new();
+                //chartData.Srclist = con.Query<srclist>(@$"select tot,completedby,category,minbudget from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+                chartData.Srclist = con.Query<srclist>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+
+                DateTime fromdateValue = DateTime.Parse(fromdate);
+                DateTime todateValue = DateTime.Parse(fromdate);
+
+                chartData.year = new();
+                chartData.year.Add(Convert.ToString(fromdateValue.Year));
+                chartData.year.Add(Convert.ToString(todateValue.Year));
+
+                //var cglsum = con.Query<string>($"select sum(minbudget) sum from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //var pglsum = con.Query<string>($"select sum(minbudget) sum from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //var totalsum = Convert.ToDouble((cglsum == null) ? "0" : cglsum) + Convert.ToDouble((pglsum == null) ? "0" : pglsum);
+
+                //var loicglsum = con.Query<string>($"select sum(minbudget) from pgl where pglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                //var loipglsum = con.Query<string>($"select sum(minbudget) sum from cgl where cglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
+                ////var loitotalsum = loicglsum + loipglsum;
+                //var loitotalsum = Convert.ToDouble((loicglsum == null) ? "0" : loicglsum) + Convert.ToDouble((loipglsum == null) ? "0" : loipglsum);
+
+                //chartData.Add(new ChartDataItem
+                //{
+                //    Type = "Minimum Value",
+                //    Count = Convert.ToInt16(totalsum)
+                //});
+                //chartData.Add(new ChartDataItem
+                //{
+                //    Type = "Closed Minimum Value",
+                //    Count = Convert.ToInt16(loitotalsum)
+                //});
 
             }
 

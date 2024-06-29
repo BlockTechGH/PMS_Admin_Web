@@ -73,6 +73,17 @@
                         </td>
                     </tr>
                 </table>
+
+                <table style="width:100%">
+                    <tr>
+                        <td>
+                            <div id="chartdiv5" style="width: 500px; height: 400px;"></div>
+                        </td>
+                        <td>
+                            <div id="chartdiv6" style="width: 500px; height: 400px;"></div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
         
@@ -127,6 +138,7 @@
     google.charts.setOnLoadCallback(drawChart2);
     google.charts.setOnLoadCallback(drawChart3);
     google.charts.setOnLoadCallback(drawChart4);
+    google.charts.setOnLoadCallback(drawChart5);
 
     var fromdate = $('#hiddenfromdate').val();
     var todate = $('#hiddentodate').val();
@@ -257,6 +269,68 @@
                 };
                 var chart = new google.visualization.PieChart(document.getElementById('chartdiv4'));
                 chart.draw(data, options);
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart5() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page3BarChart1", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Year');
+                data.addColumn('number', 'Min Budget');
+
+                var dataArray = [];
+                // var yearArray = [];
+                // var srcArray = [];
+
+                // $.each(r.year, function (i, item) {
+                //     yearArray.push([String(item)]);
+                // });
+
+                // $.each(r.srclist, function (i, item) {
+                //     srcArray.push([Number(item.minbudget)]);
+                // });
+
+                // dataArray.push([yearArray, srcArray]);
+
+                $.each(r.srclist, function (i, item) {
+                    dataArray.push([String(item.year), Number(item.minbudget)]);
+                });
+
+                data.addRows(dataArray);
+                
+                var options = {
+                    title: 'Client Inquiry Assignment',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        title: 'Budget'//,
+                        //minValue: 0
+                    },
+                    vAxis: {
+                        title: 'Year'
+                    }
+                };
+                var chart = new google.visualization.BarChart(document.getElementById('chartdiv5'));
+
+                chart.draw(data, options);
+                //return false;
             },
             failure: function (r) {
                 alert(r.d);
