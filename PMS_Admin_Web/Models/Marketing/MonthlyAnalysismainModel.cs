@@ -51,16 +51,27 @@ namespace PMS_Admin_Web.Models.Marketing
 
     public class src
     {
-        public List<srclist> Srclist { get; set; }
-        public List<string> year { get; set; }
-    }
-
-    public class srclist
-    {
         public string tot { get; set; }
         public string completedby { get; set; }
         public string category { get; set; }
         public string minbudget { get; set; }
         public string year { get; set; }
     }
+
+    public class resf
+    {
+        public string REF { get; set; }
+        public string completedby { get; set; }
+        public string Xpgl { get; set; }
+        public string Xcgl { get; set; }
+        public string PGLCASE { get; set; }
+        public string CGLCASE { get; set; }
+        public string pglresf { get; set; }
+        public string cglresf { get; set; }
+        public string resf { get; set; }
+        public string MB { get; set; }
+        public string resfper { get; set; }
+    }
+
+
 }

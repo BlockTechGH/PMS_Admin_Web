@@ -3024,41 +3024,41 @@ namespace PMS_Admin_Web.Controllers
 
         public JsonResult Page3BarChart1(string fromdate, string todate)
         {
-            src chartData = new src();
+            List<src> chartData = new();
 
             using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
             {
-                chartData.Srclist = new();
-                //chartData.Srclist = con.Query<srclist>(@$"select tot,completedby,category,minbudget from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
-                chartData.Srclist = con.Query<srclist>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+                //chartData = con.Query<src>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+                chartData = con.Query<src>(@$"select tot,Year(Doc) year from(select Count(PGLREFNO) AS TOT,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' group by Doc union select Count(CGLREFNO) AS TOT,Doc from cgl where enquirydate between '{fromdate}' and '{todate}' group by Doc)src").ToList();
+            }
 
-                DateTime fromdateValue = DateTime.Parse(fromdate);
-                DateTime todateValue = DateTime.Parse(fromdate);
+            return Json(chartData);
+        }
 
-                chartData.year = new();
-                chartData.year.Add(Convert.ToString(fromdateValue.Year));
-                chartData.year.Add(Convert.ToString(todateValue.Year));
+        public JsonResult Page3BarChart2(string fromdate, string todate)
+        {
+            List<src> chartData = new();
 
-                //var cglsum = con.Query<string>($"select sum(minbudget) sum from cgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
-                //var pglsum = con.Query<string>($"select sum(minbudget) sum from pgl where enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
-                //var totalsum = Convert.ToDouble((cglsum == null) ? "0" : cglsum) + Convert.ToDouble((pglsum == null) ? "0" : pglsum);
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //chartData = con.Query<src>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+                chartData = con.Query<src>(@$"select minbudget,Year(Doc) year from(select sum(minbudget) minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' group by doc union select sum(minbudget) minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}' group by doc)src").ToList();
+            }
 
-                //var loicglsum = con.Query<string>($"select sum(minbudget) from pgl where pglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
-                //var loipglsum = con.Query<string>($"select sum(minbudget) sum from cgl where cglrefno in(select inqno from LOIInformation where LoiStatus='Approved' and loisigndate between '{fromdate}' and '{todate}') and enquirydate between '{fromdate}' and '{todate}'").FirstOrDefault();
-                ////var loitotalsum = loicglsum + loipglsum;
-                //var loitotalsum = Convert.ToDouble((loicglsum == null) ? "0" : loicglsum) + Convert.ToDouble((loipglsum == null) ? "0" : loipglsum);
+            return Json(chartData);
+        }
 
-                //chartData.Add(new ChartDataItem
-                //{
-                //    Type = "Minimum Value",
-                //    Count = Convert.ToInt16(totalsum)
-                //});
-                //chartData.Add(new ChartDataItem
-                //{
-                //    Type = "Closed Minimum Value",
-                //    Count = Convert.ToInt16(loitotalsum)
-                //});
+        public JsonResult Page4ColumnChart1(string fromdate, string todate)
+        {
+            List<src> chartData = new();
 
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //chartData = con.Query<src>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+                chartData = con.Query<src>(@$"select REF,completedby,case  when mycase='Closed PGL' then 'PGL Closed'  else null end as Xpgl ,case  when mycase='Closed CGL' then 'CGL Closed'  else null end as Xcgl,case when mycase1='PGL' THEN 'PGL' ELSE NULL END AS  PGLCASE ,case when mycase1='CGL' THEN 'CGL' ELSE NULL END AS  CGLCASE,case  when mycase='Closed PGL' then resf else null end as pglresf,case  when mycase='Closed CGL' then resf else null end as cglresf ,isnull(resf,null) resf,MB,resf*100/mb resfper from(
+                                                select completedby ,left(PGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' tHen 'Closed PGL'  else null end from LOIInformation where   inqno in(select PGLREFNO  ))as mycase,case when left(PGLREFNO,3)='PGL' then 'PGL'  else null end as mycase1,PGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select PGLREFNO )) as resf,case when  PGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from pgl where EnquiryDate between '{fromdate}' and '{todate}'
+                                                union
+                                                select completedby ,left(CGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' then 'Closed CGL'  else null end from LOIInformation where   inqno in(select CGLREFNO  ))as mycase,case when left(CGLREFNO,3)='CGL' then 'CGL'  else null end as mycase1,CGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select CGLREFNO )) as resf,case when  CGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from CGL where EnquiryDate between '{fromdate}' and '{todate}') a").ToList();
             }
 
             return Json(chartData);
