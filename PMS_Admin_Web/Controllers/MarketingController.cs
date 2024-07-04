@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DocumentFormat.OpenXml.Office2013.Word;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Office.Interop.Excel;
@@ -3050,15 +3051,35 @@ namespace PMS_Admin_Web.Controllers
 
         public JsonResult Page4ColumnChart1(string fromdate, string todate)
         {
-            List<src> chartData = new();
+            resfclosedleads chartData = new();
 
             using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
             {
                 //chartData = con.Query<src>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
-                chartData = con.Query<src>(@$"select REF,completedby,case  when mycase='Closed PGL' then 'PGL Closed'  else null end as Xpgl ,case  when mycase='Closed CGL' then 'CGL Closed'  else null end as Xcgl,case when mycase1='PGL' THEN 'PGL' ELSE NULL END AS  PGLCASE ,case when mycase1='CGL' THEN 'CGL' ELSE NULL END AS  CGLCASE,case  when mycase='Closed PGL' then resf else null end as pglresf,case  when mycase='Closed CGL' then resf else null end as cglresf ,isnull(resf,null) resf,MB,resf*100/mb resfper from(
-                                                select completedby ,left(PGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' tHen 'Closed PGL'  else null end from LOIInformation where   inqno in(select PGLREFNO  ))as mycase,case when left(PGLREFNO,3)='PGL' then 'PGL'  else null end as mycase1,PGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select PGLREFNO )) as resf,case when  PGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from pgl where EnquiryDate between '{fromdate}' and '{todate}'
-                                                union
-                                                select completedby ,left(CGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' then 'Closed CGL'  else null end from LOIInformation where   inqno in(select CGLREFNO  ))as mycase,case when left(CGLREFNO,3)='CGL' then 'CGL'  else null end as mycase1,CGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select CGLREFNO )) as resf,case when  CGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from CGL where EnquiryDate between '{fromdate}' and '{todate}') a").ToList();
+                //chartData.list = con.Query<resfclosedleadslist>(@$"select REF,completedby,year(doc) year,case  when mycase='Closed PGL' then 'PGL Closed'  else null end as Xpgl ,case  when mycase='Closed CGL' then 'CGL Closed'  else null end as Xcgl,case when mycase1='PGL' THEN 'PGL' ELSE NULL END AS  PGLCASE ,case when mycase1='CGL' THEN 'CGL' ELSE NULL END AS  CGLCASE,case  when mycase='Closed PGL' then resf else null end as pglresf,case  when mycase='Closed CGL' then resf else null end as cglresf ,isnull(resf,null) resf,MB,resf*100/mb resfper from(
+                //                                select completedby ,doc ,left(PGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' tHen 'Closed PGL'  else null end from LOIInformation where   inqno in(select PGLREFNO  ))as mycase,case when left(PGLREFNO,3)='PGL' then 'PGL'  else null end as mycase1,PGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select PGLREFNO )) as resf,case when  PGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from pgl where EnquiryDate between '{fromdate}' and '{todate}'
+                //                                union
+                //                                select completedby ,doc ,left(CGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' then 'Closed CGL'  else null end from LOIInformation where   inqno in(select CGLREFNO  ))as mycase,case when left(CGLREFNO,3)='CGL' then 'CGL'  else null end as mycase1,CGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select CGLREFNO )) as resf,case when  CGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from CGL where EnquiryDate between '{fromdate}' and '{todate}') a").ToList();
+
+                chartData.list = con.Query<resfclosedleadslist>(@$"SELECT Completedby, year, COUNT(Completedby) as count
+                                                                    FROM (
+                                                                        SELECT completedby, YEAR(doc) as year
+                                                                        FROM (
+                                                                            SELECT completedby, doc
+                                                                            FROM pgl
+                                                                            WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                                            UNION
+                                                                            SELECT completedby, doc
+                                                                            FROM cgl
+                                                                            WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                                        ) a
+                                                                    ) b
+                                                                    GROUP BY Completedby, year;").ToList();
+
+                chartData.completedbynames= new List<string>();
+                var completedbynames = chartData.list.Select(p => p.completedby).Distinct();
+                chartData.completedbynames.AddRange(completedbynames);
+                
             }
 
             return Json(chartData);

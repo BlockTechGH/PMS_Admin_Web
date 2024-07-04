@@ -58,10 +58,19 @@ namespace PMS_Admin_Web.Models.Marketing
         public string year { get; set; }
     }
 
-    public class resf
+    public class resfclosedleads
+    {
+        public List<resfclosedleadslist> list { get; set; }
+        
+
+        public List<string> completedbynames { get; set; }
+    }
+
+    public class resfclosedleadslist
     {
         public string REF { get; set; }
         public string completedby { get; set; }
+        public string year { get; set; }
         public string Xpgl { get; set; }
         public string Xcgl { get; set; }
         public string PGLCASE { get; set; }
@@ -71,6 +80,8 @@ namespace PMS_Admin_Web.Models.Marketing
         public string resf { get; set; }
         public string MB { get; set; }
         public string resfper { get; set; }
+
+        public string count { get; set; }
     }
 
 

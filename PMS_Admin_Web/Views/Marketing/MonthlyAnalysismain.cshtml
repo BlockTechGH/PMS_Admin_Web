@@ -152,6 +152,7 @@
     google.charts.setOnLoadCallback(drawChart5);
     google.charts.setOnLoadCallback(drawChart6);
     google.charts.setOnLoadCallback(drawChart7);
+    google.charts.setOnLoadCallback(drawChart8);
 
     var fromdate = $('#hiddenfromdate').val();
     var todate = $('#hiddentodate').val();
@@ -418,14 +419,18 @@
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
                 var data = new google.visualization.DataTable();
-                data.addColumn('number', 'Min Budget');
                 data.addColumn('number', 'Year');
+                data.addColumn('number', 'Min Budget');
+                
+                // $.each(r.completedbynames, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
                 
 
                 var dataArray = [];
 
-                $.each(r, function (i, item) {
-                    dataArray.push([Number(item.minbudget), Number(item.year)]);
+                $.each(r.list, function (i, item) {
+                    dataArray.push([Number(item.year), Number(item.count)]);
                 });
 
                 data.addRows(dataArray);
@@ -439,6 +444,7 @@
                     hAxis: {
                         //title: 'Budget',
                         //minValue: 0
+                        format:'0'
                     },
                     vAxis: {
                         //title: 'Year',
@@ -446,6 +452,63 @@
                     }
                 };
                 var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv7'));
+
+                chart.draw(data, options);
+                //return false;
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart8() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page4ColumnChart1", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('number', 'Year');
+                data.addColumn('number', 'Min Budget');
+
+                // $.each(r.completedbynames, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
+
+
+                var dataArray = [];
+
+                $.each(r.list, function (i, item) {
+                    dataArray.push([Number(item.year), Number(item.count)]);
+                });
+
+                data.addRows(dataArray);
+
+                var options = {
+                    title: 'RESF Value of Closed Lead Against Minimum Value of Assigned Inquiry',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        //title: 'Budget',
+                        //minValue: 0
+                        format: '0'
+                    },
+                    vAxis: {
+                        //title: 'Year',
+                        format: '0'
+                    }
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv8'));
 
                 chart.draw(data, options);
                 //return false;
