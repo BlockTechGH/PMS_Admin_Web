@@ -95,6 +95,17 @@
                         </td>
                     </tr>
                 </table>
+
+                <table style="width:100%">
+                    <tr>
+                        <td>
+                            <div id="chartdiv9" style="width: 500px; height: 400px;"></div>
+                        </td>
+                        <td>
+                            <div id="chartdiv10" style="width: 500px; height: 400px;"></div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
         
@@ -154,8 +165,19 @@
     google.charts.setOnLoadCallback(drawChart7);
     google.charts.setOnLoadCallback(drawChart8);
 
+    google.charts.setOnLoadCallback(drawChart9);
+    google.charts.setOnLoadCallback(drawChart10);
+    // google.charts.setOnLoadCallback(drawChart11);
+    // google.charts.setOnLoadCallback(drawChart12);
+    // google.charts.setOnLoadCallback(drawChart13);
+    // google.charts.setOnLoadCallback(drawChart14);
+    // google.charts.setOnLoadCallback(drawChart15);
+    // google.charts.setOnLoadCallback(drawChart16);
+
     var fromdate = $('#hiddenfromdate').val();
     var todate = $('#hiddentodate').val();
+
+    
 
     function drawChart1() {
         $.ajax({
@@ -163,7 +185,7 @@
             url: "@Url.Action("Page2PieChart1", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -197,7 +219,7 @@
             url: "@Url.Action("Page2PieChart2", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -231,7 +253,7 @@
             url: "@Url.Action("Page2PieChart3", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -265,7 +287,7 @@
             url: "@Url.Action("Page2PieChart4", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -299,7 +321,7 @@
             url: "@Url.Action("Page3BarChart1", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -363,7 +385,7 @@
             url: "@Url.Action("Page3BarChart2", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -414,7 +436,7 @@
             url: "@Url.Action("Page4ColumnChart1", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -471,7 +493,7 @@
             url: "@Url.Action("Page4ColumnChart2", "Marketing")",
             data: { fromdate: fromdate, todate: todate },
             success: function (r) {
-                console.log(r);
+                //console.log(r);
                 //var Data = r.jsonList;
                 //console.log(Data);
                 //var data = new google.visualization.arrayToDataTable();
@@ -509,6 +531,120 @@
                     }
                 };
                 var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv8'));
+
+                chart.draw(data, options);
+                //return false;
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart9() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page5BarChart1", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                //console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Budget');
+                data.addColumn('number', 'PGL');
+                data.addColumn('number', 'CGL');
+
+                // $.each(r.typelist, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
+
+                var dataArray = [];
+
+                $.each(r, function (i, item) {
+                    dataArray.push([String(item.budget), Number(item.countPgl), Number(item.countCgl)]);
+                });
+
+                data.addRows(dataArray);
+
+                var options = {
+                    title: 'Inquiry According to Budget',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        //title: 'Budget',
+                        //minValue: 0
+                        format: '0'
+                    },
+                    vAxis: {
+                        //title: 'Year',
+                        format: '0'
+                    }
+                };
+                var chart = new google.visualization.BarChart(document.getElementById('chartdiv9'));
+
+                chart.draw(data, options);
+                //return false;
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart10() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page5BarChart2", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Propertytype');
+                data.addColumn('number', 'PGL');
+                data.addColumn('number', 'CGL');
+
+                // $.each(r.typelist, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
+
+                var dataArray = [];
+
+                $.each(r, function (i, item) {
+                    dataArray.push([String(item.propertytype), Number(item.countPgl), Number(item.countCgl)]);
+                });
+
+                data.addRows(dataArray);
+
+                var options = {
+                    title: 'Inquiry According to Budget',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        //title: 'Budget',
+                        //minValue: 0
+                        format: '0'
+                    },
+                    vAxis: {
+                        //title: 'Year',
+                        format: '0'
+                    }
+                };
+                var chart = new google.visualization.BarChart(document.getElementById('chartdiv10'));
 
                 chart.draw(data, options);
                 //return false;

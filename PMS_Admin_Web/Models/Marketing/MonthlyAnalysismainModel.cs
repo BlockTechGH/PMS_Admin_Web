@@ -84,5 +84,19 @@ namespace PMS_Admin_Web.Models.Marketing
         public string count { get; set; }
     }
 
-
+    //public class inquirybudget
+    //{
+    //    public List<inquirybudgetlist> list { get; set; }
+    //    public List<string> typelist { get; set; }
+        
+    //}
+    public class inquirybudgetlist
+    {
+        public string refno { get; set; }
+        public string Budget { get; set; }
+        public string type { get; set; }
+        public string Propertytype { get; set; }
+        public string CountPgl { get; set; }
+        public string CountCgl { get; set; }
+    }
 }

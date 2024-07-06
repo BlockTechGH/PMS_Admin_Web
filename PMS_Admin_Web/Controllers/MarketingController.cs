@@ -3121,6 +3121,113 @@ namespace PMS_Admin_Web.Controllers
             return Json(chartData);
         }
 
+        public JsonResult Page5BarChart1(string fromdate, string todate)
+        {
+            List<inquirybudgetlist> chartData = new();
+
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //chartData = con.Query<src>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+                //chartData.list = con.Query<resfclosedleadslist>(@$"select REF,completedby,year(doc) year,case  when mycase='Closed PGL' then 'PGL Closed'  else null end as Xpgl ,case  when mycase='Closed CGL' then 'CGL Closed'  else null end as Xcgl,case when mycase1='PGL' THEN 'PGL' ELSE NULL END AS  PGLCASE ,case when mycase1='CGL' THEN 'CGL' ELSE NULL END AS  CGLCASE,case  when mycase='Closed PGL' then resf else null end as pglresf,case  when mycase='Closed CGL' then resf else null end as cglresf ,isnull(resf,null) resf,MB,resf*100/mb resfper from(
+                //                                select completedby ,doc ,left(PGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' tHen 'Closed PGL'  else null end from LOIInformation where   inqno in(select PGLREFNO  ))as mycase,case when left(PGLREFNO,3)='PGL' then 'PGL'  else null end as mycase1,PGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select PGLREFNO )) as resf,case when  PGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from pgl where EnquiryDate between '{fromdate}' and '{todate}'
+                //                                union
+                //                                select completedby ,doc ,left(CGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' then 'Closed CGL'  else null end from LOIInformation where   inqno in(select CGLREFNO  ))as mycase,case when left(CGLREFNO,3)='CGL' then 'CGL'  else null end as mycase1,CGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select CGLREFNO )) as resf,case when  CGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from CGL where EnquiryDate between '{fromdate}' and '{todate}') a").ToList();
+
+                //chartData.list = con.Query<inquirybudgetlist>(@$"select pglrefno,case WHEN Maxbudget BETWEEN 100 AND 500 THEN '100-500' 
+                //                                                    WHEN Maxbudget BETWEEN 500 AND 700 THEN '500-700'
+                //                                                    WHEN Maxbudget BETWEEN 700 AND 1000 THEN '700-1000'
+                //                                                    WHEN Maxbudget BETWEEN 1000 AND 1500 THEN '1000-1500'
+                //                                                    WHEN Maxbudget BETWEEN 1500 AND 2000 THEN '1500-2000'
+                //                                                    WHEN Maxbudget BETWEEN 2000 AND 3000 THEN '2000-3000'
+                //                                                    WHEN Maxbudget >3000 THEN 'ABOVE 3000'
+                //                                                    END AS BUDGET,left(pglrefno,3) type,propertytype from pgl where enquirydate between '{fromdate}' and '{todate}'
+                //                                                    union
+                //                                                    select Cglrefno,case WHEN Maxbudget BETWEEN 100 AND 500 THEN '100-500' 
+                //                                                    WHEN Maxbudget BETWEEN 500 AND 700 THEN '500-700'
+                //                                                    WHEN Maxbudget BETWEEN 700 AND 1000 THEN '700-1000'
+                //                                                    WHEN Maxbudget BETWEEN 1000 AND 1500 THEN '1000-1500'
+                //                                                    WHEN Maxbudget BETWEEN 1500 AND 2000 THEN '1500-2000'
+                //                                                    WHEN Maxbudget BETWEEN 2000 AND 3000 THEN '2000-3000'
+                //                                                    WHEN Maxbudget >3000 THEN 'ABOVE 3000'
+                //                                                    END AS BUDGET,left(Cglrefno,3) type,propertytype from Cgl where enquirydate between '{fromdate}' and '{todate}'").ToList();
+
+                chartData = con.Query<inquirybudgetlist>($@"select Budget,CountPgl,CountCgl
+                                                                    from
+                                                                    (SELECT '100-500' AS Budget,(select COUNT(*) from PGL where Maxbudget BETWEEN 100 AND 500 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where Maxbudget BETWEEN 100 AND 500 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                                    UNION ALL
+                                                                    SELECT '500-700' AS Budget,(select COUNT(*) from PGL where Maxbudget BETWEEN 500 AND 700 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where Maxbudget BETWEEN 500 AND 700 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                                    UNION ALL
+                                                                    SELECT '700-1000' AS Budget,(select COUNT(*) from PGL where Maxbudget BETWEEN 700 AND 1000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where Maxbudget BETWEEN 700 AND 1000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                                    UNION ALL
+                                                                    SELECT '1000-1500' AS Budget,(select COUNT(*) from PGL where Maxbudget BETWEEN 1000 AND 1500 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where Maxbudget BETWEEN 1000 AND 1500 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                                    UNION ALL
+                                                                    SELECT '1500-2000' AS Budget,(select COUNT(*) from PGL where Maxbudget BETWEEN 1500 AND 2000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where Maxbudget BETWEEN 1500 AND 2000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                                    UNION ALL
+                                                                    SELECT '2000-3000' AS Budget,(select COUNT(*) from PGL where Maxbudget BETWEEN 2000 AND 3000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where Maxbudget BETWEEN 2000 AND 3000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                                    UNION ALL
+                                                                    SELECT 'ABOVE 3000' AS Budget,(select COUNT(*) from PGL where Maxbudget > 3000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where Maxbudget > 3000 and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl)b").ToList();
+
+                
+
+            }
+
+            return Json(chartData);
+        }
+
+        public JsonResult Page5BarChart2(string fromdate, string todate)
+        {
+            List<inquirybudgetlist> chartData = new();
+
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                //chartData = con.Query<src>(@$"select tot,completedby,category,minbudget,Year(Doc) year from(select PGLREFNO AS TOT,completedby,left(pglrefno,3) as category,minbudget,Doc from pgl where enquirydate between '{fromdate}' and '{todate}' union select CGLREFNO AS TOT,completedby,left(cglrefno,3) as category,minbudget,Doc from cgl where enquirydate between '{fromdate}' and '{todate}')src order by Completedby").ToList();
+                //chartData.list = con.Query<resfclosedleadslist>(@$"select REF,completedby,year(doc) year,case  when mycase='Closed PGL' then 'PGL Closed'  else null end as Xpgl ,case  when mycase='Closed CGL' then 'CGL Closed'  else null end as Xcgl,case when mycase1='PGL' THEN 'PGL' ELSE NULL END AS  PGLCASE ,case when mycase1='CGL' THEN 'CGL' ELSE NULL END AS  CGLCASE,case  when mycase='Closed PGL' then resf else null end as pglresf,case  when mycase='Closed CGL' then resf else null end as cglresf ,isnull(resf,null) resf,MB,resf*100/mb resfper from(
+                //                                select completedby ,doc ,left(PGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' tHen 'Closed PGL'  else null end from LOIInformation where   inqno in(select PGLREFNO  ))as mycase,case when left(PGLREFNO,3)='PGL' then 'PGL'  else null end as mycase1,PGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select PGLREFNO )) as resf,case when  PGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from pgl where EnquiryDate between '{fromdate}' and '{todate}'
+                //                                union
+                //                                select completedby ,doc ,left(CGLREFNO,3) as inquirytype,(select case when loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}' then 'Closed CGL'  else null end from LOIInformation where   inqno in(select CGLREFNO  ))as mycase,case when left(CGLREFNO,3)='CGL' then 'CGL'  else null end as mycase1,CGLREFNO as ref,(select case when loistatus='Approved'  and loisigndate between '{fromdate}' and '{todate}' then  clientresf+llresf  else null end  from  LOIInformation  where  inqno in(select CGLREFNO )) as resf,case when  CGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE  loistatus='Approved' and loisigndate between '{fromdate}' and '{todate}') THEN MINBUDGET ELSE NULL END AS MB from CGL where EnquiryDate between '{fromdate}' and '{todate}') a").ToList();
+
+                //chartData.list = con.Query<inquirybudgetlist>(@$"select pglrefno,case WHEN Maxbudget BETWEEN 100 AND 500 THEN '100-500' 
+                //                                                    WHEN Maxbudget BETWEEN 500 AND 700 THEN '500-700'
+                //                                                    WHEN Maxbudget BETWEEN 700 AND 1000 THEN '700-1000'
+                //                                                    WHEN Maxbudget BETWEEN 1000 AND 1500 THEN '1000-1500'
+                //                                                    WHEN Maxbudget BETWEEN 1500 AND 2000 THEN '1500-2000'
+                //                                                    WHEN Maxbudget BETWEEN 2000 AND 3000 THEN '2000-3000'
+                //                                                    WHEN Maxbudget >3000 THEN 'ABOVE 3000'
+                //                                                    END AS BUDGET,left(pglrefno,3) type,propertytype from pgl where enquirydate between '{fromdate}' and '{todate}'
+                //                                                    union
+                //                                                    select Cglrefno,case WHEN Maxbudget BETWEEN 100 AND 500 THEN '100-500' 
+                //                                                    WHEN Maxbudget BETWEEN 500 AND 700 THEN '500-700'
+                //                                                    WHEN Maxbudget BETWEEN 700 AND 1000 THEN '700-1000'
+                //                                                    WHEN Maxbudget BETWEEN 1000 AND 1500 THEN '1000-1500'
+                //                                                    WHEN Maxbudget BETWEEN 1500 AND 2000 THEN '1500-2000'
+                //                                                    WHEN Maxbudget BETWEEN 2000 AND 3000 THEN '2000-3000'
+                //                                                    WHEN Maxbudget >3000 THEN 'ABOVE 3000'
+                //                                                    END AS BUDGET,left(Cglrefno,3) type,propertytype from Cgl where enquirydate between '{fromdate}' and '{todate}'").ToList();
+
+                chartData = con.Query<inquirybudgetlist>($@"select Propertytype,CountPgl,CountCgl
+                                                            from
+                                                            (SELECT 'Apartment' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                            UNION ALL
+                                                            SELECT 'Penthouse Apartment' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Penthouse Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Penthouse Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                            UNION ALL
+                                                            SELECT 'Villa' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Villa' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Villa' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                            UNION ALL
+                                                            SELECT 'Villa Apartment' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Villa Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Villa Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                            UNION ALL
+                                                            SELECT 'Villa Floor' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Villa Floor' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Villa Floor' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                            UNION ALL
+                                                            SELECT 'Floor Apartment' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Floor Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Floor Apartment' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                            UNION ALL
+                                                            SELECT 'Commercial' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Commercial' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Commercial' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl
+                                                            UNION ALL
+                                                            SELECT 'Commercial Space' AS Propertytype,(select COUNT(*) from PGL where propertytype = 'Commercial Space' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountPgl,(select COUNT(*) from CGL where propertytype = 'Commercial Space' and enquirydate BETWEEN '{fromdate}' and '{todate}')CountCgl)pc").ToList();
+                
+
+            }
+
+            return Json(chartData);
+        }
+
         public async Task<IActionResult> AllQueriesOnly(string fromdate, string todate)
         { 
             AllQueriesOnlyModel model = new AllQueriesOnlyModel();
