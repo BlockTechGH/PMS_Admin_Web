@@ -3278,6 +3278,67 @@ namespace PMS_Admin_Web.Controllers
             return Json(chartData);
         }
 
+        public JsonResult Page7BarChart1(string fromdate, string todate)
+        {
+            List<srcdata> chartData = new();
+
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                con.Open();
+                chartData = con.Query<srcdata>($@"WITH PGL_Count AS (
+                                                        SELECT source AS clientsource, COUNT(*) AS inquiry_count
+                                                        FROM PGL
+                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                        GROUP BY source
+                                                    ),
+                                                    CGL_Count AS (
+                                                        SELECT source AS clientsource, COUNT(*) AS inquiry_count
+                                                        FROM CGL
+                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                        GROUP BY source
+                                                    ),
+                                                    LOI_PGL_Closed AS (
+                                                        SELECT source AS clientsource, COUNT(*) AS closed_count
+                                                        FROM PGL p
+                                                        JOIN LOIInformation l ON p.PGLREFNO = l.inqno
+                                                        WHERE p.EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                          AND l.loistatus = 'Approved'
+                                                          AND l.loisigndate BETWEEN '{fromdate}' and '{todate}'
+                                                        GROUP BY source
+                                                    ),
+                                                    LOI_CGL_Closed AS (
+                                                        SELECT source AS clientsource, COUNT(*) AS closed_count
+                                                        FROM CGL c
+                                                        JOIN LOIInformation l ON c.CGLREFNO = l.inqno
+                                                        WHERE c.EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                          AND l.loistatus = 'Approved'
+                                                          AND l.loisigndate BETWEEN '{fromdate}' and '{todate}'
+                                                        GROUP BY source
+                                                    )
+                                                    SELECT
+                                                        srcdata.clientsource,
+                                                        COALESCE(PGL_Count.inquiry_count, 0) + COALESCE(CGL_Count.inquiry_count, 0) AS totalinquiry,
+                                                        COALESCE(LOI_PGL_Closed.closed_count, 0) + COALESCE(LOI_CGL_Closed.closed_count, 0) AS totalclosed
+                                                    FROM (
+                                                        SELECT DISTINCT source AS clientsource
+                                                        FROM PGL
+                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                        UNION
+                                                        SELECT DISTINCT source AS clientsource
+                                                        FROM CGL
+                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                    ) srcdata
+                                                    LEFT JOIN PGL_Count ON srcdata.clientsource = PGL_Count.clientsource
+                                                    LEFT JOIN CGL_Count ON srcdata.clientsource = CGL_Count.clientsource
+                                                    LEFT JOIN LOI_PGL_Closed ON srcdata.clientsource = LOI_PGL_Closed.clientsource
+                                                    LEFT JOIN LOI_CGL_Closed ON srcdata.clientsource = LOI_CGL_Closed.clientsource
+                                                    GROUP BY srcdata.clientsource, PGL_Count.inquiry_count, CGL_Count.inquiry_count, LOI_PGL_Closed.closed_count, LOI_CGL_Closed.closed_count", commandTimeout: 120).ToList();
+                con.Close();
+            }
+
+            return Json(chartData);
+        }
+
         public async Task<IActionResult> AllQueriesOnly(string fromdate, string todate)
         { 
             AllQueriesOnlyModel model = new AllQueriesOnlyModel();

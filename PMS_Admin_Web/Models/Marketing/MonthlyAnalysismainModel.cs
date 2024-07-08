@@ -105,4 +105,13 @@ namespace PMS_Admin_Web.Models.Marketing
         public string nationality { get; set; }
         public string occurrence { get; set; }
     }
+
+    public class srcdata 
+    {
+        public string clientsource { get; set; }
+        public string totalinquiry { get; set; }
+        public string totalclosed { get; set; }
+
+    
+    }
 }

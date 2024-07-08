@@ -117,6 +117,17 @@
                         </td>
                     </tr>
                 </table>
+
+                <table style="width:100%">
+                    <tr>
+                        <td>
+                            <div id="chartdiv13" style="width: 500px; height: 400px;"></div>
+                        </td>
+                        <td>
+                            <div id="chartdiv14" style="width: 500px; height: 400px;"></div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
         
@@ -180,7 +191,7 @@
     google.charts.setOnLoadCallback(drawChart10);
     google.charts.setOnLoadCallback(drawChart11);
     google.charts.setOnLoadCallback(drawChart12);
-    // google.charts.setOnLoadCallback(drawChart13);
+    google.charts.setOnLoadCallback(drawChart13);
     // google.charts.setOnLoadCallback(drawChart14);
     // google.charts.setOnLoadCallback(drawChart15);
     // google.charts.setOnLoadCallback(drawChart16);
@@ -770,6 +781,63 @@
                     }
                 };
                 var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv12'));
+
+                chart.draw(data, options);
+                //return false;
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart13() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page7BarChart1", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'ClientSource');
+                data.addColumn('number', 'TotalInquiry');
+                data.addColumn('number', 'ClosedInquiry');
+
+                // $.each(r.typelist, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
+
+                var dataArray = [];
+
+                $.each(r, function (i, item) {
+                    dataArray.push([String(item.clientsource), Number(item.totalinquiry), Number(item.totalclosed)]);
+                });
+
+                data.addRows(dataArray);
+
+                var options = {
+                    title: 'Closed Leads of Client Source',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        //title: 'Budget',
+                        //minValue: 0
+                        format: '0'
+                    },
+                    vAxis: {
+                        //title: 'Year',
+                        format: '0'
+                    }
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv13'));
 
                 chart.draw(data, options);
                 //return false;
