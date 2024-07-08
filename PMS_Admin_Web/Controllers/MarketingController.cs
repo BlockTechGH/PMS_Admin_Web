@@ -3228,6 +3228,56 @@ namespace PMS_Admin_Web.Controllers
             return Json(chartData);
         }
 
+        public JsonResult Page6BarChart1(string fromdate, string todate)
+        {
+            List<natsrc> chartData = new();
+
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                chartData = con.Query<natsrc>($@"SELECT nationality, COUNT(nationality) AS occurrence
+                                                                    FROM (
+                                                                        SELECT nationality 
+                                                                        FROM pgl 
+                                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                                        UNION ALL
+                                                                        SELECT nationality 
+                                                                        FROM cgl 
+                                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                                    ) AS natsrc
+                                                                    where len(nationality)>1
+                                                                    GROUP BY nationality
+                                                                    ORDER BY nationality").ToList();
+
+            }
+
+            return Json(chartData);
+        }
+
+        public JsonResult Page6BarChart2(string fromdate, string todate)
+        {
+            List<natsrc> chartData = new();
+
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                chartData = con.Query<natsrc>($@"SELECT nationality,count(nationality) occurrence
+                                                    FROM (
+                                                        SELECT case when  PGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE LoiStatus ='Approved'  and loisigndate between  '{fromdate}' and '{todate}') THEN nationality else null end as nationality
+                                                        FROM pgl 
+                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                        UNION ALL
+                                                        SELECT case when  CGLREFNO IN(SELECT INQNO FROM LOIINFORMATION WHERE LoiStatus ='Approved'  and loisigndate between  '{fromdate}' and '{todate}') THEN nationality else null end as nationality
+                                                        FROM cgl 
+                                                        WHERE EnquiryDate BETWEEN '{fromdate}' and '{todate}'
+                                                    ) AS natsrc
+                                                    where nationality is not null
+                                                    GROUP BY nationality
+                                                    ORDER BY nationality").ToList();
+
+            }
+
+            return Json(chartData);
+        }
+
         public async Task<IActionResult> AllQueriesOnly(string fromdate, string todate)
         { 
             AllQueriesOnlyModel model = new AllQueriesOnlyModel();

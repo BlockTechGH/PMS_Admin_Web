@@ -106,6 +106,17 @@
                         </td>
                     </tr>
                 </table>
+
+                <table style="width:100%">
+                    <tr>
+                        <td>
+                            <div id="chartdiv11" style="width: 500px; height: 400px;"></div>
+                        </td>
+                        <td>
+                            <div id="chartdiv12" style="width: 500px; height: 400px;"></div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
         
@@ -167,8 +178,8 @@
 
     google.charts.setOnLoadCallback(drawChart9);
     google.charts.setOnLoadCallback(drawChart10);
-    // google.charts.setOnLoadCallback(drawChart11);
-    // google.charts.setOnLoadCallback(drawChart12);
+    google.charts.setOnLoadCallback(drawChart11);
+    google.charts.setOnLoadCallback(drawChart12);
     // google.charts.setOnLoadCallback(drawChart13);
     // google.charts.setOnLoadCallback(drawChart14);
     // google.charts.setOnLoadCallback(drawChart15);
@@ -645,6 +656,120 @@
                     }
                 };
                 var chart = new google.visualization.BarChart(document.getElementById('chartdiv10'));
+
+                chart.draw(data, options);
+                //return false;
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart11() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page6BarChart1", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Nationality');
+                data.addColumn('number', 'Count');
+                
+
+                // $.each(r.typelist, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
+
+                var dataArray = [];
+
+                $.each(r, function (i, item) {
+                    dataArray.push([String(item.nationality), Number(item.occurrence)]);
+                });
+
+                data.addRows(dataArray);
+
+                var options = {
+                    title: 'Client Inquiry Nationality Analysis',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        //title: 'Budget',
+                        //minValue: 0
+                        format: '0'
+                    },
+                    vAxis: {
+                        //title: 'Year',
+                        format: '0'
+                    }
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv11'));
+
+                chart.draw(data, options);
+                //return false;
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart12() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page6BarChart2", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Nationality');
+                data.addColumn('number', 'Count');
+
+
+                // $.each(r.typelist, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
+
+                var dataArray = [];
+
+                $.each(r, function (i, item) {
+                    dataArray.push([String(item.nationality), Number(item.occurrence)]);
+                });
+
+                data.addRows(dataArray);
+
+                var options = {
+                    title: 'Closed Lead Nationality Analysis',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        //title: 'Budget',
+                        //minValue: 0
+                        format: '0'
+                    },
+                    vAxis: {
+                        //title: 'Year',
+                        format: '0'
+                    }
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv12'));
 
                 chart.draw(data, options);
                 //return false;

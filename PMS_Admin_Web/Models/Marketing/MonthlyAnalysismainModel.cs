@@ -99,4 +99,10 @@ namespace PMS_Admin_Web.Models.Marketing
         public string CountPgl { get; set; }
         public string CountCgl { get; set; }
     }
+
+    public class natsrc
+    {
+        public string nationality { get; set; }
+        public string occurrence { get; set; }
+    }
 }
