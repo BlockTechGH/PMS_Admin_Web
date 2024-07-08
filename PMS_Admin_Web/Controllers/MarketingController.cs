@@ -3339,6 +3339,24 @@ namespace PMS_Admin_Web.Controllers
             return Json(chartData);
         }
 
+        public JsonResult Page8BarChart1(string fromdate, string todate)
+        {
+            List<srclead> chartData = new();
+
+            using (SqlConnection con = new SqlConnection(sqlConnectionString.ConnectionString))
+            {
+                con.Open();
+                chartData = con.Query<srclead>($@"select count(*) assignedinq,sum(pt) ptmade,Completedby,sum(closed) closedlead from(
+                                                    select cglrefno,completedby,(select count(*) from DriverScheduel where  referenceno=cglrefno and Stype ='Property Tour') as pt,(select count(*) from LOIInformation where inqno=cglrefno  and loistatus='Approved' and loisigndate between  '{fromdate}' and '{todate}') as closed from cgl where EnquiryDate between  '{fromdate}' and '{todate}'
+                                                    union
+                                                    select pglrefno,completedby,(select count(*) from DriverScheduel where  referenceno=pglrefno and Stype ='Property Tour') as pt,(select count(*) from LOIInformation where inqno=pglrefno  and loistatus='Approved' and loisigndate between  '{fromdate}' and '{todate}') as closed from pgl where EnquiryDate between  '{fromdate}' and '{todate}' )src
+                                                    group by Completedby ", commandTimeout: 120).ToList();
+                con.Close();
+            }
+
+            return Json(chartData);
+        }
+
         public async Task<IActionResult> AllQueriesOnly(string fromdate, string todate)
         { 
             AllQueriesOnlyModel model = new AllQueriesOnlyModel();

@@ -111,7 +111,14 @@ namespace PMS_Admin_Web.Models.Marketing
         public string clientsource { get; set; }
         public string totalinquiry { get; set; }
         public string totalclosed { get; set; }
-
-    
     }
+
+    public class srclead
+    {
+        public string assignedinq { get; set; }
+        public string ptmade { get; set; }
+        public string Completedby { get; set; }
+        public string closedlead { get; set; }
+    }
+
 }

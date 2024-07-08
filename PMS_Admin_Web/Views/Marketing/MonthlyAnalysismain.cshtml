@@ -135,47 +135,7 @@
 </html>
 
 <script type="text/javascript">
-    // $(document).ready(function () {
-    //     google.charts.load('current', { 'packages': ['corechart'] });
-    //     google.charts.setOnLoadCallback(drawChart1);
-    //     var fromdate = $('#hiddenfromdate').val();
-    //     var todate = $('#hiddentodate').val();
-    //     function drawChart1() {
-    //         $.ajax({
-    //             type: "POST",
-    //             url: "@Url.Action("Page2PieChart1", "Marketing")",
-    //             data: { fromdate: fromdate, todate: todate },
-    //             contentType: "application/json; charset=utf-8",
-    //             dataType: "json",
-    //             success: function (r) {
-    //                 console.log(r);
-    //                 //var Data = r.jsonList;
-    //                 //console.log(Data);
-    //                 //var data = new google.visualization.arrayToDataTable();
-    //                 var data = new google.visualization.DataTable();
-    //                 data.addColumn('string', 'Type');
-    //                 data.addColumn('number', 'Count');
-
-    //                 for (var i = 0; i < r.length; i++) {
-    //                     data.addRow([r[i].type, r[i].count]);
-    //                 }
-
-    //                 //Pie
-    //                 var options = {
-    //                     title: 'Client Inquiry Distribution'
-    //                 };
-    //                 var chart = new google.visualization.PieChart($("#chartdiv1"));
-    //                 chart.draw(data, options);
-    //             },
-    //             failure: function (r) {
-    //                 alert(r.d);
-    //             },
-    //             error: function (r) {
-    //                 alert(r.d);
-    //             }
-    //         });
-    //     }
-    // })
+    
 
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(drawChart1);
@@ -192,10 +152,8 @@
     google.charts.setOnLoadCallback(drawChart11);
     google.charts.setOnLoadCallback(drawChart12);
     google.charts.setOnLoadCallback(drawChart13);
-    // google.charts.setOnLoadCallback(drawChart14);
-    // google.charts.setOnLoadCallback(drawChart15);
-    // google.charts.setOnLoadCallback(drawChart16);
-
+    google.charts.setOnLoadCallback(drawChart14);
+    
     var fromdate = $('#hiddenfromdate').val();
     var todate = $('#hiddentodate').val();
 
@@ -838,6 +796,64 @@
                     }
                 };
                 var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv13'));
+
+                chart.draw(data, options);
+                //return false;
+            },
+            failure: function (r) {
+                alert(r.d);
+            },
+            error: function (r) {
+                alert(r.d);
+            }
+        });
+    }
+
+    function drawChart14() {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Page8BarChart1", "Marketing")",
+            data: { fromdate: fromdate, todate: todate },
+            success: function (r) {
+                console.log(r);
+                //var Data = r.jsonList;
+                //console.log(Data);
+                //var data = new google.visualization.arrayToDataTable();
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Completedby');
+                data.addColumn('number', 'Assigned Inquiry');
+                data.addColumn('number', 'PT Made');
+                data.addColumn('number', 'Closed Lead');
+
+                // $.each(r.typelist, function (i, item) {
+                //     data.addColumn('string', item);
+                // });
+
+                var dataArray = [];
+
+                $.each(r, function (i, item) {
+                    dataArray.push([String(item.completedby), Number(item.assignedinq), Number(item.ptmade), Number(item.closedlead)]);
+                });
+
+                data.addRows(dataArray);
+
+                var options = {
+                    title: 'LE Monthly Achievement',
+                    // chartArea: {
+                    //     width: '50%'
+                    // },
+                    //colors: ['#b0120a', '#7b1fa2', '#ffab91', '#d95f02'],
+                    hAxis: {
+                        //title: 'Budget',
+                        //minValue: 0
+                        format: '0'
+                    },
+                    vAxis: {
+                        //title: 'Year',
+                        format: '0'
+                    }
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById('chartdiv14'));
 
                 chart.draw(data, options);
                 //return false;
